@@ -3,162 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#070b12">
+<meta name="theme-color" content="#060a12">
 <title>QUANTIX TECH Smart Irrigation</title>
 <style>
   :root{
-    --bg:#070b12;
-    --card:#111827;
-    --card2:#162033;
-    --line:#23324d;
+    --bg:#060a12;
+    --card:#101827;
+    --card2:#162238;
+    --line:#1f2f4a;
     --cyan:#00e5ff;
     --mag:#e879f9;
     --green:#00e676;
     --red:#ff5252;
+    --amber:#ffb300;
     --text:#f8fafc;
     --sub:#94a3b8;
   }
   *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:radial-gradient(circle at top,#0f1c30 0%,var(--bg) 58%);color:var(--text);padding:12px;max-width:680px;margin-inline:auto;min-height:100vh}
+  body{
+    margin:0;
+    background:radial-gradient(circle at 50% -10%,#11223d 0%,var(--bg) 55%);
+    color:var(--text);
+    padding:12px 12px 84px 12px;
+    max-width:640px;
+    margin-inline:auto;
+    min-height:100vh;
+  }
 
-  .hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--card);border-radius:14px;border:1px solid var(--line);margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-  .brand{font-weight:900;font-size:17px;letter-spacing:.6px;display:flex;align-items:center;gap:8px}
+  /* Top App Bar */
+  .appbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 14px;background:rgba(16,24,39,.92);backdrop-filter:blur(10px);
+    border-radius:16px;border:1px solid var(--line);margin-bottom:10px;
+    position:sticky;top:10px;z-index:20;box-shadow:0 10px 26px rgba(0,0,0,.4)
+  }
+  .brand-row{display:flex;align-items:center;gap:10px}
+  .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+  .pulse-dot.off{background:var(--red);box-shadow:0 0 12px var(--red)}
+  .brand{font-weight:900;font-size:16.5px;letter-spacing:.5px}
   .brand span{color:var(--cyan)}
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);display:inline-block}
-  .dot.off{background:var(--red);box-shadow:0 0 10px var(--red)}
-  .sub-line{font-size:11.5px;color:var(--sub);margin-top:3px}
-  .badge{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.4px;background:#0c2433;color:var(--cyan);border:1px solid rgba(0,229,255,.35)}
+  .meta-sub{font-size:11px;color:var(--sub);margin-top:2px}
+  .status-pill{
+    padding:6px 12px;border-radius:999px;font-size:11.5px;font-weight:900;
+    letter-spacing:.5px;background:#092533;color:var(--green);border:1px solid rgba(0,230,118,.35)
+  }
+  .status-pill.offline{background:#2a0d12;color:var(--red);border-color:rgba(255,82,82,.4)}
 
-  .alert-box{display:none;padding:10px 12px;border-radius:12px;margin-bottom:10px;font-size:13px;font-weight:700;align-items:center;justify-content:space-between;gap:8px}
-  .alert-dry{display:flex;background:rgba(255,82,82,.14);border:1px solid rgba(255,82,82,.55);color:#ff8a80}
-  .alert-run{display:flex;background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.45);color:#69f0ae}
+  .banner{display:none;padding:10px 12px;border-radius:13px;margin-bottom:10px;font-size:12.5px;font-weight:700;align-items:center;justify-content:space-between;gap:8px}
+  .banner.dry{display:flex;background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.5);color:#ff8a80}
+  .banner.run{display:flex;background:rgba(0,230,118,.13);border:1px solid rgba(0,230,118,.45);color:#69f0ae}
 
-  .toast{text-align:center;font-size:12.5px;color:var(--green);min-height:18px;margin:4px 0 10px;font-weight:700}
+  .toast{text-align:center;font-size:12px;font-weight:700;min-height:18px;margin:4px 0 8px;color:var(--green)}
 
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .card{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .tab-panel{display:none;animation:fadeIn .18s ease}
+  .tab-panel.active{display:block}
+  @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .card{background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .z1{border-top:3px solid var(--cyan)}.z2{border-top:3px solid var(--mag)}
-  .z-title{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;letter-spacing:.5px}
-  .z1 .z-title{color:var(--cyan)}.z2 .z-title{color:var(--mag)}
-  .pill{font-size:10.5px;padding:2px 7px;border-radius:999px;background:var(--card2);color:var(--sub);border:1px solid var(--line)}
-  .big{font-size:28px;font-weight:900;margin:6px 0 4px}
-  .bar{height:9px;background:#0b1220;border-radius:999px;overflow:hidden;margin:6px 0 8px;border:1px solid #1d2b45}
-  .fill{height:100%;background:linear-gradient(90deg,#00c853,#00e676);transition:width .35s ease}
-  .used-row{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
-  .used-row b{color:#fff}
+  .z-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800}
+  .z1 .z-head{color:var(--cyan)}.z2 .z-head{color:var(--mag)}
+  .chip{font-size:10.5px;padding:2px 8px;border-radius:999px;background:var(--card2);color:var(--sub);border:1px solid var(--line)}
+  .moist-val{font-size:30px;font-weight:900;margin:6px 0 4px}
+  .meter{height:9px;background:#09101d;border-radius:999px;overflow:hidden;margin:6px 0 8px;border:1px solid #1b2a44}
+  .meter-fill{height:100%;background:linear-gradient(90deg,#00c853,#00e676);transition:width .35s ease}
+  .stat-line{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+  .stat-line b{color:#fff}
 
-  h3{margin:0 0 10px 0;font-size:14px;font-weight:800;color:var(--cyan);letter-spacing:.3px;display:flex;justify-content:space-between;align-items:center}
-  button{border:none;border-radius:10px;padding:11px 13px;font-weight:800;font-size:13.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
+  .sec-title{font-size:13.5px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+  button{border:none;border-radius:12px;padding:12px 14px;font-weight:800;font-size:13.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
   button:active{transform:scale(.97);opacity:.92}
-  .btn-run{background:var(--green);color:#04130b}
-  .btn-stop{background:var(--red);color:#fff}
-  .btn-z1{background:#0284c7;color:#fff}
-  .btn-z2{background:#a21caf;color:#fff}
-  .btn-save{background:var(--cyan);color:#04151c;margin-top:10px}
-  .btn-rst{background:#1e293b;color:#e2e8f0;border:1px solid #334155;margin-top:8px}
+  .b-green{background:var(--green);color:#03140b}
+  .b-red{background:var(--red);color:#fff}
+  .b-z1{background:#0284c7;color:#fff}
+  .b-z2{background:#a21caf;color:#fff}
+  .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
+  .b-ghost{background:var(--card2);color:#e2e8f0;border:1px solid var(--line);margin-top:8px}
 
-  .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid #1d293d;font-size:12px;color:var(--sub)}
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:9px 0}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0}
   label{font-size:13px;color:var(--sub)}
-  input{background:#0b111e;border:1px solid #2b3b55;color:#fff;padding:7px 9px;border-radius:9px;font-size:14px;font-weight:600}
+  input{background:#090f1b;border:1px solid #293954;color:#fff;padding:8px 10px;border-radius:10px;font-size:14px;font-weight:700}
   input:focus{outline:none;border-color:var(--cyan)}
 
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th{color:var(--sub);font-size:11.5px;text-transform:uppercase;padding:6px 4px;border-bottom:1px solid #22304a}
-  td{padding:6px 4px;text-align:center;border-bottom:1px solid #182338}
-  td input{width:76px;text-align:center}
+  th{color:var(--sub);font-size:11px;text-transform:uppercase;padding:7px 4px;border-bottom:1px solid #20304a}
+  td{padding:7px 4px;text-align:center;border-bottom:1px solid #162236}
+  td input{width:78px;text-align:center}
 
-  .footer-note{text-align:center;font-size:11.5px;color:#64748b;padding:8px 0 18px}
+  .info-list{font-size:12.5px;color:var(--sub);line-height:1.7}
+  .info-list b{color:#fff}
+
+  /* Bottom Navigation */
+  .nav{
+    position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
+    width:calc(100% - 24px);max-width:616px;
+    background:rgba(16,24,39,.95);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:18px;
+    display:grid;grid-template-columns:repeat(4,1fr);padding:6px;gap:4px;
+    z-index:30;box-shadow:0 12px 30px rgba(0,0,0,.55)
+  }
+  .nav-btn{
+    background:transparent;color:var(--sub);padding:8px 4px;border-radius:13px;
+    font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px
+  }
+  .nav-btn.active{background:var(--card2);color:var(--cyan);border:1px solid rgba(0,229,255,.28)}
+  .nav-ico{font-size:15px;line-height:1}
 </style>
 </head>
 <body>
-  <div class="hdr">
-    <div>
-      <div class="brand">
-        <span class="dot off" id="netDot"></span>
-        <div>QUAN<span>TIX</span> TECH</div>
-      </div>
-      <div class="sub-line" id="rtc">Syncing RTC clock...</div>
-    </div>
-    <div class="badge" id="stBadge">OFFLINE</div>
-  </div>
 
-  <div id="alertBanner" class="alert-box" style="display:none"></div>
+  <header class="appbar">
+    <div class="brand-row">
+      <span class="pulse-dot off" id="netDot"></span>
+      <div>
+        <div class="brand">QUAN<span>TIX</span> TECH</div>
+        <div class="meta-sub" id="rtc">Syncing RTC...</div>
+      </div>
+    </div>
+    <div class="status-pill offline" id="stBadge">OFFLINE</div>
+  </header>
+
+  <div id="alertBanner" class="banner"></div>
   <div class="toast" id="msg"></div>
 
-  <div class="grid">
-    <div class="card z1" style="margin:0">
-      <div class="z-title"><span>ZONE 1</span><span class="pill" id="band1">--</span></div>
-      <div class="big" id="m1">--%</div>
-      <div class="bar"><div class="fill" id="b1" style="width:0%"></div></div>
-      <div class="used-row"><span>Water Used</span><b id="l1">0.00 L</b></div>
-    </div>
-
-    <div class="card z2" style="margin:0">
-      <div class="z-title"><span>ZONE 2</span><span class="pill" id="band2">--</span></div>
-      <div class="big" id="m2">--%</div>
-      <div class="bar"><div class="fill" id="b2" style="width:0%"></div></div>
-      <div class="used-row"><span>Water Used</span><b id="l2">0.00 L</b></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3><span>Remote Pump & Valve Control</span><span class="pill" id="syncAgo">ESP Offline</span></h3>
-    <div class="grid" style="margin:0">
-      <button class="btn-run" onclick="sendCmd('start')">START BOTH</button>
-      <button class="btn-stop" onclick="confirmStop()">STOP ALL</button>
-    </div>
-    <div class="grid" style="margin-top:8px;margin-bottom:0">
-      <button class="btn-z1" onclick="sendCmd('z1')">RUN ZONE 1</button>
-      <button class="btn-z2" onclick="sendCmd('z2')">RUN ZONE 2</button>
-    </div>
-    <button class="btn-rst" onclick="confirmReset()">Reset Total Litres</button>
-    <div class="meta">
-      <span id="wifiState">Wi-Fi: --</span>
-      <span id="ipState">IP: --</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Schedules & Flow Calibration</h3>
-    <div class="row">
-      <label>Morning Sch 1 (HH:MM)</label>
-      <div>
-        <input id="s1h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
-        <input id="s1m" type="number" min="0" max="59" style="width:58px;text-align:center">
+  <!-- TAB 1: HOME -->
+  <section id="tab-home" class="tab-panel active">
+    <div class="grid2">
+      <div class="card z1" style="margin:0">
+        <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+        <div class="moist-val" id="m1">--%</div>
+        <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
+        <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
+      </div>
+      <div class="card z2" style="margin:0">
+        <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+        <div class="moist-val" id="m2">--%</div>
+        <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
+        <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
       </div>
     </div>
-    <div class="row">
-      <label>Evening Sch 2 (HH:MM)</label>
-      <div>
-        <input id="s2h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
-        <input id="s2m" type="number" min="0" max="59" style="width:58px;text-align:center">
+
+    <div class="card">
+      <div class="sec-title"><span>Quick Irrigation Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
+      <div class="grid2" style="margin:0">
+        <button class="b-green" onclick="sendCmd('start')">START BOTH</button>
+        <button class="b-red" onclick="confirmStop()">STOP ALL</button>
+      </div>
+      <div class="grid2" style="margin-top:8px;margin-bottom:0">
+        <button class="b-z1" onclick="sendCmd('z1')">RUN ZONE 1</button>
+        <button class="b-z2" onclick="sendCmd('z2')">RUN ZONE 2</button>
       </div>
     </div>
-    <div class="row">
-      <label>Flow Cal Z1 / Z2 (pulses/L)</label>
-      <div>
-        <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
-        <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
+
+    <div class="card">
+      <div class="sec-title">Controller Telemetry</div>
+      <div class="info-list">
+        <div>Wi-Fi Router: <b id="wifiState">--</b></div>
+        <div>Local IP: <b id="ipState">--</b></div>
+        <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
       </div>
     </div>
-    <button class="btn-save" onclick="saveSettings()">Save Schedules & Calibration</button>
-  </div>
+  </section>
 
-  <div class="card">
-    <h3>Moisture Band Water Target (ml)</h3>
-    <table>
-      <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
-      <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
-      <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
-      <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
-      <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
-      <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
-    </table>
-    <button class="btn-save" onclick="saveSettings()">Save Water Targets</button>
-  </div>
+  <!-- TAB 2: CONTROL -->
+  <section id="tab-ctrl" class="tab-panel">
+    <div class="card">
+      <div class="sec-title">Pump & Solenoid Valves</div>
+      <button class="b-green" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
+      <div class="grid2" style="margin-top:8px">
+        <button class="b-z1" onclick="sendCmd('z1')">Zone 1 Only</button>
+        <button class="b-z2" onclick="sendCmd('z2')">Zone 2 Only</button>
+      </div>
+      <button class="b-red" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
+      <button class="b-ghost" onclick="confirmReset()">Reset Total Litres Counter</button>
+    </div>
+  </section>
 
-  <div class="footer-note">QUANTIX TECH • Smart Automated Irrigation System</div>
+  <!-- TAB 3: SCHEDULE -->
+  <section id="tab-sched" class="tab-panel">
+    <div class="card">
+      <div class="sec-title">Daily Irrigation Schedules & Flow</div>
+      <div class="row">
+        <label>Morning Schedule 1 (HH:MM)</label>
+        <div>
+          <input id="s1h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
+          <input id="s1m" type="number" min="0" max="59" style="width:58px;text-align:center">
+        </div>
+      </div>
+      <div class="row">
+        <label>Evening Schedule 2 (HH:MM)</label>
+        <div>
+          <input id="s2h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
+          <input id="s2m" type="number" min="0" max="59" style="width:58px;text-align:center">
+        </div>
+      </div>
+      <div class="row">
+        <label>Flow Cal Z1 / Z2 (pulses/L)</label>
+        <div>
+          <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
+          <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
+        </div>
+      </div>
+      <button class="b-cyan" onclick="saveSettings()">Save Schedule & Flow Cal</button>
+    </div>
+  </section>
+
+  <!-- TAB 4: TARGETS -->
+  <section id="tab-cfg" class="tab-panel">
+    <div class="card">
+      <div class="sec-title">Moisture Band Water Targets (ml)</div>
+      <table>
+        <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
+        <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
+        <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
+        <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
+        <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
+        <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
+      </table>
+      <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
+    </div>
+  </section>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <button class="nav-btn active" data-tab="tab-home" onclick="switchTab(this)"><span class="nav-ico">🏠</span><span>Home</span></button>
+    <button class="nav-btn" data-tab="tab-ctrl" onclick="switchTab(this)"><span class="nav-ico">💧</span><span>Control</span></button>
+    <button class="nav-btn" data-tab="tab-sched" onclick="switchTab(this)"><span class="nav-ico">⏰</span><span>Schedule</span></button>
+    <button class="nav-btn" data-tab="tab-cfg" onclick="switchTab(this)"><span class="nav-ico">⚙️</span><span>Targets</span></button>
+  </nav>
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -169,6 +242,13 @@ let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
 let lastSuccessfulFetchAt = 0;
 let latestStatusData = null;
+
+function switchTab(btn) {
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(btn.dataset.tab).classList.add("active");
+}
 
 function bandLabel(m) {
   if (m < 20) return "<20%";
@@ -197,9 +277,7 @@ async function fetchJsonSafe(url, options = {}, retries = 2) {
   for (let i = 0; i <= retries; i++) {
     try {
       const res = await fetch(url, { cache: "no-store", ...options });
-      if (res.ok) {
-        return await res.json();
-      }
+      if (res.ok) return await res.json();
       if (res.status >= 500 && i < retries) {
         await new Promise(r => setTimeout(r, 250 * (i + 1)));
         continue;
@@ -244,16 +322,15 @@ async function saveSettings() {
     z2_3: Number(document.getElementById("z2_3").value || 0),
     z2_4: Number(document.getElementById("z2_4").value || 0)
   };
-
   try {
     await fetchJsonSafe(`${DB_URL}/settings.json`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     }, 2);
-    showMsg("Configuration synced to Firebase!");
+    showMsg("Settings synced with cloud!");
   } catch (e) {
-    showMsg("Temporary issue saving settings, try again", true);
+    showMsg("Temporary issue saving settings", true);
   }
 }
 
@@ -265,7 +342,6 @@ function populateInputsFromData(d) {
   if (d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
   if (d.c1 !== undefined) document.getElementById("c1").value = d.c1;
   if (d.c2 !== undefined) document.getElementById("c2").value = d.c2;
-
   for (let i = 0; i < 5; i++) {
     if (Array.isArray(d.z1) && d.z1[i] !== undefined) document.getElementById("z1_" + i).value = d.z1[i];
     if (Array.isArray(d.z2) && d.z2[i] !== undefined) document.getElementById("z2_" + i).value = d.z2[i];
@@ -274,18 +350,13 @@ function populateInputsFromData(d) {
 
 function renderBanner(st, dryAlert, watering, espAlive) {
   const box = document.getElementById("alertBanner");
-  if (!espAlive) {
-    box.style.display = "none";
-    return;
-  }
+  if (!espAlive) { box.style.display = "none"; return; }
   if (dryAlert || st === "DRY!") {
-    box.className = "alert-box alert-dry";
-    box.style.display = "flex";
-    box.innerHTML = "<span>⚠ DRY RUN ALERT: No water flow detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
+    box.className = "banner dry";
+    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
   } else if (watering || st === "RUN") {
-    box.className = "alert-box alert-run";
-    box.style.display = "flex";
-    box.innerHTML = "<span>💧 Irrigation Active — Watering in progress</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
+    box.className = "banner run";
+    box.innerHTML = "<span>💧 Irrigation Running</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
   } else {
     box.style.display = "none";
   }
@@ -293,9 +364,7 @@ function renderBanner(st, dryAlert, watering, espAlive) {
 
 function isEspAliveNow() {
   const now = Date.now();
-  if (lastSeenMillis !== null) {
-    return (now - lastSeenChangeAt) <= ESP_STALE_MS;
-  }
+  if (lastSeenMillis !== null) return (now - lastSeenChangeAt) <= ESP_STALE_MS;
   return lastSuccessfulFetchAt > 0 && ((now - lastSuccessfulFetchAt) <= ESP_STALE_MS);
 }
 
@@ -303,24 +372,24 @@ function updateEspLinkState() {
   const dot = document.getElementById("netDot");
   const badge = document.getElementById("stBadge");
   const syncTag = document.getElementById("syncAgo");
+  const hbEl = document.getElementById("hbAge");
   const alive = isEspAliveNow();
 
+  const refTime = (lastSeenMillis !== null) ? lastSeenChangeAt : lastSuccessfulFetchAt;
+  hbEl.innerText = refTime > 0 ? Math.max(0, Math.floor((Date.now() - refTime) / 1000)) + "s ago" : "--";
+
   if (alive) {
-    dot.className = "dot";
+    dot.className = "pulse-dot";
     syncTag.innerText = "ESP Online";
     const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
+    badge.className = "status-pill";
     badge.innerText = st === "RDY" ? "ONLINE" : st;
-    badge.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e676");
-    renderBanner(
-      st,
-      Boolean(latestStatusData && latestStatusData.dryAlert),
-      Boolean(latestStatusData && latestStatusData.watering),
-      true
-    );
+    badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
+    renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
   } else {
-    dot.className = "dot off";
+    dot.className = "pulse-dot off";
+    badge.className = "status-pill offline";
     badge.innerText = "OFFLINE";
-    badge.style.color = "#ff5252";
     syncTag.innerText = "ESP Offline";
     renderBanner("OFFLINE", false, false, false);
   }
@@ -330,7 +399,6 @@ async function fetchStatus() {
   try {
     const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
     if (!d) return;
-
     latestStatusData = d;
     lastSuccessfulFetchAt = Date.now();
 
@@ -356,19 +424,15 @@ async function fetchStatus() {
     document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
     document.getElementById("l1").innerText = l1.toFixed(2) + " L";
     document.getElementById("l2").innerText = l2.toFixed(2) + " L";
-
-    document.getElementById("wifiState").innerText = "Wi-Fi: " + (d.staSsid || "Not set");
-    document.getElementById("ipState").innerText = "IP: " + (d.staIP || "--");
+    document.getElementById("wifiState").innerText = d.staSsid || "Not set";
+    document.getElementById("ipState").innerText = d.staIP || "--";
 
     if (!settingsLoaded) {
       populateInputsFromData(d);
       settingsLoaded = true;
     }
-
     updateEspLinkState();
-  } catch (e) {
-    // ক্ষণিকের 500 বা নেটওয়ার্ক গ্লিচে সাথে সাথে OFFLINE দেখানো হবে না
-  }
+  } catch (e) {}
 }
 
 setInterval(updateEspLinkState, 1000);
