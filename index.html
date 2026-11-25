@@ -14,7 +14,6 @@
     --cyan:#00e5ff;
     --mag:#e879f9;
     --green:#00e676;
-    --amber:#ffb300;
     --red:#ff5252;
     --text:#f8fafc;
     --sub:#94a3b8;
@@ -81,7 +80,7 @@
       </div>
       <div class="sub-line" id="rtc">Syncing RTC clock...</div>
     </div>
-    <div class="badge" id="stBadge">CONNECTING</div>
+    <div class="badge" id="stBadge">OFFLINE</div>
   </div>
 
   <div id="alertBanner" class="alert-box" style="display:none"></div>
@@ -104,7 +103,7 @@
   </div>
 
   <div class="card">
-    <h3><span>Remote Pump & Valve Control</span><span class="pill" id="syncAgo">Live Cloud</span></h3>
+    <h3><span>Remote Pump & Valve Control</span><span class="pill" id="syncAgo">ESP Offline</span></h3>
     <div class="grid" style="margin:0">
       <button class="btn-run" onclick="sendCmd('start')">START BOTH</button>
       <button class="btn-stop" onclick="confirmStop()">STOP ALL</button>
@@ -163,8 +162,12 @@
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
+const ESP_TIMEOUT_MS = 10000;
+
 let settingsLoaded = false;
-let lastOkTime = 0;
+let lastSeenMillis = null;
+let lastSeenChangeAt = 0;
+let latestStatusData = null;
 
 function bandLabel(m) {
   if (m < 20) return "<20%";
@@ -178,7 +181,7 @@ function showMsg(t, isErr=false) {
   const m = document.getElementById("msg");
   m.style.color = isErr ? "#ff8a80" : "#00e676";
   m.innerText = t;
-  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
+  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3000);
 }
 
 function confirmStop() {
@@ -189,17 +192,35 @@ function confirmReset() {
   if (confirm("Reset total water counter (Litres) for both zones?")) sendCmd("resetL");
 }
 
+async function fetchJsonSafe(url, options = {}, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, { cache: "no-store", ...options });
+      if (res.ok) {
+        return await res.json();
+      }
+      if (res.status >= 500 && i < retries) {
+        await new Promise(r => setTimeout(r, 300 * (i + 1)));
+        continue;
+      }
+      throw new Error("HTTP " + res.status);
+    } catch (err) {
+      if (i === retries) throw err;
+      await new Promise(r => setTimeout(r, 300 * (i + 1)));
+    }
+  }
+}
+
 async function sendCmd(cmd) {
   try {
-    const res = await fetch(`${DB_URL}/control/cmd.json`, {
+    await fetchJsonSafe(`${DB_URL}/control/cmd.json`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cmd)
-    });
-    if (res.ok) showMsg("Command sent: " + cmd.toUpperCase());
-    else showMsg("Failed to send command", true);
+    }, 2);
+    showMsg("Command sent: " + cmd.toUpperCase());
   } catch (e) {
-    showMsg("Network error sending command", true);
+    showMsg("Retrying command... please check network", true);
   }
 }
 
@@ -224,15 +245,14 @@ async function saveSettings() {
   };
 
   try {
-    const res = await fetch(`${DB_URL}/settings.json`, {
+    await fetchJsonSafe(`${DB_URL}/settings.json`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
-    });
-    if (res.ok) showMsg("Configuration synced to Firebase!");
-    else showMsg("Failed to save configuration", true);
+    }, 2);
+    showMsg("Configuration synced to Firebase!");
   } catch (e) {
-    showMsg("Network error saving configuration", true);
+    showMsg("Temporary issue saving settings, try again", true);
   }
 }
 
@@ -251,8 +271,12 @@ function populateInputsFromData(d) {
   }
 }
 
-function renderBanner(st, dryAlert, watering) {
+function renderBanner(st, dryAlert, watering, espAlive) {
   const box = document.getElementById("alertBanner");
+  if (!espAlive) {
+    box.style.display = "none";
+    return;
+  }
   if (dryAlert || st === "DRY!") {
     box.className = "alert-box alert-dry";
     box.style.display = "flex";
@@ -266,21 +290,48 @@ function renderBanner(st, dryAlert, watering) {
   }
 }
 
+function updateEspLinkState() {
+  const dot = document.getElementById("netDot");
+  const badge = document.getElementById("stBadge");
+  const syncTag = document.getElementById("syncAgo");
+
+  const espAlive = (lastSeenMillis !== null) && ((Date.now() - lastSeenChangeAt) <= ESP_TIMEOUT_MS);
+
+  if (espAlive) {
+    dot.className = "dot";
+    syncTag.innerText = "ESP Online";
+    if (latestStatusData) {
+      const st = latestStatusData.status || "RDY";
+      badge.innerText = st === "RDY" ? "ONLINE" : st;
+      badge.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e676");
+      renderBanner(st, Boolean(latestStatusData.dryAlert), Boolean(latestStatusData.watering), true);
+    }
+  } else {
+    dot.className = "dot off";
+    badge.innerText = "OFFLINE";
+    badge.style.color = "#ff5252";
+    syncTag.innerText = "ESP Offline";
+    renderBanner("OFFLINE", false, false, false);
+  }
+}
+
 async function fetchStatus() {
   try {
-    const res = await fetch(`${DB_URL}/status.json`);
-    if (!res.ok) return;
-    const d = await res.json();
+    const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
     if (!d) return;
 
-    lastOkTime = Date.now();
-    document.getElementById("netDot").className = "dot";
+    latestStatusData = d;
+
+    const incomingSeen = d.lastSeen !== undefined ? Number(d.lastSeen) : null;
+    if (incomingSeen !== null && incomingSeen !== lastSeenMillis) {
+      lastSeenMillis = incomingSeen;
+      lastSeenChangeAt = Date.now();
+    }
 
     const m1 = Number(d.m1 ?? 0);
     const m2 = Number(d.m2 ?? 0);
     const l1 = Number(d.l1 ?? 0);
     const l2 = Number(d.l2 ?? 0);
-    const st = d.status || "RDY";
 
     document.getElementById("rtc").innerText = "RTC: " + (d.time || "--/--/---- --:--");
     document.getElementById("m1").innerText = m1 + "%";
@@ -292,12 +343,6 @@ async function fetchStatus() {
     document.getElementById("l1").innerText = l1.toFixed(2) + " L";
     document.getElementById("l2").innerText = l2.toFixed(2) + " L";
 
-    const sb = document.getElementById("stBadge");
-    sb.innerText = st;
-    sb.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e5ff");
-
-    renderBanner(st, Boolean(d.dryAlert), Boolean(d.watering));
-
     document.getElementById("wifiState").innerText = "Wi-Fi: " + (d.staSsid || "Not set");
     document.getElementById("ipState").innerText = "IP: " + (d.staIP || "--");
 
@@ -305,20 +350,14 @@ async function fetchStatus() {
       populateInputsFromData(d);
       settingsLoaded = true;
     }
+
+    updateEspLinkState();
   } catch (e) {
-    document.getElementById("netDot").className = "dot off";
-    document.getElementById("stBadge").innerText = "OFFLINE";
-    document.getElementById("stBadge").style.color = "#ff5252";
+    // ক্ষণিকের 500 বা নেটওয়ার্ক গ্লিচে সঙ্গে সঙ্গে OFFLINE দেখাবো না; 10s পার হলে updateEspLinkState() নিজেই OFFLINE করবে
   }
 }
 
-setInterval(() => {
-  if (lastOkTime > 0) {
-    const sec = Math.max(0, Math.floor((Date.now() - lastOkTime) / 1000));
-    document.getElementById("syncAgo").innerText = sec <= 5 ? "Live Cloud" : `Synced ${sec}s ago`;
-  }
-}, 1000);
-
+setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
 fetchStatus();
 </script>
