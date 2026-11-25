@@ -363,12 +363,12 @@
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const ESP_STALE_MS = 15000; // 15s notun heartbeat na asle OFFLINE
+const ESP_STALE_MS = 30000;
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
-let lastPayloadSig = "";
+let lastSuccessfulFetchAt = 0;
 let latestStatusData = null;
 
 function switchTab(btn) {
@@ -497,4 +497,196 @@ async function saveRtc(usePhoneNow) {
     mo = Number(document.getElementById("rtcMo").value || 1);
     d = Number(document.getElementById("rtcD").value || 1);
     h = Number(document.getElementById("rtcH").value || 0);
-    mi = Number(document.getElementById("rtcMi").value || 
+    mi = Number(document.getElementById("rtcMi").value || 0);
+    s = Number(document.getElementById("rtcS").value || 0);
+  }
+  try {
+    await patchSettings({
+      setRtc: true,
+      rtcY: y,
+      rtcMo: mo,
+      rtcD: d,
+      rtcH: h,
+      rtcMi: mi,
+      rtcS: s
+    });
+    showMsg("RTC time saved to cloud!");
+  } catch (e) {
+    showMsg("RTC save failed: " + e.message, true);
+  }
+}
+
+function initRtcInputs() {
+  const now = new Date();
+  document.getElementById("rtcY").value = now.getFullYear();
+  document.getElementById("rtcMo").value = now.getMonth() + 1;
+  document.getElementById("rtcD").value = now.getDate();
+  document.getElementById("rtcH").value = now.getHours();
+  document.getElementById("rtcMi").value = now.getMinutes();
+  document.getElementById("rtcS").value = now.getSeconds();
+}
+
+function populateInputsFromSettings(s) {
+  if (!s) return;
+  if (s.s1h !== undefined) document.getElementById("s1h").value = s.s1h;
+  if (s.s1m !== undefined) document.getElementById("s1m").value = s.s1m;
+  if (s.s2h !== undefined) document.getElementById("s2h").value = s.s2h;
+  if (s.s2m !== undefined) document.getElementById("s2m").value = s.s2m;
+  if (s.c1 !== undefined) document.getElementById("c1").value = s.c1;
+  if (s.c2 !== undefined) document.getElementById("c2").value = s.c2;
+  if (s.wifiSsid) document.getElementById("wifiSsid").value = s.wifiSsid;
+  for (let i = 0; i < 5; i++) {
+    if (s["z1_" + i] !== undefined) document.getElementById("z1_" + i).value = s["z1_" + i];
+    if (s["z2_" + i] !== undefined) document.getElementById("z2_" + i).value = s["z2_" + i];
+  }
+}
+
+function populateInputsFromStatus(d) {
+  if (!d) return;
+  if (document.getElementById("s1h").value === "" && d.s1h !== undefined) document.getElementById("s1h").value = d.s1h;
+  if (document.getElementById("s1m").value === "" && d.s1m !== undefined) document.getElementById("s1m").value = d.s1m;
+  if (document.getElementById("s2h").value === "" && d.s2h !== undefined) document.getElementById("s2h").value = d.s2h;
+  if (document.getElementById("s2m").value === "" && d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
+  if (document.getElementById("c1").value === "" && d.c1 !== undefined) document.getElementById("c1").value = d.c1;
+  if (document.getElementById("c2").value === "" && d.c2 !== undefined) document.getElementById("c2").value = d.c2;
+  if (!document.getElementById("wifiSsid").value && d.staSsid) document.getElementById("wifiSsid").value = d.staSsid;
+  for (let i = 0; i < 5; i++) {
+    if (document.getElementById("z1_" + i).value === "" && Array.isArray(d.z1) && d.z1[i] !== undefined) {
+      document.getElementById("z1_" + i).value = d.z1[i];
+    }
+    if (document.getElementById("z2_" + i).value === "" && Array.isArray(d.z2) && d.z2[i] !== undefined) {
+      document.getElementById("z2_" + i).value = d.z2[i];
+    }
+  }
+}
+
+async function fetchSettingsOnce() {
+  if (settingsLoaded) return;
+  try {
+    const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
+    if (s) {
+      populateInputsFromSettings(s);
+      settingsLoaded = true;
+    }
+  } catch (e) {}
+}
+
+function renderBanner(st, dryAlert, watering, espAlive) {
+  const box = document.getElementById("alertBanner");
+  if (!espAlive) { box.style.display = "none"; return; }
+  if (dryAlert || st === "DRY!") {
+    box.className = "banner dry";
+    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
+  } else if (watering || st === "RUN") {
+    box.className = "banner run";
+    box.innerHTML = "<span>💧 Irrigation Running</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
+  } else {
+    box.style.display = "none";
+  }
+}
+
+function isEspAliveNow() {
+  const now = Date.now();
+  if (lastSeenMillis !== null) {
+    if ((now - lastSeenChangeAt) <= ESP_STALE_MS) return true;
+  }
+  return lastSuccessfulFetchAt > 0 && ((now - lastSuccessfulFetchAt) <= ESP_STALE_MS);
+}
+
+function updateEspLinkState() {
+  const dot = document.getElementById("netDot");
+  const badge = document.getElementById("stBadge");
+  const syncTag = document.getElementById("syncAgo");
+  const hbEl = document.getElementById("hbAge");
+  const alive = isEspAliveNow();
+
+  const refTime = (lastSeenMillis !== null && lastSeenChangeAt > 0) ? lastSeenChangeAt : lastSuccessfulFetchAt;
+  hbEl.innerText = refTime > 0 ? Math.max(0, Math.floor((Date.now() - refTime) / 1000)) + "s ago" : "--";
+
+  if (alive) {
+    dot.className = "pulse-dot";
+    syncTag.innerText = "ESP Online";
+    const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
+    badge.className = "status-pill";
+    badge.innerText = st === "RDY" ? "ONLINE" : st;
+    badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
+    renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
+  } else {
+    dot.className = "pulse-dot off";
+    badge.className = "status-pill offline";
+    badge.innerText = "OFFLINE";
+    syncTag.innerText = "ESP Offline";
+    renderBanner("OFFLINE", false, false, false);
+  }
+}
+
+async function fetchStatus() {
+  try {
+    const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
+    if (!d) return;
+    latestStatusData = d;
+    lastSuccessfulFetchAt = Date.now();
+
+    if (d.lastSeen !== undefined && d.lastSeen !== null) {
+      const incomingSeen = Number(d.lastSeen);
+      if (incomingSeen !== lastSeenMillis) {
+        lastSeenMillis = incomingSeen;
+      }
+      lastSeenChangeAt = Date.now();
+    }
+
+    const m1 = Number(d.m1 ?? 0);
+    const m2 = Number(d.m2 ?? 0);
+    const l1 = Number(d.l1 ?? 0);
+    const l2 = Number(d.l2 ?? 0);
+
+    document.getElementById("rtc").innerText = "RTC: " + (d.time || "--/--/---- --:--");
+    document.getElementById("m1").innerText = m1 + "%";
+    document.getElementById("m2").innerText = m2 + "%";
+    document.getElementById("band1").innerText = bandLabel(m1);
+    document.getElementById("band2").innerText = bandLabel(m2);
+    document.getElementById("b1").style.width = Math.max(0, Math.min(100, m1)) + "%";
+    document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
+    document.getElementById("l1").innerText = l1.toFixed(2) + " L";
+    document.getElementById("l2").innerText = l2.toFixed(2) + " L";
+    document.getElementById("wifiState").innerText = d.staSsid || "Not set";
+    document.getElementById("ipState").innerText = d.staIP || "--";
+    document.getElementById("curSsid").innerText = d.staSsid || "Not set";
+    document.getElementById("curIp").innerText = d.staIP || "--";
+
+    populateInputsFromStatus(d);
+    updateEspLinkState();
+  } catch (e) {
+    updateEspLinkState();
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    fetchSettingsOnce();
+    fetchStatus();
+    updateEspLinkState();
+  }
+});
+
+window.addEventListener("focus", () => {
+  fetchSettingsOnce();
+  fetchStatus();
+  updateEspLinkState();
+});
+
+window.addEventListener("online", () => {
+  showMsg("Internet reconnected — syncing...");
+  fetchSettingsOnce();
+  fetchStatus();
+  updateEspLinkState();
+});
+
+initRtcInputs();
+fetchSettingsOnce();
+setInterval(updateEspLinkState, 1000);
+setInterval(fetchStatus, 2500);
+fetchStatus();
+</script>
+</body>
+</html>
