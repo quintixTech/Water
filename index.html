@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QUANTIX TECH Smart Irrigation</title>
+<style>
+  :root{--bg:#0b0f17;--card:#141b29;--accent:#00e5ff;--mag:#e040fb;--green:#00e676;--red:#ff5252;--text:#f1f5f9;--sub:#94a3b8;}
+  *{box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--text);padding:12px;max-width:640px;margin-inline:auto}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--card);border-radius:12px;border:1px solid #22304a;margin-bottom:12px}
+  .brand{font-weight:800;font-size:17px;letter-spacing:.5px}.brand span{color:var(--accent)}
+  .badge{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;background:#0f293a;color:var(--accent)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .card{background:var(--card);border-radius:12px;padding:13px;border:1px solid #22304a;margin-bottom:12px}
+  .z1{border-top:3px solid var(--accent)}.z2{border-top:3px solid var(--mag)}
+  .big{font-size:26px;font-weight:800;margin:4px 0}
+  .bar{height:8px;background:#1e293b;border-radius:6px;overflow:hidden;margin:6px 0}
+  .fill{height:100%;background:var(--green);transition:.3s}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
+  label{font-size:13px;color:var(--sub)}
+  input{background:#0f1623;border:1px solid #334155;color:#fff;padding:7px 9px;border-radius:8px;width:82px;font-size:14px}
+  button{border:none;border-radius:9px;padding:11px 14px;font-weight:700;font-size:14px;cursor:pointer;width:100%}
+  button:active{transform:scale(.99)}
+  .btn-run{background:var(--green);color:#000}.btn-stop{background:var(--red);color:#fff}
+  .btn-save{background:var(--accent);color:#000;margin-top:8px}.btn-rst{background:#334155;color:#fff;margin-top:6px}
+  h3{margin:0 0 8px 0;font-size:15px;color:var(--accent)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:6px 4px;text-align:center;border-bottom:1px solid #1e293b}
+  td input{width:76px;text-align:center}
+  .msg{text-align:center;font-size:12px;color:var(--green);min-height:18px;margin:6px 0;font-weight:600}
+  .meta{font-size:12px;color:var(--sub);margin-top:6px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+</style>
+</head>
+<body>
+  <div class="hdr">
+    <div>
+      <div class="brand">QUAN<span>TIX</span> TECH</div>
+      <small style="color:var(--sub)" id="rtc">--/--/---- --:--</small>
+    </div>
+    <div class="badge" id="stBadge">CONNECTING</div>
+  </div>
+  <div class="msg" id="msg"></div>
+
+  <div class="grid">
+    <div class="card z1" style="margin:0">
+      <div style="font-size:12px;color:var(--accent);font-weight:700">ZONE 1</div>
+      <div class="big" id="m1">--%</div>
+      <div class="bar"><div class="fill" id="b1" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--sub)">Used: <b style="color:#fff" id="l1">0.00</b> L</div>
+    </div>
+    <div class="card z2" style="margin:0">
+      <div style="font-size:12px;color:var(--mag);font-weight:700">ZONE 2</div>
+      <div class="big" id="m2">--%</div>
+      <div class="bar"><div class="fill" id="b2" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--sub)">Used: <b style="color:#fff" id="l2">0.00</b> L</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Remote Control (Cloud)</h3>
+    <div class="grid" style="margin:0">
+      <button class="btn-run" onclick="sendCmd('start')">START BOTH</button>
+      <button class="btn-stop" onclick="sendCmd('stop')">STOP ALL</button>
+    </div>
+    <div class="grid" style="margin-top:8px;margin-bottom:0">
+      <button style="background:#0284c7;color:#fff" onclick="sendCmd('z1')">RUN ZONE 1</button>
+      <button style="background:#a21caf;color:#fff" onclick="sendCmd('z2')">RUN ZONE 2</button>
+    </div>
+    <button class="btn-rst" onclick="sendCmd('resetL')">Reset Total Litres</button>
+    <div class="meta">
+      <span id="wifiState">Wi-Fi: --</span>
+      <span id="ipState">IP: --</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Schedules & Flow Calibration</h3>
+    <div class="row">
+      <label>Morning Sch 1 (HH:MM)</label>
+      <div>
+        <input id="s1h" type="number" min="0" max="23" style="width:56px"> :
+        <input id="s1m" type="number" min="0" max="59" style="width:56px">
+      </div>
+    </div>
+    <div class="row">
+      <label>Evening Sch 2 (HH:MM)</label>
+      <div>
+        <input id="s2h" type="number" min="0" max="23" style="width:56px"> :
+        <input id="s2m" type="number" min="0" max="59" style="width:56px">
+      </div>
+    </div>
+    <div class="row">
+      <label>Flow Cal Z1 / Z2</label>
+      <div>
+        <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:66px">
+        <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:66px">
+      </div>
+    </div>
+    <button class="btn-save" onclick="saveSettings()">Save Schedules & Cal</button>
+  </div>
+
+  <div class="card">
+    <h3>Moisture Band Water Target (ml)</h3>
+    <table>
+      <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
+      <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
+      <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
+      <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
+      <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
+      <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
+    </table>
+    <button class="btn-save" onclick="saveSettings()">Save Water Targets</button>
+  </div>
+
+<script>
+const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
+let settingsLoaded = false;
+
+function showMsg(t) {
+  const m = document.getElementById("msg");
+  m.innerText = t;
+  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
+}
+
+async function sendCmd(cmd) {
+  try {
+    const res = await fetch(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cmd)
+    });
+    if (res.ok) showMsg("Command sent: " + cmd);
+    else showMsg("Failed to send command");
+  } catch (e) {
+    showMsg("Network error sending command");
+  }
+}
+
+async function saveSettings() {
+  const payload = {
+    s1h: Number(document.getElementById("s1h").value || 0),
+    s1m: Number(document.getElementById("s1m").value || 0),
+    s2h: Number(document.getElementById("s2h").value || 0),
+    s2m: Number(document.getElementById("s2m").value || 0),
+    c1: Number(document.getElementById("c1").value || 7.5),
+    c2: Number(document.getElementById("c2").value || 7.5),
+    z1_0: Number(document.getElementById("z1_0").value || 0),
+    z1_1: Number(document.getElementById("z1_1").value || 0),
+    z1_2: Number(document.getElementById("z1_2").value || 0),
+    z1_3: Number(document.getElementById("z1_3").value || 0),
+    z1_4: Number(document.getElementById("z1_4").value || 0),
+    z2_0: Number(document.getElementById("z2_0").value || 0),
+    z2_1: Number(document.getElementById("z2_1").value || 0),
+    z2_2: Number(document.getElementById("z2_2").value || 0),
+    z2_3: Number(document.getElementById("z2_3").value || 0),
+    z2_4: Number(document.getElementById("z2_4").value || 0)
+  };
+
+  try {
+    const res = await fetch(`${DB_URL}/settings.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) showMsg("Settings saved to Firebase!");
+    else showMsg("Failed to save settings");
+  } catch (e) {
+    showMsg("Network error saving settings");
+  }
+}
+
+function populateInputsFromData(d) {
+  if (!d) return;
+  if (d.s1h !== undefined) document.getElementById("s1h").value = d.s1h;
+  if (d.s1m !== undefined) document.getElementById("s1m").value = d.s1m;
+  if (d.s2h !== undefined) document.getElementById("s2h").value = d.s2h;
+  if (d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
+  if (d.c1 !== undefined) document.getElementById("c1").value = d.c1;
+  if (d.c2 !== undefined) document.getElementById("c2").value = d.c2;
+
+  for (let i = 0; i < 5; i++) {
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined) {
+      document.getElementById("z1_" + i).value = d.z1[i];
+    }
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined) {
+      document.getElementById("z2_" + i).value = d.z2[i];
+    }
+  }
+}
+
+async function fetchStatus() {
+  try {
+    const res = await fetch(`${DB_URL}/status.json`);
+    if (!res.ok) return;
+    const d = await res.json();
+    if (!d) return;
+
+    const m1 = Number(d.m1 ?? 0);
+    const m2 = Number(d.m2 ?? 0);
+    const l1 = Number(d.l1 ?? 0);
+    const l2 = Number(d.l2 ?? 0);
+    const st = d.status || "RDY";
+
+    document.getElementById("rtc").innerText = d.time || "--/--/---- --:--";
+    document.getElementById("m1").innerText = m1 + "%";
+    document.getElementById("m2").innerText = m2 + "%";
+    document.getElementById("b1").style.width = Math.max(0, Math.min(100, m1)) + "%";
+    document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
+    document.getElementById("l1").innerText = l1.toFixed(2);
+    document.getElementById("l2").innerText = l2.toFixed(2);
+
+    const sb = document.getElementById("stBadge");
+    sb.innerText = st;
+    sb.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e5ff");
+
+    document.getElementById("wifiState").innerText = "Wi-Fi: " + (d.staSsid || "Not set");
+    document.getElementById("ipState").innerText = "IP: " + (d.staIP || "--");
+
+    if (!settingsLoaded) {
+      populateInputsFromData(d);
+      settingsLoaded = true;
+    }
+  } catch (e) {
+    document.getElementById("stBadge").innerText = "OFFLINE";
+    document.getElementById("stBadge").style.color = "#ff5252";
+  }
+}
+
+setInterval(fetchStatus, 2500);
+fetchStatus();
+</script>
+</body>
+</html>
