@@ -2,72 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#070b12">
 <title>QUANTIX TECH Smart Irrigation</title>
 <style>
-  :root{--bg:#0b0f17;--card:#141b29;--accent:#00e5ff;--mag:#e040fb;--green:#00e676;--red:#ff5252;--text:#f1f5f9;--sub:#94a3b8;}
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
-  body{margin:0;background:var(--bg);color:var(--text);padding:12px;max-width:640px;margin-inline:auto}
-  .hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--card);border-radius:12px;border:1px solid #22304a;margin-bottom:12px}
-  .brand{font-weight:800;font-size:17px;letter-spacing:.5px}.brand span{color:var(--accent)}
-  .badge{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;background:#0f293a;color:var(--accent)}
+  :root{
+    --bg:#070b12;
+    --card:#111827;
+    --card2:#162033;
+    --line:#23324d;
+    --cyan:#00e5ff;
+    --mag:#e879f9;
+    --green:#00e676;
+    --amber:#ffb300;
+    --red:#ff5252;
+    --text:#f8fafc;
+    --sub:#94a3b8;
+  }
+  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:radial-gradient(circle at top,#0f1c30 0%,var(--bg) 58%);color:var(--text);padding:12px;max-width:680px;margin-inline:auto;min-height:100vh}
+
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--card);border-radius:14px;border:1px solid var(--line);margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .brand{font-weight:900;font-size:17px;letter-spacing:.6px;display:flex;align-items:center;gap:8px}
+  .brand span{color:var(--cyan)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);display:inline-block}
+  .dot.off{background:var(--red);box-shadow:0 0 10px var(--red)}
+  .sub-line{font-size:11.5px;color:var(--sub);margin-top:3px}
+  .badge{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.4px;background:#0c2433;color:var(--cyan);border:1px solid rgba(0,229,255,.35)}
+
+  .alert-box{display:none;padding:10px 12px;border-radius:12px;margin-bottom:10px;font-size:13px;font-weight:700;align-items:center;justify-content:space-between;gap:8px}
+  .alert-dry{display:flex;background:rgba(255,82,82,.14);border:1px solid rgba(255,82,82,.55);color:#ff8a80}
+  .alert-run{display:flex;background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.45);color:#69f0ae}
+
+  .toast{text-align:center;font-size:12.5px;color:var(--green);min-height:18px;margin:4px 0 10px;font-weight:700}
+
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .card{background:var(--card);border-radius:12px;padding:13px;border:1px solid #22304a;margin-bottom:12px}
-  .z1{border-top:3px solid var(--accent)}.z2{border-top:3px solid var(--mag)}
-  .big{font-size:26px;font-weight:800;margin:4px 0}
-  .bar{height:8px;background:#1e293b;border-radius:6px;overflow:hidden;margin:6px 0}
-  .fill{height:100%;background:var(--green);transition:.3s}
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
+  .card{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .z1{border-top:3px solid var(--cyan)}.z2{border-top:3px solid var(--mag)}
+  .z-title{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;letter-spacing:.5px}
+  .z1 .z-title{color:var(--cyan)}.z2 .z-title{color:var(--mag)}
+  .pill{font-size:10.5px;padding:2px 7px;border-radius:999px;background:var(--card2);color:var(--sub);border:1px solid var(--line)}
+  .big{font-size:28px;font-weight:900;margin:6px 0 4px}
+  .bar{height:9px;background:#0b1220;border-radius:999px;overflow:hidden;margin:6px 0 8px;border:1px solid #1d2b45}
+  .fill{height:100%;background:linear-gradient(90deg,#00c853,#00e676);transition:width .35s ease}
+  .used-row{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+  .used-row b{color:#fff}
+
+  h3{margin:0 0 10px 0;font-size:14px;font-weight:800;color:var(--cyan);letter-spacing:.3px;display:flex;justify-content:space-between;align-items:center}
+  button{border:none;border-radius:10px;padding:11px 13px;font-weight:800;font-size:13.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
+  button:active{transform:scale(.97);opacity:.92}
+  .btn-run{background:var(--green);color:#04130b}
+  .btn-stop{background:var(--red);color:#fff}
+  .btn-z1{background:#0284c7;color:#fff}
+  .btn-z2{background:#a21caf;color:#fff}
+  .btn-save{background:var(--cyan);color:#04151c;margin-top:10px}
+  .btn-rst{background:#1e293b;color:#e2e8f0;border:1px solid #334155;margin-top:8px}
+
+  .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid #1d293d;font-size:12px;color:var(--sub)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:9px 0}
   label{font-size:13px;color:var(--sub)}
-  input{background:#0f1623;border:1px solid #334155;color:#fff;padding:7px 9px;border-radius:8px;width:82px;font-size:14px}
-  button{border:none;border-radius:9px;padding:11px 14px;font-weight:700;font-size:14px;cursor:pointer;width:100%}
-  button:active{transform:scale(.99)}
-  .btn-run{background:var(--green);color:#000}.btn-stop{background:var(--red);color:#fff}
-  .btn-save{background:var(--accent);color:#000;margin-top:8px}.btn-rst{background:#334155;color:#fff;margin-top:6px}
-  h3{margin:0 0 8px 0;font-size:15px;color:var(--accent)}
+  input{background:#0b111e;border:1px solid #2b3b55;color:#fff;padding:7px 9px;border-radius:9px;font-size:14px;font-weight:600}
+  input:focus{outline:none;border-color:var(--cyan)}
+
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:6px 4px;text-align:center;border-bottom:1px solid #1e293b}
+  th{color:var(--sub);font-size:11.5px;text-transform:uppercase;padding:6px 4px;border-bottom:1px solid #22304a}
+  td{padding:6px 4px;text-align:center;border-bottom:1px solid #182338}
   td input{width:76px;text-align:center}
-  .msg{text-align:center;font-size:12px;color:var(--green);min-height:18px;margin:6px 0;font-weight:600}
-  .meta{font-size:12px;color:var(--sub);margin-top:6px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+
+  .footer-note{text-align:center;font-size:11.5px;color:#64748b;padding:8px 0 18px}
 </style>
 </head>
 <body>
   <div class="hdr">
     <div>
-      <div class="brand">QUAN<span>TIX</span> TECH</div>
-      <small style="color:var(--sub)" id="rtc">--/--/---- --:--</small>
+      <div class="brand">
+        <span class="dot off" id="netDot"></span>
+        <div>QUAN<span>TIX</span> TECH</div>
+      </div>
+      <div class="sub-line" id="rtc">Syncing RTC clock...</div>
     </div>
     <div class="badge" id="stBadge">CONNECTING</div>
   </div>
-  <div class="msg" id="msg"></div>
+
+  <div id="alertBanner" class="alert-box" style="display:none"></div>
+  <div class="toast" id="msg"></div>
 
   <div class="grid">
     <div class="card z1" style="margin:0">
-      <div style="font-size:12px;color:var(--accent);font-weight:700">ZONE 1</div>
+      <div class="z-title"><span>ZONE 1</span><span class="pill" id="band1">--</span></div>
       <div class="big" id="m1">--%</div>
       <div class="bar"><div class="fill" id="b1" style="width:0%"></div></div>
-      <div style="font-size:12px;color:var(--sub)">Used: <b style="color:#fff" id="l1">0.00</b> L</div>
+      <div class="used-row"><span>Water Used</span><b id="l1">0.00 L</b></div>
     </div>
+
     <div class="card z2" style="margin:0">
-      <div style="font-size:12px;color:var(--mag);font-weight:700">ZONE 2</div>
+      <div class="z-title"><span>ZONE 2</span><span class="pill" id="band2">--</span></div>
       <div class="big" id="m2">--%</div>
       <div class="bar"><div class="fill" id="b2" style="width:0%"></div></div>
-      <div style="font-size:12px;color:var(--sub)">Used: <b style="color:#fff" id="l2">0.00</b> L</div>
+      <div class="used-row"><span>Water Used</span><b id="l2">0.00 L</b></div>
     </div>
   </div>
 
   <div class="card">
-    <h3>Remote Control (Cloud)</h3>
+    <h3><span>Remote Pump & Valve Control</span><span class="pill" id="syncAgo">Live Cloud</span></h3>
     <div class="grid" style="margin:0">
       <button class="btn-run" onclick="sendCmd('start')">START BOTH</button>
-      <button class="btn-stop" onclick="sendCmd('stop')">STOP ALL</button>
+      <button class="btn-stop" onclick="confirmStop()">STOP ALL</button>
     </div>
     <div class="grid" style="margin-top:8px;margin-bottom:0">
-      <button style="background:#0284c7;color:#fff" onclick="sendCmd('z1')">RUN ZONE 1</button>
-      <button style="background:#a21caf;color:#fff" onclick="sendCmd('z2')">RUN ZONE 2</button>
+      <button class="btn-z1" onclick="sendCmd('z1')">RUN ZONE 1</button>
+      <button class="btn-z2" onclick="sendCmd('z2')">RUN ZONE 2</button>
     </div>
-    <button class="btn-rst" onclick="sendCmd('resetL')">Reset Total Litres</button>
+    <button class="btn-rst" onclick="confirmReset()">Reset Total Litres</button>
     <div class="meta">
       <span id="wifiState">Wi-Fi: --</span>
       <span id="ipState">IP: --</span>
@@ -79,25 +125,25 @@
     <div class="row">
       <label>Morning Sch 1 (HH:MM)</label>
       <div>
-        <input id="s1h" type="number" min="0" max="23" style="width:56px"> :
-        <input id="s1m" type="number" min="0" max="59" style="width:56px">
+        <input id="s1h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
+        <input id="s1m" type="number" min="0" max="59" style="width:58px;text-align:center">
       </div>
     </div>
     <div class="row">
       <label>Evening Sch 2 (HH:MM)</label>
       <div>
-        <input id="s2h" type="number" min="0" max="23" style="width:56px"> :
-        <input id="s2m" type="number" min="0" max="59" style="width:56px">
+        <input id="s2h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
+        <input id="s2m" type="number" min="0" max="59" style="width:58px;text-align:center">
       </div>
     </div>
     <div class="row">
-      <label>Flow Cal Z1 / Z2</label>
+      <label>Flow Cal Z1 / Z2 (pulses/L)</label>
       <div>
-        <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:66px">
-        <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:66px">
+        <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
+        <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
       </div>
     </div>
-    <button class="btn-save" onclick="saveSettings()">Save Schedules & Cal</button>
+    <button class="btn-save" onclick="saveSettings()">Save Schedules & Calibration</button>
   </div>
 
   <div class="card">
@@ -113,14 +159,34 @@
     <button class="btn-save" onclick="saveSettings()">Save Water Targets</button>
   </div>
 
+  <div class="footer-note">QUANTIX TECH • Smart Automated Irrigation System</div>
+
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 let settingsLoaded = false;
+let lastOkTime = 0;
 
-function showMsg(t) {
+function bandLabel(m) {
+  if (m < 20) return "<20%";
+  if (m < 40) return "20-39%";
+  if (m < 60) return "40-59%";
+  if (m < 80) return "60-79%";
+  return "80-100%";
+}
+
+function showMsg(t, isErr=false) {
   const m = document.getElementById("msg");
+  m.style.color = isErr ? "#ff8a80" : "#00e676";
   m.innerText = t;
   setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
+}
+
+function confirmStop() {
+  if (confirm("Stop pump and close active valves now?")) sendCmd("stop");
+}
+
+function confirmReset() {
+  if (confirm("Reset total water counter (Litres) for both zones?")) sendCmd("resetL");
 }
 
 async function sendCmd(cmd) {
@@ -130,10 +196,10 @@ async function sendCmd(cmd) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cmd)
     });
-    if (res.ok) showMsg("Command sent: " + cmd);
-    else showMsg("Failed to send command");
+    if (res.ok) showMsg("Command sent: " + cmd.toUpperCase());
+    else showMsg("Failed to send command", true);
   } catch (e) {
-    showMsg("Network error sending command");
+    showMsg("Network error sending command", true);
   }
 }
 
@@ -163,10 +229,10 @@ async function saveSettings() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) showMsg("Settings saved to Firebase!");
-    else showMsg("Failed to save settings");
+    if (res.ok) showMsg("Configuration synced to Firebase!");
+    else showMsg("Failed to save configuration", true);
   } catch (e) {
-    showMsg("Network error saving settings");
+    showMsg("Network error saving configuration", true);
   }
 }
 
@@ -180,12 +246,23 @@ function populateInputsFromData(d) {
   if (d.c2 !== undefined) document.getElementById("c2").value = d.c2;
 
   for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined) {
-      document.getElementById("z1_" + i).value = d.z1[i];
-    }
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined) {
-      document.getElementById("z2_" + i).value = d.z2[i];
-    }
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined) document.getElementById("z1_" + i).value = d.z1[i];
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined) document.getElementById("z2_" + i).value = d.z2[i];
+  }
+}
+
+function renderBanner(st, dryAlert, watering) {
+  const box = document.getElementById("alertBanner");
+  if (dryAlert || st === "DRY!") {
+    box.className = "alert-box alert-dry";
+    box.style.display = "flex";
+    box.innerHTML = "<span>⚠ DRY RUN ALERT: No water flow detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
+  } else if (watering || st === "RUN") {
+    box.className = "alert-box alert-run";
+    box.style.display = "flex";
+    box.innerHTML = "<span>💧 Irrigation Active — Watering in progress</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
+  } else {
+    box.style.display = "none";
   }
 }
 
@@ -196,23 +273,30 @@ async function fetchStatus() {
     const d = await res.json();
     if (!d) return;
 
+    lastOkTime = Date.now();
+    document.getElementById("netDot").className = "dot";
+
     const m1 = Number(d.m1 ?? 0);
     const m2 = Number(d.m2 ?? 0);
     const l1 = Number(d.l1 ?? 0);
     const l2 = Number(d.l2 ?? 0);
     const st = d.status || "RDY";
 
-    document.getElementById("rtc").innerText = d.time || "--/--/---- --:--";
+    document.getElementById("rtc").innerText = "RTC: " + (d.time || "--/--/---- --:--");
     document.getElementById("m1").innerText = m1 + "%";
     document.getElementById("m2").innerText = m2 + "%";
+    document.getElementById("band1").innerText = bandLabel(m1);
+    document.getElementById("band2").innerText = bandLabel(m2);
     document.getElementById("b1").style.width = Math.max(0, Math.min(100, m1)) + "%";
     document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
-    document.getElementById("l1").innerText = l1.toFixed(2);
-    document.getElementById("l2").innerText = l2.toFixed(2);
+    document.getElementById("l1").innerText = l1.toFixed(2) + " L";
+    document.getElementById("l2").innerText = l2.toFixed(2) + " L";
 
     const sb = document.getElementById("stBadge");
     sb.innerText = st;
     sb.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e5ff");
+
+    renderBanner(st, Boolean(d.dryAlert), Boolean(d.watering));
 
     document.getElementById("wifiState").innerText = "Wi-Fi: " + (d.staSsid || "Not set");
     document.getElementById("ipState").innerText = "IP: " + (d.staIP || "--");
@@ -222,10 +306,18 @@ async function fetchStatus() {
       settingsLoaded = true;
     }
   } catch (e) {
+    document.getElementById("netDot").className = "dot off";
     document.getElementById("stBadge").innerText = "OFFLINE";
     document.getElementById("stBadge").style.color = "#ff5252";
   }
 }
+
+setInterval(() => {
+  if (lastOkTime > 0) {
+    const sec = Math.max(0, Math.floor((Date.now() - lastOkTime) / 1000));
+    document.getElementById("syncAgo").innerText = sec <= 5 ? "Live Cloud" : `Synced ${sec}s ago`;
+  }
+}, 1000);
 
 setInterval(fetchStatus, 2500);
 fetchStatus();
