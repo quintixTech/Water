@@ -162,11 +162,12 @@
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const ESP_TIMEOUT_MS = 10000;
+const ESP_STALE_MS = 10000;
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
+let lastSuccessfulFetchAt = 0;
 let latestStatusData = null;
 
 function bandLabel(m) {
@@ -200,13 +201,13 @@ async function fetchJsonSafe(url, options = {}, retries = 2) {
         return await res.json();
       }
       if (res.status >= 500 && i < retries) {
-        await new Promise(r => setTimeout(r, 300 * (i + 1)));
+        await new Promise(r => setTimeout(r, 250 * (i + 1)));
         continue;
       }
       throw new Error("HTTP " + res.status);
     } catch (err) {
       if (i === retries) throw err;
-      await new Promise(r => setTimeout(r, 300 * (i + 1)));
+      await new Promise(r => setTimeout(r, 250 * (i + 1)));
     }
   }
 }
@@ -290,22 +291,32 @@ function renderBanner(st, dryAlert, watering, espAlive) {
   }
 }
 
+function isEspAliveNow() {
+  const now = Date.now();
+  if (lastSeenMillis !== null) {
+    return (now - lastSeenChangeAt) <= ESP_STALE_MS;
+  }
+  return lastSuccessfulFetchAt > 0 && ((now - lastSuccessfulFetchAt) <= ESP_STALE_MS);
+}
+
 function updateEspLinkState() {
   const dot = document.getElementById("netDot");
   const badge = document.getElementById("stBadge");
   const syncTag = document.getElementById("syncAgo");
+  const alive = isEspAliveNow();
 
-  const espAlive = (lastSeenMillis !== null) && ((Date.now() - lastSeenChangeAt) <= ESP_TIMEOUT_MS);
-
-  if (espAlive) {
+  if (alive) {
     dot.className = "dot";
     syncTag.innerText = "ESP Online";
-    if (latestStatusData) {
-      const st = latestStatusData.status || "RDY";
-      badge.innerText = st === "RDY" ? "ONLINE" : st;
-      badge.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e676");
-      renderBanner(st, Boolean(latestStatusData.dryAlert), Boolean(latestStatusData.watering), true);
-    }
+    const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
+    badge.innerText = st === "RDY" ? "ONLINE" : st;
+    badge.style.color = st === "DRY!" ? "#ff5252" : (st === "RUN" ? "#00e676" : "#00e676");
+    renderBanner(
+      st,
+      Boolean(latestStatusData && latestStatusData.dryAlert),
+      Boolean(latestStatusData && latestStatusData.watering),
+      true
+    );
   } else {
     dot.className = "dot off";
     badge.innerText = "OFFLINE";
@@ -321,11 +332,14 @@ async function fetchStatus() {
     if (!d) return;
 
     latestStatusData = d;
+    lastSuccessfulFetchAt = Date.now();
 
-    const incomingSeen = d.lastSeen !== undefined ? Number(d.lastSeen) : null;
-    if (incomingSeen !== null && incomingSeen !== lastSeenMillis) {
-      lastSeenMillis = incomingSeen;
-      lastSeenChangeAt = Date.now();
+    if (d.lastSeen !== undefined && d.lastSeen !== null) {
+      const incomingSeen = Number(d.lastSeen);
+      if (incomingSeen !== lastSeenMillis) {
+        lastSeenMillis = incomingSeen;
+        lastSeenChangeAt = Date.now();
+      }
     }
 
     const m1 = Number(d.m1 ?? 0);
@@ -353,7 +367,7 @@ async function fetchStatus() {
 
     updateEspLinkState();
   } catch (e) {
-    // ক্ষণিকের 500 বা নেটওয়ার্ক গ্লিচে সঙ্গে সঙ্গে OFFLINE দেখাবো না; 10s পার হলে updateEspLinkState() নিজেই OFFLINE করবে
+    // ক্ষণিকের 500 বা নেটওয়ার্ক গ্লিচে সাথে সাথে OFFLINE দেখানো হবে না
   }
 }
 
