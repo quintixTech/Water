@@ -44,10 +44,11 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:8px;
+    gap:6px;
     position:sticky;
     top:0;
     height:100vh;
+    overflow-y:auto;
   }
 
   .rail-logo{
@@ -67,8 +68,8 @@
     color:var(--sub);
     border:1px solid transparent;
     border-radius:14px;
-    padding:10px 4px;
-    font-size:10.5px;
+    padding:9px 4px;
+    font-size:10px;
     font-weight:800;
     cursor:pointer;
     display:flex;
@@ -77,7 +78,7 @@
     gap:4px;
     transition:all .15s ease;
   }
-  .side-btn .ico{font-size:17px;line-height:1}
+  .side-btn .ico{font-size:16px;line-height:1}
   .side-btn:active{transform:scale(.96)}
   .side-btn.active{
     background:var(--card2);
@@ -145,8 +146,11 @@
   .b-ghost{background:var(--card2);color:#e2e8f0;border:1px solid var(--line);margin-top:8px}
 
   .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0}
-  label{font-size:12.5px;color:var(--sub)}
+  .field-col{margin:10px 0}
+  label{font-size:12.5px;color:var(--sub);display:block}
+  .field-col label{margin-bottom:5px}
   input{background:#090f1b;border:1px solid #293954;color:#fff;padding:7px 9px;border-radius:10px;font-size:13.5px;font-weight:700}
+  input.full{width:100%}
   input:focus{outline:none;border-color:var(--cyan)}
 
   table{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -189,6 +193,14 @@
     <button class="side-btn" data-tab="tab-cfg" onclick="switchTab(this)">
       <span class="ico">⚙️</span>
       <span>Targets</span>
+    </button>
+    <button class="side-btn" data-tab="tab-wifi" onclick="switchTab(this)">
+      <span class="ico">📶</span>
+      <span>Wi-Fi</span>
+    </button>
+    <button class="side-btn" data-tab="tab-rtc" onclick="switchTab(this)">
+      <span class="ico">🕒</span>
+      <span>RTC</span>
     </button>
   </aside>
 
@@ -305,6 +317,51 @@
         <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
       </div>
     </section>
+
+    <!-- TAB 5: WI-FI SETUP -->
+    <section id="tab-wifi" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Router Wi-Fi Setup</div>
+        <div class="info-list" style="margin-bottom:8px">
+          <div>Current SSID: <b id="curSsid">--</b></div>
+          <div>Current IP: <b id="curIp">--</b></div>
+        </div>
+        <div class="field-col">
+          <label for="wifiSsid">Wi-Fi User ID / SSID</label>
+          <input id="wifiSsid" class="full" type="text" placeholder="Enter router SSID">
+        </div>
+        <div class="field-col">
+          <label for="wifiPass">Wi-Fi Password</label>
+          <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
+        </div>
+        <button class="b-cyan" onclick="saveWifi()">Save Wi-Fi Credentials</button>
+      </div>
+    </section>
+
+    <!-- TAB 6: RTC DATE & TIME -->
+    <section id="tab-rtc" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">DS3231 Date & Time</div>
+        <div class="row">
+          <label>Date (YYYY/MM/DD)</label>
+          <div>
+            <input id="rtcY" type="number" min="2020" max="2099" style="width:68px;text-align:center"> /
+            <input id="rtcMo" type="number" min="1" max="12" style="width:48px;text-align:center"> /
+            <input id="rtcD" type="number" min="1" max="31" style="width:48px;text-align:center">
+          </div>
+        </div>
+        <div class="row">
+          <label>Time (HH:MM:SS)</label>
+          <div>
+            <input id="rtcH" type="number" min="0" max="23" style="width:48px;text-align:center"> :
+            <input id="rtcMi" type="number" min="0" max="59" style="width:48px;text-align:center"> :
+            <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
+          </div>
+        </div>
+        <button class="b-cyan" onclick="saveRtc(false)">Set Date & Time</button>
+        <button class="b-ghost" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -365,6 +422,15 @@ async function fetchJsonSafe(url, options = {}, retries = 2) {
   }
 }
 
+async function patchSettings(fields) {
+  const payload = { ...fields, updatedAt: Date.now() };
+  return fetchJsonSafe(`${DB_URL}/settings.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }, 2);
+}
+
 async function sendCmd(cmd) {
   try {
     await fetchJsonSafe(`${DB_URL}/control/cmd.json`, {
@@ -398,139 +464,39 @@ async function saveSettings() {
     z2_4: Number(document.getElementById("z2_4").value || 0)
   };
   try {
-    await fetchJsonSafe(`${DB_URL}/settings.json`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }, 2);
+    await patchSettings(payload);
     showMsg("Settings synced with cloud!");
   } catch (e) {
     showMsg("Temporary issue saving settings", true);
   }
 }
 
-function populateInputsFromData(d) {
-  if (!d) return;
-  if (d.s1h !== undefined) document.getElementById("s1h").value = d.s1h;
-  if (d.s1m !== undefined) document.getElementById("s1m").value = d.s1m;
-  if (d.s2h !== undefined) document.getElementById("s2h").value = d.s2h;
-  if (d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
-  if (d.c1 !== undefined) document.getElementById("c1").value = d.c1;
-  if (d.c2 !== undefined) document.getElementById("c2").value = d.c2;
-  for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined) document.getElementById("z1_" + i).value = d.z1[i];
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined) document.getElementById("z2_" + i).value = d.z2[i];
+async function saveWifi() {
+  const ssid = document.getElementById("wifiSsid").value.trim();
+  const pass = document.getElementById("wifiPass").value;
+  if (!ssid) {
+    showMsg("Enter Wi-Fi SSID first", true);
+    return;
   }
-}
-
-function renderBanner(st, dryAlert, watering, espAlive) {
-  const box = document.getElementById("alertBanner");
-  if (!espAlive) { box.style.display = "none"; return; }
-  if (dryAlert || st === "DRY!") {
-    box.className = "banner dry";
-    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
-  } else if (watering || st === "RUN") {
-    box.className = "banner run";
-    box.innerHTML = "<span>💧 Irrigation Running</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
-  } else {
-    box.style.display = "none";
-  }
-}
-
-function isEspAliveNow() {
-  const now = Date.now();
-  if (lastSeenMillis !== null) return (now - lastSeenChangeAt) <= ESP_STALE_MS;
-  return lastSuccessfulFetchAt > 0 && ((now - lastSuccessfulFetchAt) <= ESP_STALE_MS);
-}
-
-function updateEspLinkState() {
-  const dot = document.getElementById("netDot");
-  const badge = document.getElementById("stBadge");
-  const syncTag = document.getElementById("syncAgo");
-  const hbEl = document.getElementById("hbAge");
-  const alive = isEspAliveNow();
-
-  const refTime = (lastSeenMillis !== null) ? lastSeenChangeAt : lastSuccessfulFetchAt;
-  hbEl.innerText = refTime > 0 ? Math.max(0, Math.floor((Date.now() - refTime) / 1000)) + "s ago" : "--";
-
-  if (alive) {
-    dot.className = "pulse-dot";
-    syncTag.innerText = "ESP Online";
-    const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
-    badge.className = "status-pill";
-    badge.innerText = st === "RDY" ? "ONLINE" : st;
-    badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
-    renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
-  } else {
-    dot.className = "pulse-dot off";
-    badge.className = "status-pill offline";
-    badge.innerText = "OFFLINE";
-    syncTag.innerText = "ESP Offline";
-    renderBanner("OFFLINE", false, false, false);
-  }
-}
-
-async function fetchStatus() {
   try {
-    const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
-    if (!d) return;
-    latestStatusData = d;
-    lastSuccessfulFetchAt = Date.now();
-
-    if (d.lastSeen !== undefined && d.lastSeen !== null) {
-      const incomingSeen = Number(d.lastSeen);
-      if (incomingSeen !== lastSeenMillis) {
-        lastSeenMillis = incomingSeen;
-        lastSeenChangeAt = Date.now();
-      }
-    }
-
-    const m1 = Number(d.m1 ?? 0);
-    const m2 = Number(d.m2 ?? 0);
-    const l1 = Number(d.l1 ?? 0);
-    const l2 = Number(d.l2 ?? 0);
-
-    document.getElementById("rtc").innerText = "RTC: " + (d.time || "--/--/---- --:--");
-    document.getElementById("m1").innerText = m1 + "%";
-    document.getElementById("m2").innerText = m2 + "%";
-    document.getElementById("band1").innerText = bandLabel(m1);
-    document.getElementById("band2").innerText = bandLabel(m2);
-    document.getElementById("b1").style.width = Math.max(0, Math.min(100, m1)) + "%";
-    document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
-    document.getElementById("l1").innerText = l1.toFixed(2) + " L";
-    document.getElementById("l2").innerText = l2.toFixed(2) + " L";
-    document.getElementById("wifiState").innerText = d.staSsid || "Not set";
-    document.getElementById("ipState").innerText = d.staIP || "--";
-
-    if (!settingsLoaded) {
-      populateInputsFromData(d);
-      settingsLoaded = true;
-    }
-    updateEspLinkState();
-  } catch (e) {}
+    await patchSettings({ wifiSsid: ssid, wifiPass: pass });
+    showMsg("Wi-Fi credentials sent (syncs in ~8s)");
+  } catch (e) {
+    showMsg("Temporary issue saving Wi-Fi", true);
+  }
 }
 
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    fetchStatus();
-    updateEspLinkState();
-  }
-});
-
-window.addEventListener("focus", () => {
-  fetchStatus();
-  updateEspLinkState();
-});
-
-window.addEventListener("online", () => {
-  showMsg("Internet reconnected — syncing...");
-  fetchStatus();
-  updateEspLinkState();
-});
-
-setInterval(updateEspLinkState, 1000);
-setInterval(fetchStatus, 2500);
-fetchStatus();
-</script>
-</body>
-</html>
+async function saveRtc(usePhoneNow) {
+  let y, mo, d, h, mi, s;
+  if (usePhoneNow) {
+    const now = new Date();
+    y = now.getFullYear();
+    mo = now.getMonth() + 1;
+    d = now.getDate();
+    h = now.getHours();
+    mi = now.getMinutes();
+    s = now.getSeconds();
+  } else {
+    y = Number(document.getElementById("rtcY").value || 2026);
+    mo = Number(document.getElementById("rtcMo").value || 1);
+    d = Number(document.getElementById("rtcD").
