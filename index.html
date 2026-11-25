@@ -10,42 +10,105 @@
     --bg:#060a12;
     --card:#101827;
     --card2:#162238;
+    --rail:#0c1320;
     --line:#1f2f4a;
     --cyan:#00e5ff;
     --mag:#e879f9;
     --green:#00e676;
     --red:#ff5252;
-    --amber:#ffb300;
     --text:#f8fafc;
     --sub:#94a3b8;
   }
   *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
   body{
     margin:0;
-    background:radial-gradient(circle at 50% -10%,#11223d 0%,var(--bg) 55%);
+    background:radial-gradient(circle at 60% -10%,#11223d 0%,var(--bg) 58%);
     color:var(--text);
-    padding:12px 12px 84px 12px;
-    max-width:640px;
-    margin-inline:auto;
     min-height:100vh;
+  }
+
+  /* Left Side Menu Rail + Main Content Layout */
+  .app-shell{
+    display:flex;
+    min-height:100vh;
+    max-width:920px;
+    margin-inline:auto;
+  }
+
+  .side-rail{
+    width:82px;
+    flex-shrink:0;
+    background:var(--rail);
+    border-right:1px solid var(--line);
+    padding:12px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    position:sticky;
+    top:0;
+    height:100vh;
+  }
+
+  .rail-logo{
+    width:100%;
+    text-align:center;
+    padding:8px 4px 10px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:4px;
+  }
+  .rail-logo .q-mark{font-weight:900;font-size:15px;letter-spacing:.5px;color:#fff}
+  .rail-logo .q-mark span{color:var(--cyan)}
+  .rail-logo .q-sub{font-size:9px;color:var(--sub);letter-spacing:.4px;margin-top:2px}
+
+  .side-btn{
+    width:100%;
+    background:transparent;
+    color:var(--sub);
+    border:1px solid transparent;
+    border-radius:14px;
+    padding:10px 4px;
+    font-size:10.5px;
+    font-weight:800;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    transition:all .15s ease;
+  }
+  .side-btn .ico{font-size:17px;line-height:1}
+  .side-btn:active{transform:scale(.96)}
+  .side-btn.active{
+    background:var(--card2);
+    color:var(--cyan);
+    border-color:rgba(0,229,255,.35);
+    box-shadow:0 4px 14px rgba(0,229,255,.12);
+  }
+
+  .main-area{
+    flex:1;
+    min-width:0;
+    padding:12px;
   }
 
   /* Top App Bar */
   .appbar{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:12px 14px;background:rgba(16,24,39,.92);backdrop-filter:blur(10px);
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    padding:11px 14px;background:rgba(16,24,39,.92);backdrop-filter:blur(10px);
     border-radius:16px;border:1px solid var(--line);margin-bottom:10px;
-    position:sticky;top:10px;z-index:20;box-shadow:0 10px 26px rgba(0,0,0,.4)
+    position:sticky;top:10px;z-index:20;box-shadow:0 8px 22px rgba(0,0,0,.35)
   }
-  .brand-row{display:flex;align-items:center;gap:10px}
-  .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+  .brand-row{display:flex;align-items:center;gap:9px;min-width:0}
+  .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);flex-shrink:0}
   .pulse-dot.off{background:var(--red);box-shadow:0 0 12px var(--red)}
-  .brand{font-weight:900;font-size:16.5px;letter-spacing:.5px}
+  .brand{font-weight:900;font-size:15.5px;letter-spacing:.4px;white-space:nowrap}
   .brand span{color:var(--cyan)}
-  .meta-sub{font-size:11px;color:var(--sub);margin-top:2px}
+  .meta-sub{font-size:11px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status-pill{
-    padding:6px 12px;border-radius:999px;font-size:11.5px;font-weight:900;
-    letter-spacing:.5px;background:#092533;color:var(--green);border:1px solid rgba(0,230,118,.35)
+    padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;
+    letter-spacing:.5px;background:#092533;color:var(--green);border:1px solid rgba(0,230,118,.35);
+    flex-shrink:0
   }
   .status-pill.offline{background:#2a0d12;color:var(--red);border-color:rgba(255,82,82,.4)}
 
@@ -55,24 +118,24 @@
 
   .toast{text-align:center;font-size:12px;font-weight:700;min-height:18px;margin:4px 0 8px;color:var(--green)}
 
-  .tab-panel{display:none;animation:fadeIn .18s ease}
+  .tab-panel{display:none;animation:fadeIn .16s ease}
   .tab-panel.active{display:block}
   @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .card{background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+  .card{background:var(--card);border-radius:16px;padding:13px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .z1{border-top:3px solid var(--cyan)}.z2{border-top:3px solid var(--mag)}
-  .z-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800}
+  .z-head{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:800;gap:4px}
   .z1 .z-head{color:var(--cyan)}.z2 .z-head{color:var(--mag)}
-  .chip{font-size:10.5px;padding:2px 8px;border-radius:999px;background:var(--card2);color:var(--sub);border:1px solid var(--line)}
-  .moist-val{font-size:30px;font-weight:900;margin:6px 0 4px}
+  .chip{font-size:10px;padding:2px 7px;border-radius:999px;background:var(--card2);color:var(--sub);border:1px solid var(--line);white-space:nowrap}
+  .moist-val{font-size:27px;font-weight:900;margin:6px 0 4px}
   .meter{height:9px;background:#09101d;border-radius:999px;overflow:hidden;margin:6px 0 8px;border:1px solid #1b2a44}
   .meter-fill{height:100%;background:linear-gradient(90deg,#00c853,#00e676);transition:width .35s ease}
   .stat-line{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
   .stat-line b{color:#fff}
 
-  .sec-title{font-size:13.5px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
-  button{border:none;border-radius:12px;padding:12px 14px;font-weight:800;font-size:13.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
+  .sec-title{font-size:13px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  button{border:none;border-radius:12px;padding:11px 12px;font-weight:800;font-size:12.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
   button:active{transform:scale(.97);opacity:.92}
   .b-green{background:var(--green);color:#03140b}
   .b-red{background:var(--red);color:#fff}
@@ -81,157 +144,169 @@
   .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
   .b-ghost{background:var(--card2);color:#e2e8f0;border:1px solid var(--line);margin-top:8px}
 
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0}
-  label{font-size:13px;color:var(--sub)}
-  input{background:#090f1b;border:1px solid #293954;color:#fff;padding:8px 10px;border-radius:10px;font-size:14px;font-weight:700}
+  .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0}
+  label{font-size:12.5px;color:var(--sub)}
+  input{background:#090f1b;border:1px solid #293954;color:#fff;padding:7px 9px;border-radius:10px;font-size:13.5px;font-weight:700}
   input:focus{outline:none;border-color:var(--cyan)}
 
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th{color:var(--sub);font-size:11px;text-transform:uppercase;padding:7px 4px;border-bottom:1px solid #20304a}
-  td{padding:7px 4px;text-align:center;border-bottom:1px solid #162236}
-  td input{width:78px;text-align:center}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{color:var(--sub);font-size:10.5px;text-transform:uppercase;padding:7px 3px;border-bottom:1px solid #20304a}
+  td{padding:7px 3px;text-align:center;border-bottom:1px solid #162236}
+  td input{width:68px;text-align:center}
 
-  .info-list{font-size:12.5px;color:var(--sub);line-height:1.7}
+  .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
   .info-list b{color:#fff}
 
-  /* Bottom Navigation */
-  .nav{
-    position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
-    width:calc(100% - 24px);max-width:616px;
-    background:rgba(16,24,39,.95);backdrop-filter:blur(12px);
-    border:1px solid var(--line);border-radius:18px;
-    display:grid;grid-template-columns:repeat(4,1fr);padding:6px;gap:4px;
-    z-index:30;box-shadow:0 12px 30px rgba(0,0,0,.55)
+  @media (max-width:420px){
+    .grid2{grid-template-columns:1fr}
+    .side-rail{width:74px;padding:10px 6px}
+    .moist-val{font-size:25px}
   }
-  .nav-btn{
-    background:transparent;color:var(--sub);padding:8px 4px;border-radius:13px;
-    font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px
-  }
-  .nav-btn.active{background:var(--card2);color:var(--cyan);border:1px solid rgba(0,229,255,.28)}
-  .nav-ico{font-size:15px;line-height:1}
 </style>
 </head>
 <body>
 
-  <header class="appbar">
-    <div class="brand-row">
-      <span class="pulse-dot off" id="netDot"></span>
-      <div>
-        <div class="brand">QUAN<span>TIX</span> TECH</div>
-        <div class="meta-sub" id="rtc">Syncing RTC...</div>
-      </div>
-    </div>
-    <div class="status-pill offline" id="stBadge">OFFLINE</div>
-  </header>
-
-  <div id="alertBanner" class="banner"></div>
-  <div class="toast" id="msg"></div>
-
-  <!-- TAB 1: HOME -->
-  <section id="tab-home" class="tab-panel active">
-    <div class="grid2">
-      <div class="card z1" style="margin:0">
-        <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
-        <div class="moist-val" id="m1">--%</div>
-        <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
-        <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
-      </div>
-      <div class="card z2" style="margin:0">
-        <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
-        <div class="moist-val" id="m2">--%</div>
-        <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
-        <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
-      </div>
+<div class="app-shell">
+  <!-- LEFT SIDE MENU -->
+  <aside class="side-rail" aria-label="Main Menu">
+    <div class="rail-logo">
+      <div class="q-mark">Q<span>T</span></div>
+      <div class="q-sub">IRRIGATE</div>
     </div>
 
-    <div class="card">
-      <div class="sec-title"><span>Quick Irrigation Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
-      <div class="grid2" style="margin:0">
-        <button class="b-green" onclick="sendCmd('start')">START BOTH</button>
-        <button class="b-red" onclick="confirmStop()">STOP ALL</button>
-      </div>
-      <div class="grid2" style="margin-top:8px;margin-bottom:0">
-        <button class="b-z1" onclick="sendCmd('z1')">RUN ZONE 1</button>
-        <button class="b-z2" onclick="sendCmd('z2')">RUN ZONE 2</button>
-      </div>
-    </div>
+    <button class="side-btn active" data-tab="tab-home" onclick="switchTab(this)">
+      <span class="ico">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="side-btn" data-tab="tab-ctrl" onclick="switchTab(this)">
+      <span class="ico">💧</span>
+      <span>Control</span>
+    </button>
+    <button class="side-btn" data-tab="tab-sched" onclick="switchTab(this)">
+      <span class="ico">⏰</span>
+      <span>Schedule</span>
+    </button>
+    <button class="side-btn" data-tab="tab-cfg" onclick="switchTab(this)">
+      <span class="ico">⚙️</span>
+      <span>Targets</span>
+    </button>
+  </aside>
 
-    <div class="card">
-      <div class="sec-title">Controller Telemetry</div>
-      <div class="info-list">
-        <div>Wi-Fi Router: <b id="wifiState">--</b></div>
-        <div>Local IP: <b id="ipState">--</b></div>
-        <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TAB 2: CONTROL -->
-  <section id="tab-ctrl" class="tab-panel">
-    <div class="card">
-      <div class="sec-title">Pump & Solenoid Valves</div>
-      <button class="b-green" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
-      <div class="grid2" style="margin-top:8px">
-        <button class="b-z1" onclick="sendCmd('z1')">Zone 1 Only</button>
-        <button class="b-z2" onclick="sendCmd('z2')">Zone 2 Only</button>
-      </div>
-      <button class="b-red" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
-      <button class="b-ghost" onclick="confirmReset()">Reset Total Litres Counter</button>
-    </div>
-  </section>
-
-  <!-- TAB 3: SCHEDULE -->
-  <section id="tab-sched" class="tab-panel">
-    <div class="card">
-      <div class="sec-title">Daily Irrigation Schedules & Flow</div>
-      <div class="row">
-        <label>Morning Schedule 1 (HH:MM)</label>
-        <div>
-          <input id="s1h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
-          <input id="s1m" type="number" min="0" max="59" style="width:58px;text-align:center">
+  <!-- RIGHT CONTENT AREA -->
+  <div class="main-area">
+    <header class="appbar">
+      <div class="brand-row">
+        <span class="pulse-dot off" id="netDot"></span>
+        <div style="min-width:0">
+          <div class="brand">QUAN<span>TIX</span> TECH</div>
+          <div class="meta-sub" id="rtc">Syncing RTC...</div>
         </div>
       </div>
-      <div class="row">
-        <label>Evening Schedule 2 (HH:MM)</label>
-        <div>
-          <input id="s2h" type="number" min="0" max="23" style="width:58px;text-align:center"> :
-          <input id="s2m" type="number" min="0" max="59" style="width:58px;text-align:center">
+      <div class="status-pill offline" id="stBadge">OFFLINE</div>
+    </header>
+
+    <div id="alertBanner" class="banner"></div>
+    <div class="toast" id="msg"></div>
+
+    <!-- TAB 1: HOME -->
+    <section id="tab-home" class="tab-panel active">
+      <div class="grid2">
+        <div class="card z1" style="margin:0">
+          <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+          <div class="moist-val" id="m1">--%</div>
+          <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
+          <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
+        </div>
+        <div class="card z2" style="margin:0">
+          <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+          <div class="moist-val" id="m2">--%</div>
+          <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
+          <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
         </div>
       </div>
-      <div class="row">
-        <label>Flow Cal Z1 / Z2 (pulses/L)</label>
-        <div>
-          <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
-          <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:68px;text-align:center">
+
+      <div class="card">
+        <div class="sec-title"><span>Quick Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
+        <div class="grid2" style="margin:0">
+          <button class="b-green" onclick="sendCmd('start')">START BOTH</button>
+          <button class="b-red" onclick="confirmStop()">STOP ALL</button>
+        </div>
+        <div class="grid2" style="margin-top:8px;margin-bottom:0">
+          <button class="b-z1" onclick="sendCmd('z1')">RUN ZONE 1</button>
+          <button class="b-z2" onclick="sendCmd('z2')">RUN ZONE 2</button>
         </div>
       </div>
-      <button class="b-cyan" onclick="saveSettings()">Save Schedule & Flow Cal</button>
-    </div>
-  </section>
 
-  <!-- TAB 4: TARGETS -->
-  <section id="tab-cfg" class="tab-panel">
-    <div class="card">
-      <div class="sec-title">Moisture Band Water Targets (ml)</div>
-      <table>
-        <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
-        <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
-        <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
-        <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
-        <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
-        <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
-      </table>
-      <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
-    </div>
-  </section>
+      <div class="card">
+        <div class="sec-title">Controller Telemetry</div>
+        <div class="info-list">
+          <div>Wi-Fi Router: <b id="wifiState">--</b></div>
+          <div>Local IP: <b id="ipState">--</b></div>
+          <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
+        </div>
+      </div>
+    </section>
 
-  <!-- BOTTOM NAV -->
-  <nav class="nav">
-    <button class="nav-btn active" data-tab="tab-home" onclick="switchTab(this)"><span class="nav-ico">🏠</span><span>Home</span></button>
-    <button class="nav-btn" data-tab="tab-ctrl" onclick="switchTab(this)"><span class="nav-ico">💧</span><span>Control</span></button>
-    <button class="nav-btn" data-tab="tab-sched" onclick="switchTab(this)"><span class="nav-ico">⏰</span><span>Schedule</span></button>
-    <button class="nav-btn" data-tab="tab-cfg" onclick="switchTab(this)"><span class="nav-ico">⚙️</span><span>Targets</span></button>
-  </nav>
+    <!-- TAB 2: CONTROL -->
+    <section id="tab-ctrl" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Pump & Solenoid Valves</div>
+        <button class="b-green" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
+        <div class="grid2" style="margin-top:8px">
+          <button class="b-z1" onclick="sendCmd('z1')">Zone 1 Only</button>
+          <button class="b-z2" onclick="sendCmd('z2')">Zone 2 Only</button>
+        </div>
+        <button class="b-red" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
+        <button class="b-ghost" onclick="confirmReset()">Reset Total Litres Counter</button>
+      </div>
+    </section>
+
+    <!-- TAB 3: SCHEDULE -->
+    <section id="tab-sched" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Daily Irrigation Schedules & Flow</div>
+        <div class="row">
+          <label>Morning Sch 1 (HH:MM)</label>
+          <div>
+            <input id="s1h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
+            <input id="s1m" type="number" min="0" max="59" style="width:54px;text-align:center">
+          </div>
+        </div>
+        <div class="row">
+          <label>Evening Sch 2 (HH:MM)</label>
+          <div>
+            <input id="s2h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
+            <input id="s2m" type="number" min="0" max="59" style="width:54px;text-align:center">
+          </div>
+        </div>
+        <div class="row">
+          <label>Flow Cal Z1 / Z2</label>
+          <div>
+            <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+            <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+          </div>
+        </div>
+        <button class="b-cyan" onclick="saveSettings()">Save Schedule & Flow Cal</button>
+      </div>
+    </section>
+
+    <!-- TAB 4: TARGETS -->
+    <section id="tab-cfg" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Moisture Band Water Targets (ml)</div>
+        <table>
+          <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
+          <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
+        </table>
+        <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
+      </div>
+    </section>
+  </div>
+</div>
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -244,7 +319,7 @@ let lastSuccessfulFetchAt = 0;
 let latestStatusData = null;
 
 function switchTab(btn) {
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
   btn.classList.add("active");
   document.getElementById(btn.dataset.tab).classList.add("active");
