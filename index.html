@@ -363,7 +363,7 @@
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const ESP_STALE_MS = 25000;
+const ESP_STALE_MS = 30000;
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
@@ -390,7 +390,7 @@ function showMsg(t, isErr=false) {
   const m = document.getElementById("msg");
   m.style.color = isErr ? "#ff8a80" : "#00e676";
   m.innerText = t;
-  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3000);
+  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
 }
 
 function confirmStop() {
@@ -436,7 +436,7 @@ async function sendCmd(cmd) {
     }, 2);
     showMsg("Command sent: " + cmd.toUpperCase());
   } catch (e) {
-    showMsg("Retrying command... please check network", true);
+    showMsg("Cmd failed: " + e.message, true);
   }
 }
 
@@ -461,9 +461,9 @@ async function saveSettings() {
   };
   try {
     await patchSettings(payload);
-    showMsg("Settings synced with cloud!");
+    showMsg("Settings saved to cloud!");
   } catch (e) {
-    showMsg("Temporary issue saving settings", true);
+    showMsg("Save failed: " + e.message, true);
   }
 }
 
@@ -476,9 +476,9 @@ async function saveWifi() {
   }
   try {
     await patchSettings({ wifiSsid: ssid, wifiPass: pass });
-    showMsg("Wi-Fi credentials sent (syncs in ~8s)");
+    showMsg("Wi-Fi saved to cloud!");
   } catch (e) {
-    showMsg("Temporary issue saving Wi-Fi", true);
+    showMsg("Wi-Fi save failed: " + e.message, true);
   }
 }
 
@@ -510,9 +510,9 @@ async function saveRtc(usePhoneNow) {
       rtcMi: mi,
       rtcS: s
     });
-    showMsg("RTC date & time sent (syncs in ~8s)");
+    showMsg("RTC time saved to cloud!");
   } catch (e) {
-    showMsg("Temporary issue setting RTC", true);
+    showMsg("RTC save failed: " + e.message, true);
   }
 }
 
@@ -526,20 +526,49 @@ function initRtcInputs() {
   document.getElementById("rtcS").value = now.getSeconds();
 }
 
-function populateInputsFromData(d) {
-  if (!d) return;
-  if (d.s1h !== undefined) document.getElementById("s1h").value = d.s1h;
-  if (d.s1m !== undefined) document.getElementById("s1m").value = d.s1m;
-  if (d.s2h !== undefined) document.getElementById("s2h").value = d.s2h;
-  if (d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
-  if (d.c1 !== undefined) document.getElementById("c1").value = d.c1;
-  if (d.c2 !== undefined) document.getElementById("c2").value = d.c2;
-  if (d.staSsid) document.getElementById("wifiSsid").value = d.staSsid;
+function populateInputsFromSettings(s) {
+  if (!s) return;
+  if (s.s1h !== undefined) document.getElementById("s1h").value = s.s1h;
+  if (s.s1m !== undefined) document.getElementById("s1m").value = s.s1m;
+  if (s.s2h !== undefined) document.getElementById("s2h").value = s.s2h;
+  if (s.s2m !== undefined) document.getElementById("s2m").value = s.s2m;
+  if (s.c1 !== undefined) document.getElementById("c1").value = s.c1;
+  if (s.c2 !== undefined) document.getElementById("c2").value = s.c2;
+  if (s.wifiSsid) document.getElementById("wifiSsid").value = s.wifiSsid;
   for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined) document.getElementById("z1_" + i).value = d.z1[i];
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined) document.getElementById("z2_" + i).value = d.z2[i];
+    if (s["z1_" + i] !== undefined) document.getElementById("z1_" + i).value = s["z1_" + i];
+    if (s["z2_" + i] !== undefined) document.getElementById("z2_" + i).value = s["z2_" + i];
   }
-  initRtcInputs();
+}
+
+function populateInputsFromStatus(d) {
+  if (!d) return;
+  if (document.getElementById("s1h").value === "" && d.s1h !== undefined) document.getElementById("s1h").value = d.s1h;
+  if (document.getElementById("s1m").value === "" && d.s1m !== undefined) document.getElementById("s1m").value = d.s1m;
+  if (document.getElementById("s2h").value === "" && d.s2h !== undefined) document.getElementById("s2h").value = d.s2h;
+  if (document.getElementById("s2m").value === "" && d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
+  if (document.getElementById("c1").value === "" && d.c1 !== undefined) document.getElementById("c1").value = d.c1;
+  if (document.getElementById("c2").value === "" && d.c2 !== undefined) document.getElementById("c2").value = d.c2;
+  if (!document.getElementById("wifiSsid").value && d.staSsid) document.getElementById("wifiSsid").value = d.staSsid;
+  for (let i = 0; i < 5; i++) {
+    if (document.getElementById("z1_" + i).value === "" && Array.isArray(d.z1) && d.z1[i] !== undefined) {
+      document.getElementById("z1_" + i).value = d.z1[i];
+    }
+    if (document.getElementById("z2_" + i).value === "" && Array.isArray(d.z2) && d.z2[i] !== undefined) {
+      document.getElementById("z2_" + i).value = d.z2[i];
+    }
+  }
+}
+
+async function fetchSettingsOnce() {
+  if (settingsLoaded) return;
+  try {
+    const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
+    if (s) {
+      populateInputsFromSettings(s);
+      settingsLoaded = true;
+    }
+  } catch (e) {}
 }
 
 function renderBanner(st, dryAlert, watering, espAlive) {
@@ -625,10 +654,7 @@ async function fetchStatus() {
     document.getElementById("curSsid").innerText = d.staSsid || "Not set";
     document.getElementById("curIp").innerText = d.staIP || "--";
 
-    if (!settingsLoaded) {
-      populateInputsFromData(d);
-      settingsLoaded = true;
-    }
+    populateInputsFromStatus(d);
     updateEspLinkState();
   } catch (e) {
     updateEspLinkState();
@@ -637,26 +663,30 @@ async function fetchStatus() {
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
+    fetchSettingsOnce();
     fetchStatus();
     updateEspLinkState();
   }
 });
 
 window.addEventListener("focus", () => {
+  fetchSettingsOnce();
   fetchStatus();
   updateEspLinkState();
 });
 
 window.addEventListener("online", () => {
   showMsg("Internet reconnected — syncing...");
+  fetchSettingsOnce();
   fetchStatus();
   updateEspLinkState();
 });
 
+initRtcInputs();
+fetchSettingsOnce();
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
 fetchStatus();
 </script>
 </body>
 </html>
-
