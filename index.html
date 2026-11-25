@@ -135,7 +135,8 @@
 
   .sec-title{font-size:13px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:6px}
   button{border:none;border-radius:12px;padding:11px 12px;font-weight:800;font-size:12.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
-  button:active{transform:scale(.97);opacity:.92}
+  button:active:not(:disabled){transform:scale(.97);opacity:.92}
+  button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.45)}
   .b-green{background:var(--green);color:#03140b}
   .b-red{background:var(--red);color:#fff}
   .b-z1{background:#0284c7;color:#fff}
@@ -236,12 +237,12 @@
       <div class="card">
         <div class="sec-title"><span>Quick Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
         <div class="grid2" style="margin:0">
-          <button class="b-green" onclick="sendCmd('start')">START BOTH</button>
-          <button class="b-red" onclick="confirmStop()">STOP ALL</button>
+          <button class="b-green ctrl-btn" onclick="sendCmd('start')">START BOTH</button>
+          <button class="b-red ctrl-btn" onclick="confirmStop()">STOP ALL</button>
         </div>
         <div class="grid2" style="margin-top:8px;margin-bottom:0">
-          <button class="b-z1" onclick="sendCmd('z1')">RUN ZONE 1</button>
-          <button class="b-z2" onclick="sendCmd('z2')">RUN ZONE 2</button>
+          <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
+          <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
         </div>
       </div>
 
@@ -259,13 +260,13 @@
     <section id="tab-ctrl" class="tab-panel">
       <div class="card">
         <div class="sec-title">Pump & Solenoid Valves</div>
-        <button class="b-green" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
+        <button class="b-green ctrl-btn" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
         <div class="grid2" style="margin-top:8px">
-          <button class="b-z1" onclick="sendCmd('z1')">Zone 1 Only</button>
-          <button class="b-z2" onclick="sendCmd('z2')">Zone 2 Only</button>
+          <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">Zone 1 Only</button>
+          <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">Zone 2 Only</button>
         </div>
-        <button class="b-red" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
-        <button class="b-ghost" onclick="confirmReset()">Reset Total Litres Counter</button>
+        <button class="b-red ctrl-btn" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
+        <button class="b-ghost ctrl-btn" onclick="confirmReset()">Reset Total Litres Counter</button>
       </div>
     </section>
 
@@ -294,7 +295,7 @@
             <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
           </div>
         </div>
-        <button class="b-cyan" onclick="saveSettings()">Save Schedule & Flow Cal</button>
+        <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Schedule & Flow Cal</button>
       </div>
     </section>
 
@@ -310,7 +311,7 @@
           <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
           <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
         </table>
-        <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
+        <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Moisture Targets</button>
       </div>
     </section>
 
@@ -330,7 +331,7 @@
           <label for="wifiPass">Wi-Fi Password</label>
           <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
         </div>
-        <button class="b-cyan" onclick="saveWifi()">Save Wi-Fi Credentials</button>
+        <button class="b-cyan ctrl-btn" onclick="saveWifi()">Save Wi-Fi Credentials</button>
       </div>
     </section>
 
@@ -354,8 +355,8 @@
             <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
           </div>
         </div>
-        <button class="b-cyan" onclick="saveRtc(false)">Set Date & Time</button>
-        <button class="b-ghost" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
+        <button class="b-cyan ctrl-btn" onclick="saveRtc(false)">Set Date & Time</button>
+        <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
       </div>
     </section>
   </div>
@@ -370,6 +371,33 @@ let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
 let lastPayloadSig = "";
 let latestStatusData = null;
+const dirtyInputs = new Set();
+
+function bindInputEditGuards() {
+  document.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      if (inp.id) dirtyInputs.add(inp.id);
+    });
+  });
+}
+
+function clearDirtyGroup(ids) {
+  ids.forEach(id => dirtyInputs.delete(id));
+}
+
+function canAutoFill(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return false;
+  if (document.activeElement === el) return false;
+  if (dirtyInputs.has(inputId)) return false;
+  return true;
+}
+
+function setControlsEnabled(enabled) {
+  document.querySelectorAll(".ctrl-btn").forEach(btn => {
+    btn.disabled = !enabled;
+  });
+}
 
 function switchTab(btn) {
   document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
@@ -394,10 +422,12 @@ function showMsg(t, isErr=false) {
 }
 
 function confirmStop() {
+  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
   if (confirm("Stop pump and close active valves now?")) sendCmd("stop");
 }
 
 function confirmReset() {
+  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
   if (confirm("Reset total water counter (Litres) for both zones?")) sendCmd("resetL");
 }
 
@@ -428,6 +458,10 @@ async function patchSettings(fields) {
 }
 
 async function sendCmd(cmd) {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — command blocked", true);
+    return;
+  }
   try {
     await fetchJsonSafe(`${DB_URL}/control/cmd.json`, {
       method: "PUT",
@@ -441,6 +475,10 @@ async function sendCmd(cmd) {
 }
 
 async function saveSettings() {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot apply settings", true);
+    return;
+  }
   const payload = {
     s1h: Number(document.getElementById("s1h").value || 0),
     s1m: Number(document.getElementById("s1m").value || 0),
@@ -461,6 +499,11 @@ async function saveSettings() {
   };
   try {
     await patchSettings(payload);
+    clearDirtyGroup([
+      "s1h","s1m","s2h","s2m","c1","c2",
+      "z1_0","z1_1","z1_2","z1_3","z1_4",
+      "z2_0","z2_1","z2_2","z2_3","z2_4"
+    ]);
     showMsg("Settings saved to cloud!");
   } catch (e) {
     showMsg("Save failed: " + e.message, true);
@@ -468,6 +511,10 @@ async function saveSettings() {
 }
 
 async function saveWifi() {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot save Wi-Fi", true);
+    return;
+  }
   const ssid = document.getElementById("wifiSsid").value.trim();
   const pass = document.getElementById("wifiPass").value;
   if (!ssid) {
@@ -476,6 +523,7 @@ async function saveWifi() {
   }
   try {
     await patchSettings({ wifiSsid: ssid, wifiPass: pass });
+    clearDirtyGroup(["wifiSsid", "wifiPass"]);
     showMsg("Wi-Fi saved to cloud!");
   } catch (e) {
     showMsg("Wi-Fi save failed: " + e.message, true);
@@ -483,6 +531,10 @@ async function saveWifi() {
 }
 
 async function saveRtc(usePhoneNow) {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot sync RTC", true);
+    return;
+  }
   let y, mo, d, h, mi, s;
   if (usePhoneNow) {
     const now = new Date();
@@ -510,6 +562,7 @@ async function saveRtc(usePhoneNow) {
       rtcMi: mi,
       rtcS: s
     });
+    clearDirtyGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
     showMsg("RTC time saved to cloud!");
   } catch (e) {
     showMsg("RTC save failed: " + e.message, true);
@@ -518,43 +571,43 @@ async function saveRtc(usePhoneNow) {
 
 function initRtcInputs() {
   const now = new Date();
-  document.getElementById("rtcY").value = now.getFullYear();
-  document.getElementById("rtcMo").value = now.getMonth() + 1;
-  document.getElementById("rtcD").value = now.getDate();
-  document.getElementById("rtcH").value = now.getHours();
-  document.getElementById("rtcMi").value = now.getMinutes();
-  document.getElementById("rtcS").value = now.getSeconds();
+  if (canAutoFill("rtcY")) document.getElementById("rtcY").value = now.getFullYear();
+  if (canAutoFill("rtcMo")) document.getElementById("rtcMo").value = now.getMonth() + 1;
+  if (canAutoFill("rtcD")) document.getElementById("rtcD").value = now.getDate();
+  if (canAutoFill("rtcH")) document.getElementById("rtcH").value = now.getHours();
+  if (canAutoFill("rtcMi")) document.getElementById("rtcMi").value = now.getMinutes();
+  if (canAutoFill("rtcS")) document.getElementById("rtcS").value = now.getSeconds();
 }
 
 function populateInputsFromSettings(s) {
   if (!s) return;
-  if (s.s1h !== undefined) document.getElementById("s1h").value = s.s1h;
-  if (s.s1m !== undefined) document.getElementById("s1m").value = s.s1m;
-  if (s.s2h !== undefined) document.getElementById("s2h").value = s.s2h;
-  if (s.s2m !== undefined) document.getElementById("s2m").value = s.s2m;
-  if (s.c1 !== undefined) document.getElementById("c1").value = s.c1;
-  if (s.c2 !== undefined) document.getElementById("c2").value = s.c2;
-  if (s.wifiSsid) document.getElementById("wifiSsid").value = s.wifiSsid;
+  if (s.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = s.s1h;
+  if (s.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = s.s1m;
+  if (s.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = s.s2h;
+  if (s.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = s.s2m;
+  if (s.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = s.c1;
+  if (s.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = s.c2;
+  if (s.wifiSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = s.wifiSsid;
   for (let i = 0; i < 5; i++) {
-    if (s["z1_" + i] !== undefined) document.getElementById("z1_" + i).value = s["z1_" + i];
-    if (s["z2_" + i] !== undefined) document.getElementById("z2_" + i).value = s["z2_" + i];
+    if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i)) document.getElementById("z1_" + i).value = s["z1_" + i];
+    if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i)) document.getElementById("z2_" + i).value = s["z2_" + i];
   }
 }
 
 function populateInputsFromStatus(d) {
   if (!d) return;
-  if (document.getElementById("s1h").value === "" && d.s1h !== undefined) document.getElementById("s1h").value = d.s1h;
-  if (document.getElementById("s1m").value === "" && d.s1m !== undefined) document.getElementById("s1m").value = d.s1m;
-  if (document.getElementById("s2h").value === "" && d.s2h !== undefined) document.getElementById("s2h").value = d.s2h;
-  if (document.getElementById("s2m").value === "" && d.s2m !== undefined) document.getElementById("s2m").value = d.s2m;
-  if (document.getElementById("c1").value === "" && d.c1 !== undefined) document.getElementById("c1").value = d.c1;
-  if (document.getElementById("c2").value === "" && d.c2 !== undefined) document.getElementById("c2").value = d.c2;
-  if (!document.getElementById("wifiSsid").value && d.staSsid) document.getElementById("wifiSsid").value = d.staSsid;
+  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
+  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
+  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
+  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
+  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
+  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
+  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
   for (let i = 0; i < 5; i++) {
-    if (document.getElementById("z1_" + i).value === "" && Array.isArray(d.z1) && d.z1[i] !== undefined) {
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
       document.getElementById("z1_" + i).value = d.z1[i];
     }
-    if (document.getElementById("z2_" + i).value === "" && Array.isArray(d.z2) && d.z2[i] !== undefined) {
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
       document.getElementById("z2_" + i).value = d.z2[i];
     }
   }
@@ -600,6 +653,7 @@ function updateEspLinkState() {
   hbEl.innerText = lastSeenChangeAt > 0 ? Math.max(0, Math.floor((Date.now() - lastSeenChangeAt) / 1000)) + "s ago" : "--";
 
   if (alive) {
+    setControlsEnabled(true);
     dot.className = "pulse-dot";
     syncTag.innerText = "ESP Online";
     const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
@@ -608,6 +662,7 @@ function updateEspLinkState() {
     badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
     renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
   } else {
+    setControlsEnabled(false);
     dot.className = "pulse-dot off";
     badge.className = "status-pill offline";
     badge.innerText = "OFFLINE";
@@ -684,31 +739,13 @@ window.addEventListener("online", () => {
   updateEspLinkState();
 });
 
-window.__qtDiag = async function () {
-  const out = {
-    now: new Date().toISOString(),
-    dbUrl: DB_URL,
-    lastSeenMillis,
-    lastSeenChangeAt,
-    ageMs: lastSeenChangeAt ? Date.now() - lastSeenChangeAt : null
-  };
-  try {
-    const r = await fetch(`${DB_URL}/status.json?t=${Date.now()}`, { cache: "no-store" });
-    out.httpStatus = r.status;
-    out.statusData = await r.json();
-  } catch (e) {
-    out.fetchError = e.message;
-  }
-  console.log("QT_DIAG:", JSON.stringify(out, null, 2));
-  return out;
-};
-
+bindInputEditGuards();
 initRtcInputs();
 fetchSettingsOnce();
+setControlsEnabled(false);
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
 fetchStatus();
-setTimeout(() => { window.__qtDiag(); }, 1500);
 </script>
 </body>
 </html>
