@@ -510,6 +510,24 @@ async function fetchStatus() {
   } catch (e) {}
 }
 
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    fetchStatus();
+    updateEspLinkState();
+  }
+});
+
+window.addEventListener("focus", () => {
+  fetchStatus();
+  updateEspLinkState();
+});
+
+window.addEventListener("online", () => {
+  showMsg("Internet reconnected — syncing...");
+  fetchStatus();
+  updateEspLinkState();
+});
+
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
 fetchStatus();
