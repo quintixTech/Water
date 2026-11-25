@@ -363,12 +363,12 @@
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const ESP_STALE_MS = 30000;
+const ESP_STALE_MS = 15000;
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
-let lastSuccessfulFetchAt = 0;
+let lastPayloadSig = "";
 let latestStatusData = null;
 
 function switchTab(btn) {
@@ -586,11 +586,8 @@ function renderBanner(st, dryAlert, watering, espAlive) {
 }
 
 function isEspAliveNow() {
-  const now = Date.now();
-  if (lastSeenMillis !== null) {
-    if ((now - lastSeenChangeAt) <= ESP_STALE_MS) return true;
-  }
-  return lastSuccessfulFetchAt > 0 && ((now - lastSuccessfulFetchAt) <= ESP_STALE_MS);
+  if (lastSeenChangeAt <= 0) return false;
+  return (Date.now() - lastSeenChangeAt) <= ESP_STALE_MS;
 }
 
 function updateEspLinkState() {
@@ -600,8 +597,7 @@ function updateEspLinkState() {
   const hbEl = document.getElementById("hbAge");
   const alive = isEspAliveNow();
 
-  const refTime = (lastSeenMillis !== null && lastSeenChangeAt > 0) ? lastSeenChangeAt : lastSuccessfulFetchAt;
-  hbEl.innerText = refTime > 0 ? Math.max(0, Math.floor((Date.now() - refTime) / 1000)) + "s ago" : "--";
+  hbEl.innerText = lastSeenChangeAt > 0 ? Math.max(0, Math.floor((Date.now() - lastSeenChangeAt) / 1000)) + "s ago" : "--";
 
   if (alive) {
     dot.className = "pulse-dot";
@@ -625,14 +621,20 @@ async function fetchStatus() {
     const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
     if (!d) return;
     latestStatusData = d;
-    lastSuccessfulFetchAt = Date.now();
 
-    if (d.lastSeen !== undefined && d.lastSeen !== null) {
-      const incomingSeen = Number(d.lastSeen);
+    const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
+    if (rawSeen !== undefined && rawSeen !== null) {
+      const incomingSeen = Number(rawSeen);
       if (incomingSeen !== lastSeenMillis) {
         lastSeenMillis = incomingSeen;
+        lastSeenChangeAt = Date.now();
       }
-      lastSeenChangeAt = Date.now();
+    } else {
+      const fallbackSig = `${d.time}|${d.status}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`;
+      if (fallbackSig !== lastPayloadSig) {
+        lastPayloadSig = fallbackSig;
+        lastSeenChangeAt = Date.now();
+      }
     }
 
     const m1 = Number(d.m1 ?? 0);
@@ -682,11 +684,31 @@ window.addEventListener("online", () => {
   updateEspLinkState();
 });
 
+window.__qtDiag = async function () {
+  const out = {
+    now: new Date().toISOString(),
+    dbUrl: DB_URL,
+    lastSeenMillis,
+    lastSeenChangeAt,
+    ageMs: lastSeenChangeAt ? Date.now() - lastSeenChangeAt : null
+  };
+  try {
+    const r = await fetch(`${DB_URL}/status.json?t=${Date.now()}`, { cache: "no-store" });
+    out.httpStatus = r.status;
+    out.statusData = await r.json();
+  } catch (e) {
+    out.fetchError = e.message;
+  }
+  console.log("QT_DIAG:", JSON.stringify(out, null, 2));
+  return out;
+};
+
 initRtcInputs();
 fetchSettingsOnce();
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
 fetchStatus();
+setTimeout(() => { window.__qtDiag(); }, 1500);
 </script>
 </body>
 </html>
