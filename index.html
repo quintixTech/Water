@@ -250,19 +250,133 @@
   .wx-svg-float{animation:wxFloat 3.4s ease-in-out infinite}
   .wx-sun-rays{transform-origin:32px 32px;animation:wxSpin 18s linear infinite}
 
-  /* INSIGHTS BAR GRAPHS */
-  .bar-group{display:flex;flex-direction:column;gap:10px;margin-top:6px}
-  .bar-item{display:flex;flex-direction:column;gap:4px}
-  .bar-meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;gap:8px}
-  .bar-meta span{color:var(--sub);font-weight:700}
-  .bar-meta b{color:#fff;font-size:12px}
-  .bar-track{height:12px;background:#09101d;border-radius:999px;overflow:hidden;border:1px solid #1b2a44}
+  /* GRAPH STYLE SWITCHER */
+  .style-bar{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:6px;
+    margin-top:6px;
+  }
+  .style-btn{
+    width:100%;
+    padding:8px 6px;
+    border-radius:10px;
+    background:var(--card2);
+    color:var(--sub);
+    border:1px solid var(--line);
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .style-btn.active{
+    background:rgba(0,229,255,.14);
+    color:var(--cyan);
+    border-color:var(--cyan);
+  }
+
+  /* HORIZONTAL BAR / LINE / POINT */
+  .viz-list{display:flex;flex-direction:column;gap:11px;margin-top:8px}
+  .viz-row{display:flex;flex-direction:column;gap:5px}
+  .viz-meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;gap:8px}
+  .viz-meta span{color:var(--sub);font-weight:700}
+  .viz-meta b{color:#fff;font-size:12px}
+
+  .bar-track{
+    position:relative;
+    height:14px;
+    background:#09101d;
+    border-radius:999px;
+    overflow:hidden;
+    border:1px solid #1b2a44;
+  }
   .bar-fill{height:100%;border-radius:999px;transition:width .35s ease;min-width:0}
   .bar-fill.cyan{background:linear-gradient(90deg,#0284c7,var(--cyan))}
   .bar-fill.mag{background:linear-gradient(90deg,#9333ea,var(--mag))}
   .bar-fill.green{background:linear-gradient(90deg,#00b248,var(--green))}
   .bar-fill.amber{background:linear-gradient(90deg,#d97706,var(--amber))}
 
+  /* LINE & POINT TRACK */
+  .lp-track{
+    position:relative;
+    height:24px;
+    background:#09101d;
+    border-radius:10px;
+    border:1px solid #1b2a44;
+    display:flex;
+    align-items:center;
+    padding:0 8px;
+  }
+  .lp-base{
+    position:relative;
+    width:100%;
+    height:3px;
+    background:#1e2f4b;
+    border-radius:999px;
+  }
+  .lp-line{
+    position:absolute;
+    left:0;
+    top:0;
+    height:3px;
+    border-radius:999px;
+    transition:width .35s ease;
+  }
+  .lp-dot{
+    position:absolute;
+    top:50%;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid #060a12;
+    box-shadow:0 0 8px currentColor;
+    transition:left .35s ease;
+  }
+  .lp-dot.point-only{
+    width:14px;
+    height:14px;
+  }
+
+  /* CIRCLE / RADIAL RINGS */
+  .circle-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(115px,1fr));
+    gap:10px;
+    margin-top:8px;
+  }
+  .ring-card{
+    background:#09101d;
+    border:1px solid #1b2a44;
+    border-radius:14px;
+    padding:10px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    text-align:center;
+  }
+  .ring-wrap{
+    position:relative;
+    width:74px;
+    height:74px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .ring-wrap svg{
+    width:74px;
+    height:74px;
+    transform:rotate(-90deg);
+  }
+  .ring-center{
+    position:absolute;
+    font-size:11.5px;
+    font-weight:900;
+    color:#fff;
+  }
+  .ring-lbl{font-size:10.5px;color:var(--sub);font-weight:700;line-height:1.2}
+
+  /* MULTI-SERIES CHART (TARGETS) */
   .vbar-chart{
     display:grid;
     grid-template-columns:repeat(5,minmax(0,1fr));
@@ -320,6 +434,20 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
+
+  .svg-multi-wrap{
+    background:#09101d;
+    border:1px solid #1b2a44;
+    border-radius:14px;
+    padding:8px;
+    margin-top:8px;
+  }
+  .svg-multi-wrap svg{
+    width:100%;
+    height:150px;
+    display:block;
+  }
+
   .legend-row{display:flex;gap:14px;font-size:11px;color:var(--sub);margin-top:8px;flex-wrap:wrap}
   .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
 
@@ -353,6 +481,7 @@
   @media (max-width:520px){
     .wx-main{flex-direction:column;align-items:stretch}
     .wx-metrics{width:100%}
+    .style-bar{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:420px){
     .grid2{grid-template-columns:1fr}
@@ -491,43 +620,31 @@
       </div>
     </section>
 
-    <!-- TAB 2: INSIGHTS (ALL INFO AS BAR GRAPHS) -->
+    <!-- TAB 2: INSIGHTS (BAR / LINE / POINT / CIRCLE) -->
     <section id="tab-insights" class="tab-panel">
       <div class="card">
-        <div class="sec-title"><span>Soil Moisture Bar Graph</span><span class="chip" id="insMoistAvg">Avg: --%</span></div>
-        <div class="bar-group">
-          <div class="bar-item">
-            <div class="bar-meta"><span>Zone 1 Moisture</span><b id="insM1Val">0%</b></div>
-            <div class="bar-track"><div class="bar-fill cyan" id="insM1Bar" style="width:0%"></div></div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-meta"><span>Zone 2 Moisture</span><b id="insM2Val">0%</b></div>
-            <div class="bar-track"><div class="bar-fill mag" id="insM2Bar" style="width:0%"></div></div>
-          </div>
+        <div class="sec-title"><span>Graph Style</span><span class="chip" id="activeStyleChip">BAR</span></div>
+        <div class="style-bar">
+          <button class="style-btn active" data-gstyle="bar" onclick="setGraphStyle('bar')">📊 Bar</button>
+          <button class="style-btn" data-gstyle="line" onclick="setGraphStyle('line')">📈 Line</button>
+          <button class="style-btn" data-gstyle="point" onclick="setGraphStyle('point')">⚫ Point</button>
+          <button class="style-btn" data-gstyle="circle" onclick="setGraphStyle('circle')">⭕ Circle</button>
         </div>
       </div>
 
       <div class="card">
-        <div class="sec-title"><span>Water Usage Bar Graph (Litres)</span><span class="chip" id="insTotalLitres">Total: 0.00 L</span></div>
-        <div class="bar-group">
-          <div class="bar-item">
-            <div class="bar-meta"><span>Zone 1 Used</span><b id="insL1Val">0.00 L</b></div>
-            <div class="bar-track"><div class="bar-fill cyan" id="insL1Bar" style="width:0%"></div></div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-meta"><span>Zone 2 Used</span><b id="insL2Val">0.00 L</b></div>
-            <div class="bar-track"><div class="bar-fill mag" id="insL2Bar" style="width:0%"></div></div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-meta"><span>Combined Flow</span><b id="insLCombVal">0.00 L</b></div>
-            <div class="bar-track"><div class="bar-fill green" id="insLCombBar" style="width:0%"></div></div>
-          </div>
-        </div>
+        <div class="sec-title"><span>Soil Moisture</span><span class="chip" id="insMoistAvg">Avg: --%</span></div>
+        <div id="insMoistViz"></div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title"><span>Water Usage (Litres)</span><span class="chip" id="insTotalLitres">Total: 0.00 L</span></div>
+        <div id="insWaterViz"></div>
       </div>
 
       <div class="card">
         <div class="sec-title"><span>Moisture Band Targets (ml)</span><span class="chip">Z1 vs Z2</span></div>
-        <div class="vbar-chart" id="targetBarChart"></div>
+        <div id="insTargetViz"></div>
         <div class="legend-row">
           <span><i class="legend-dot" style="background:var(--cyan)"></i>Zone 1 (ml)</span>
           <span><i class="legend-dot" style="background:var(--mag)"></i>Zone 2 (ml)</span>
@@ -535,25 +652,8 @@
       </div>
 
       <div class="card">
-        <div class="sec-title"><span>Area Weather Bar Metrics</span><span class="chip" id="insWxTag">Weather info not found</span></div>
-        <div class="bar-group">
-          <div class="bar-item">
-            <div class="bar-meta"><span>Temperature (0–50°C)</span><b id="insTempVal">--°C</b></div>
-            <div class="bar-track"><div class="bar-fill amber" id="insTempBar" style="width:0%"></div></div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-meta"><span>Humidity (0–100%)</span><b id="insHumVal">--%</b></div>
-            <div class="bar-track"><div class="bar-fill cyan" id="insHumBar" style="width:0%"></div></div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-meta"><span>Wind Speed (0–60 km/h)</span><b id="insWindVal">-- km/h</b></div>
-            <div class="bar-track"><div class="bar-fill green" id="insWindBar" style="width:0%"></div></div>
-          </div>
-          <div class="bar-item">
-            <div class="bar-meta"><span>Rainfall (0–25 mm)</span><b id="insRainVal">-- mm</b></div>
-            <div class="bar-track"><div class="bar-fill mag" id="insRainBar" style="width:0%"></div></div>
-          </div>
-        </div>
+        <div class="sec-title"><span>Area Weather Metrics</span><span class="chip" id="insWxTag">Weather info not found</span></div>
+        <div id="insWeatherViz"></div>
       </div>
     </section>
 
@@ -677,6 +777,7 @@ let latestStatusData = null;
 let latestWeatherMetrics = null;
 let cachedGeo = null;
 let lastWeatherFetchAt = 0;
+let currentGraphStyle = "bar";
 const dirtyInputs = new Set();
 
 function bindInputEditGuards() {
@@ -684,7 +785,7 @@ function bindInputEditGuards() {
     inp.addEventListener("input", () => {
       if (inp.id) dirtyInputs.add(inp.id);
       if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
-        renderTargetBars();
+        refreshInsightsGraphs();
       }
     });
   });
@@ -718,6 +819,15 @@ function switchTab(btn) {
   }
 }
 
+function setGraphStyle(style) {
+  currentGraphStyle = style;
+  document.querySelectorAll(".style-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.gstyle === style);
+  });
+  document.getElementById("activeStyleChip").innerText = style.toUpperCase();
+  refreshInsightsGraphs();
+}
+
 function bandLabel(m) {
   if (m < 20) return "<20%";
   if (m < 40) return "20-39%";
@@ -731,9 +841,73 @@ function fmtCompactMl(val) {
   return String(val);
 }
 
-function renderTargetBars() {
-  const chart = document.getElementById("targetBarChart");
-  if (!chart) return;
+function colorHex(theme) {
+  if (theme === "mag") return "#e879f9";
+  if (theme === "green") return "#00e676";
+  if (theme === "amber") return "#fbbf24";
+  return "#00e5ff";
+}
+
+function renderMetricSeries(containerId, items, style) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+
+  if (style === "circle") {
+    const r = 28;
+    const circ = 2 * Math.PI * r;
+    box.innerHTML = `<div class="circle-grid">${items.map(it => {
+      const pct = Math.max(0, Math.min(100, it.pct));
+      const dash = (pct / 100) * circ;
+      const stroke = colorHex(it.theme);
+      return `
+        <div class="ring-card">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 74 74">
+              <circle cx="37" cy="37" r="${r}" fill="none" stroke="#1b2a44" stroke-width="7"/>
+              <circle cx="37" cy="37" r="${r}" fill="none" stroke="${stroke}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/>
+            </svg>
+            <div class="ring-center">${Math.round(pct)}%</div>
+          </div>
+          <div class="ring-lbl">${it.label}</div>
+          <div class="vbar-val">${it.valText}</div>
+        </div>
+      `;
+    }).join("")}</div>`;
+    return;
+  }
+
+  box.innerHTML = `<div class="viz-list">${items.map(it => {
+    const pct = Math.max(0, Math.min(100, it.pct));
+    const stroke = colorHex(it.theme);
+    if (style === "bar") {
+      return `
+        <div class="viz-row">
+          <div class="viz-meta"><span>${it.label}</span><b>${it.valText}</b></div>
+          <div class="bar-track"><div class="bar-fill ${it.theme}" style="width:${pct}%"></div></div>
+        </div>
+      `;
+    }
+    const pointClass = style === "point" ? "lp-dot point-only" : "lp-dot";
+    const lineHtml = style === "line"
+      ? `<div class="lp-line" style="width:${pct}%;background:${stroke}"></div>`
+      : "";
+    return `
+      <div class="viz-row">
+        <div class="viz-meta"><span>${it.label}</span><b>${it.valText}</b></div>
+        <div class="lp-track">
+          <div class="lp-base">
+            ${lineHtml}
+            <div class="${pointClass}" style="left:${pct}%;background:${stroke};color:${stroke}"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("")}</div>`;
+}
+
+function renderTargetSeries(style) {
+  const box = document.getElementById("insTargetViz");
+  if (!box) return;
   const labels = ["<20%", "20-39%", "40-59%", "60-79%", "80-100%"];
   const z1Vals = [];
   const z2Vals = [];
@@ -743,22 +917,89 @@ function renderTargetBars() {
   }
   const maxVal = Math.max(1000, ...z1Vals, ...z2Vals);
 
-  chart.innerHTML = labels.map((lbl, idx) => {
-    const h1 = Math.max(4, Math.round((z1Vals[idx] / maxVal) * 92));
-    const h2 = Math.max(4, Math.round((z2Vals[idx] / maxVal) * 92));
-    const v1 = fmtCompactMl(z1Vals[idx]);
-    const v2 = fmtCompactMl(z2Vals[idx]);
-    return `
-      <div class="vbar-col">
-        <div class="vbar-val">${v1}/<br>${v2}</div>
-        <div class="vbar-pair">
-          <div class="vbar z1b" style="height:${h1}px" title="Z1: ${z1Vals[idx]} ml"></div>
-          <div class="vbar z2b" style="height:${h2}px" title="Z2: ${z2Vals[idx]} ml"></div>
+  if (style === "bar") {
+    box.innerHTML = `<div class="vbar-chart">${labels.map((lbl, idx) => {
+      const h1 = Math.max(4, Math.round((z1Vals[idx] / maxVal) * 92));
+      const h2 = Math.max(4, Math.round((z2Vals[idx] / maxVal) * 92));
+      return `
+        <div class="vbar-col">
+          <div class="vbar-val">${fmtCompactMl(z1Vals[idx])}/<br>${fmtCompactMl(z2Vals[idx])}</div>
+          <div class="vbar-pair">
+            <div class="vbar z1b" style="height:${h1}px" title="Z1: ${z1Vals[idx]} ml"></div>
+            <div class="vbar z2b" style="height:${h2}px" title="Z2: ${z2Vals[idx]} ml"></div>
+          </div>
+          <div class="vbar-lbl">${lbl}</div>
         </div>
-        <div class="vbar-lbl">${lbl}</div>
-      </div>
-    `;
+      `;
+    }).join("")}</div>`;
+    return;
+  }
+
+  if (style === "circle") {
+    const r = 24;
+    const circ = 2 * Math.PI * r;
+    box.innerHTML = `<div class="circle-grid">${labels.map((lbl, idx) => {
+      const p1 = Math.max(0, Math.min(100, (z1Vals[idx] / maxVal) * 100));
+      const p2 = Math.max(0, Math.min(100, (z2Vals[idx] / maxVal) * 100));
+      const d1 = (p1 / 100) * circ;
+      const d2 = (p2 / 100) * circ;
+      return `
+        <div class="ring-card">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 74 74">
+              <circle cx="37" cy="37" r="${r + 4}" fill="none" stroke="#1b2a44" stroke-width="5"/>
+              <circle cx="37" cy="37" r="${r + 4}" fill="none" stroke="#00e5ff" stroke-width="5" stroke-linecap="round" stroke-dasharray="${d1.toFixed(1)} ${(2 * Math.PI * (r + 4)).toFixed(1)}"/>
+              <circle cx="37" cy="37" r="${r - 3}" fill="none" stroke="#1b2a44" stroke-width="4.5"/>
+              <circle cx="37" cy="37" r="${r - 3}" fill="none" stroke="#e879f9" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${d2.toFixed(1)} ${(2 * Math.PI * (r - 3)).toFixed(1)}"/>
+            </svg>
+            <div class="ring-center" style="font-size:9px">${fmtCompactMl(z1Vals[idx])}<br>${fmtCompactMl(z2Vals[idx])}</div>
+          </div>
+          <div class="ring-lbl">${lbl}</div>
+        </div>
+      `;
+    }).join("")}</div>`;
+    return;
+  }
+
+  const w = 320, h = 140, padX = 28, padTop = 16, padBot = 24;
+  const plotW = w - padX * 2;
+  const plotH = h - padTop - padBot;
+
+  const pts1 = z1Vals.map((v, i) => {
+    const x = padX + (i / 4) * plotW;
+    const y = padTop + plotH - (v / maxVal) * plotH;
+    return { x, y, v };
+  });
+  const pts2 = z2Vals.map((v, i) => {
+    const x = padX + (i / 4) * plotW;
+    const y = padTop + plotH - (v / maxVal) * plotH;
+    return { x, y, v };
+  });
+
+  const poly1 = pts1.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  const poly2 = pts2.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+
+  const lineSvg = style === "line"
+    ? `<polyline fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${poly1}"/>
+       <polyline fill="none" stroke="#e879f9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${poly2}"/>`
+    : "";
+
+  const dotsSvg = [
+    ...pts1.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${style === "point" ? 5 : 3.5}" fill="#00e5ff"/>`),
+    ...pts2.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${style === "point" ? 5 : 3.5}" fill="#e879f9"/>`)
+  ].join("");
+
+  const xLabelsSvg = labels.map((lbl, i) => {
+    const x = padX + (i / 4) * plotW;
+    return `<text x="${x.toFixed(1)}" y="${h - 6}" fill="#94a3b8" font-size="9" text-anchor="middle">${lbl}</text>`;
   }).join("");
+
+  const gridSvg = [0, 0.5, 1].map(t => {
+    const y = padTop + plotH - t * plotH;
+    return `<line x1="${padX}" y1="${y.toFixed(1)}" x2="${w - padX}" y2="${y.toFixed(1)}" stroke="#1b2a44" stroke-dasharray="3 3" stroke-width="1"/>`;
+  }).join("");
+
+  box.innerHTML = `<div class="svg-multi-wrap"><svg viewBox="0 0 ${w} ${h}">${gridSvg}${lineSvg}${dotsSvg}${xLabelsSvg}</svg></div>`;
 }
 
 function refreshInsightsGraphs() {
@@ -771,44 +1012,37 @@ function refreshInsightsGraphs() {
 
   const avgM = Math.round((m1 + m2) / 2);
   document.getElementById("insMoistAvg").innerText = `Avg: ${avgM}%`;
-  document.getElementById("insM1Val").innerText = `${m1}%`;
-  document.getElementById("insM2Val").innerText = `${m2}%`;
-  document.getElementById("insM1Bar").style.width = `${m1}%`;
-  document.getElementById("insM2Bar").style.width = `${m2}%`;
+  renderMetricSeries("insMoistViz", [
+    { label: "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
+    { label: "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
+  ], currentGraphStyle);
 
   document.getElementById("insTotalLitres").innerText = `Total: ${lComb.toFixed(2)} L`;
-  document.getElementById("insL1Val").innerText = `${l1.toFixed(2)} L`;
-  document.getElementById("insL2Val").innerText = `${l2.toFixed(2)} L`;
-  document.getElementById("insLCombVal").innerText = `${lComb.toFixed(2)} L`;
-  document.getElementById("insL1Bar").style.width = `${Math.min(100, (l1 / maxL) * 100)}%`;
-  document.getElementById("insL2Bar").style.width = `${Math.min(100, (l2 / maxL) * 100)}%`;
-  document.getElementById("insLCombBar").style.width = `${Math.min(100, (lComb / maxL) * 100)}%`;
+  renderMetricSeries("insWaterViz", [
+    { label: "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
+    { label: "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
+    { label: "Combined Flow", valText: `${lComb.toFixed(2)} L`, pct: (lComb / maxL) * 100, theme: "green" }
+  ], currentGraphStyle);
 
-  renderTargetBars();
+  renderTargetSeries(currentGraphStyle);
 
   if (latestWeatherMetrics && isEspAliveNow()) {
     const { temp, hum, wind, precip, label } = latestWeatherMetrics;
     document.getElementById("insWxTag").innerText = label;
-    document.getElementById("insTempVal").innerText = `${temp}°C`;
-    document.getElementById("insHumVal").innerText = `${hum}%`;
-    document.getElementById("insWindVal").innerText = `${wind} km/h`;
-    document.getElementById("insRainVal").innerText = `${precip.toFixed(1)} mm`;
-
-    document.getElementById("insTempBar").style.width = `${Math.max(0, Math.min(100, (temp / 50) * 100))}%`;
-    document.getElementById("insHumBar").style.width = `${Math.max(0, Math.min(100, hum))}%`;
-    document.getElementById("insWindBar").style.width = `${Math.max(0, Math.min(100, (wind / 60) * 100))}%`;
-    document.getElementById("insRainBar").style.width = `${Math.max(0, Math.min(100, (precip / 25) * 100))}%`;
+    renderMetricSeries("insWeatherViz", [
+      { label: "Temperature (0–50°C)", valText: `${temp}°C`, pct: (temp / 50) * 100, theme: "amber" },
+      { label: "Humidity (0–100%)", valText: `${hum}%`, pct: hum, theme: "cyan" },
+      { label: "Wind Speed (0–60 km/h)", valText: `${wind} km/h`, pct: (wind / 60) * 100, theme: "green" },
+      { label: "Rainfall (0–25 mm)", valText: `${precip.toFixed(1)} mm`, pct: (precip / 25) * 100, theme: "mag" }
+    ], currentGraphStyle);
   } else {
     document.getElementById("insWxTag").innerText = "Weather info not found";
-    document.getElementById("insTempVal").innerText = "--°C";
-    document.getElementById("insHumVal").innerText = "--%";
-    document.getElementById("insWindVal").innerText = "-- km/h";
-    document.getElementById("insRainVal").innerText = "-- mm";
-
-    document.getElementById("insTempBar").style.width = "0%";
-    document.getElementById("insHumBar").style.width = "0%";
-    document.getElementById("insWindBar").style.width = "0%";
-    document.getElementById("insRainBar").style.width = "0%";
+    renderMetricSeries("insWeatherViz", [
+      { label: "Temperature (0–50°C)", valText: "--°C", pct: 0, theme: "amber" },
+      { label: "Humidity (0–100%)", valText: "--%", pct: 0, theme: "cyan" },
+      { label: "Wind Speed (0–60 km/h)", valText: "-- km/h", pct: 0, theme: "green" },
+      { label: "Rainfall (0–25 mm)", valText: "-- mm", pct: 0, theme: "mag" }
+    ], currentGraphStyle);
   }
 }
 
@@ -1086,7 +1320,7 @@ async function saveSettings() {
       "z1_0","z1_1","z1_2","z1_3","z1_4",
       "z2_0","z2_1","z2_2","z2_3","z2_4"
     ]);
-    renderTargetBars();
+    refreshInsightsGraphs();
     showMsg("Settings saved to cloud!");
   } catch (e) {
     showMsg("Save failed: " + e.message, true);
@@ -1175,7 +1409,7 @@ function populateInputsFromSettings(s) {
     if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i)) document.getElementById("z1_" + i).value = s["z1_" + i];
     if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i)) document.getElementById("z2_" + i).value = s["z2_" + i];
   }
-  renderTargetBars();
+  refreshInsightsGraphs();
 }
 
 function populateInputsFromStatus(d) {
@@ -1195,7 +1429,7 @@ function populateInputsFromStatus(d) {
       document.getElementById("z2_" + i).value = d.z2[i];
     }
   }
-  renderTargetBars();
+  refreshInsightsGraphs();
 }
 
 async function fetchSettingsOnce() {
@@ -1334,7 +1568,6 @@ window.addEventListener("online", () => {
 
 bindInputEditGuards();
 initRtcInputs();
-renderTargetBars();
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
 fetchSettingsOnce();
