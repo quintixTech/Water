@@ -134,7 +134,6 @@
   .stat-line{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
   .stat-line b{color:#fff}
 
-  /* FIXED / PINNED WEATHER CARD ON SCROLL & ALL TABS */
   .wx-card{
     position:sticky;
     top:66px;
@@ -251,7 +250,6 @@
   .wx-svg-float{animation:wxFloat 3.4s ease-in-out infinite}
   .wx-sun-rays{transform-origin:32px 32px;animation:wxSpin 18s linear infinite}
 
-  /* INSIGHTS DATE-TIME FILTER & STYLE SWITCHER */
   .dt-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -317,7 +315,6 @@
     border-color:var(--cyan);
   }
 
-  /* HORIZONTAL BAR / LINE / POINT */
   .viz-list{display:flex;flex-direction:column;gap:11px;margin-top:8px}
   .viz-row{display:flex;flex-direction:column;gap:5px}
   .viz-meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;gap:8px}
@@ -338,7 +335,6 @@
   .bar-fill.green{background:linear-gradient(90deg,#00b248,var(--green))}
   .bar-fill.amber{background:linear-gradient(90deg,#d97706,var(--amber))}
 
-  /* LINE & POINT TRACK */
   .lp-track{
     position:relative;
     height:24px;
@@ -380,7 +376,6 @@
     height:14px;
   }
 
-  /* CIRCLE / RADIAL RINGS */
   .circle-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(115px,1fr));
@@ -419,7 +414,6 @@
   }
   .ring-lbl{font-size:10.5px;color:var(--sub);font-weight:700;line-height:1.2}
 
-  /* MULTI-SERIES CHART (TARGETS) */
   .vbar-chart{
     display:grid;
     grid-template-columns:repeat(5,minmax(0,1fr));
@@ -603,7 +597,6 @@
       <div class="status-pill offline" id="stBadge">OFFLINE</div>
     </header>
 
-    <!-- FIXED / PINNED WEATHER CARD (ALL PAGES & ON SCROLL) -->
     <div class="card wx-card" id="pinnedWeather">
       <div class="wx-top">
         <span class="wx-title">Controller Area Weather</span>
@@ -679,7 +672,7 @@
       </div>
     </section>
 
-    <!-- TAB 2: INSIGHTS (DATE-TIME RANGE + BAR / LINE / POINT / CIRCLE) -->
+    <!-- TAB 2: INSIGHTS -->
     <section id="tab-insights" class="tab-panel">
       <div class="card">
         <div class="sec-title"><span>Date & Time Range</span><span class="chip" id="insRangeInfo">All / Live</span></div>
@@ -793,26 +786,27 @@
       </div>
     </section>
 
-    <!-- TAB 6: CONTROLLER COORDINATES (LEFT SIDE MENU) -->
+    <!-- TAB 6: CONTROLLER COORDINATES -->
     <section id="tab-coord" class="tab-panel">
       <div class="card">
         <div class="sec-title"><span>Controller Coordinates</span><span class="chip" id="coordStatusChip">Not Set</span></div>
         <div class="info-list" style="margin-bottom:8px">
           <div>Saved Lat / Lon: <b id="savedCoordText">--</b></div>
           <div>Resolved Place: <b id="savedCoordPlace">--</b></div>
+          <div>Coordinate Source: <b id="coordSourceText">--</b></div>
         </div>
         <div class="grid2" style="margin:8px 0">
           <button type="button" class="b-ghost" style="margin:0" onclick="getDeviceCoordinates()">Get Coordinates</button>
-          <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()" disabled>Add Controller Coordinate</button>
+          <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()">Add Controller Coordinate</button>
         </div>
         <div class="dt-grid">
           <div class="dt-box">
             <label for="manLat">Latitude</label>
-            <input id="manLat" class="dt-input" type="text" readonly placeholder="Tap Get Coordinates">
+            <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat (e.g. 22.7506)">
           </div>
           <div class="dt-box">
             <label for="manLon">Longitude</label>
-            <input id="manLon" class="dt-input" type="text" readonly placeholder="Tap Get Coordinates">
+            <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon (e.g. 88.3426)">
           </div>
         </div>
         <button type="button" class="b-ghost" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
@@ -898,7 +892,8 @@ function getSavedControllerCoord() {
     return {
       lat,
       lon,
-      place: d.place ? String(d.place).trim() : ""
+      place: d.place ? String(d.place).trim() : "",
+      method: d.method ? String(d.method).trim() : "App Location"
     };
   } catch (e) {
     return null;
@@ -910,60 +905,139 @@ function renderSavedCoordSummary() {
   const chip = document.getElementById("coordStatusChip");
   const txt = document.getElementById("savedCoordText");
   const pl = document.getElementById("savedCoordPlace");
-  if (!chip || !txt || !pl) return;
+  const src = document.getElementById("coordSourceText");
+  if (!chip || !txt || !pl || !src) return;
 
   if (saved) {
     chip.innerText = "Active";
     chip.style.color = "#00e676";
     txt.innerText = `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`;
     pl.innerText = saved.place || "Resolving...";
+    src.innerText = saved.method || "App Location";
   } else {
     chip.innerText = "Not Set";
     chip.style.color = "#94a3b8";
     txt.innerText = "--";
     pl.innerText = "--";
+    src.innerText = "--";
   }
 }
 
+async function fetchFallbackIpCoord() {
+  try {
+    const g = await fetchJsonSafe("https://ipwho.is", {}, 1);
+    if (g && g.success !== false && g.latitude !== undefined && g.longitude !== undefined) {
+      const lat = Number(g.latitude);
+      const lon = Number(g.longitude);
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        return { lat, lon, place: g.city || g.region || "", method: "App Network Location" };
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const g2 = await fetchJsonSafe("https://ipapi.co/json/", {}, 1);
+    if (g2 && g2.latitude !== undefined && g2.longitude !== undefined) {
+      const lat = Number(g2.latitude);
+      const lon = Number(g2.longitude);
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        return { lat, lon, place: g2.city || g2.region || "", method: "App Network Location" };
+      }
+    }
+  } catch (e) {}
+
+  return null;
+}
+
+function applyFetchedCoordToUi(lat, lon, methodName, noteText) {
+  const nLat = Number(lat);
+  const nLon = Number(lon);
+  pendingFetchedCoord = { lat: nLat, lon: nLon, method: methodName || "App Location" };
+
+  const latEl = document.getElementById("manLat");
+  const lonEl = document.getElementById("manLon");
+  const addBtn = document.getElementById("addCoordBtn");
+
+  if (latEl) {
+    latEl.value = nLat.toFixed(6);
+    dirtyInputs.add("manLat");
+  }
+  if (lonEl) {
+    lonEl.value = nLon.toFixed(6);
+    dirtyInputs.add("manLon");
+  }
+  if (addBtn) addBtn.disabled = false;
+
+  showMsg(noteText || "Coordinates ready. Tap 'Add Controller Coordinate'");
+}
+
 function getDeviceCoordinates() {
+  showMsg("Fetching coordinates from app...");
+
+  const tryIpFallback = async () => {
+    const ipGeo = await fetchFallbackIpCoord();
+    if (ipGeo) {
+      applyFetchedCoordToUi(
+        ipGeo.lat,
+        ipGeo.lon,
+        ipGeo.method,
+        "App network coordinates ready. Tap 'Add Controller Coordinate'"
+      );
+      return;
+    }
+    showMsg("Auto coordinates unavailable. Type Lat/Lon manually", true);
+  };
+
   if (!navigator.geolocation) {
-    showMsg("Geolocation not supported on this device", true);
+    tryIpFallback();
     return;
   }
 
-  const addBtn = document.getElementById("addCoordBtn");
-  if (addBtn) addBtn.disabled = true;
-  showMsg("Fetching coordinates from device...");
-
   navigator.geolocation.getCurrentPosition(
     pos => {
-      const lat = Number(pos.coords.latitude);
-      const lon = Number(pos.coords.longitude);
-      pendingFetchedCoord = { lat, lon };
-
-      const latEl = document.getElementById("manLat");
-      const lonEl = document.getElementById("manLon");
-      if (latEl) latEl.value = lat.toFixed(6);
-      if (lonEl) lonEl.value = lon.toFixed(6);
-      if (addBtn) addBtn.disabled = false;
-
-      showMsg("Coordinates fetched. Tap 'Add Controller Coordinate'");
+      applyFetchedCoordToUi(
+        pos.coords.latitude,
+        pos.coords.longitude,
+        "App GPS",
+        "App GPS coordinates fetched. Tap 'Add Controller Coordinate'"
+      );
     },
-    err => {
-      pendingFetchedCoord = null;
-      if (addBtn) addBtn.disabled = true;
-      showMsg("Location fetch failed: " + (err.message || "Permission denied"), true);
+    () => {
+      navigator.geolocation.getCurrentPosition(
+        pos2 => {
+          applyFetchedCoordToUi(
+            pos2.coords.latitude,
+            pos2.coords.longitude,
+            "App Device Location",
+            "App coordinates fetched. Tap 'Add Controller Coordinate'"
+          );
+        },
+        () => {
+          tryIpFallback();
+        },
+        { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 }
+      );
     },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
 }
 
 async function addControllerCoordinate() {
-  const latVal = Number(pendingFetchedCoord?.lat ?? document.getElementById("manLat")?.value);
-  const lonVal = Number(pendingFetchedCoord?.lon ?? document.getElementById("manLon")?.value);
+  const rawLat = document.getElementById("manLat")?.value?.trim();
+  const rawLon = document.getElementById("manLon")?.value?.trim();
 
-  if (Number.isNaN(latVal) || Number.isNaN(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
-    showMsg("Tap 'Get Coordinates' first", true);
+  const latVal = rawLat ? Number(rawLat) : Number(pendingFetchedCoord?.lat);
+  const lonVal = rawLon ? Number(rawLon) : Number(pendingFetchedCoord?.lon);
+
+  if (
+    Number.isNaN(latVal) ||
+    Number.isNaN(lonVal) ||
+    latVal < -90 ||
+    latVal > 90 ||
+    lonVal < -180 ||
+    lonVal > 180
+  ) {
+    showMsg("Enter valid Latitude and Longitude first", true);
     return;
   }
 
@@ -971,10 +1045,13 @@ async function addControllerCoordinate() {
     (await reverseGeocodePlace(latVal, lonVal)) ||
     `${latVal.toFixed(4)}, ${lonVal.toFixed(4)}`;
 
+  const methodUsed = pendingFetchedCoord?.method || "Manual App Coordinate";
+
   localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify({
     lat: latVal,
     lon: lonVal,
-    place: resolvedPlace
+    place: resolvedPlace,
+    method: methodUsed
   }));
 
   cachedGeo = {
@@ -995,10 +1072,14 @@ function clearControllerCoordinate() {
   pendingFetchedCoord = null;
   const latEl = document.getElementById("manLat");
   const lonEl = document.getElementById("manLon");
-  const addBtn = document.getElementById("addCoordBtn");
-  if (latEl) latEl.value = "";
-  if (lonEl) lonEl.value = "";
-  if (addBtn) addBtn.disabled = true;
+  if (latEl) {
+    latEl.value = "";
+    dirtyInputs.delete("manLat");
+  }
+  if (lonEl) {
+    lonEl.value = "";
+    dirtyInputs.delete("manLon");
+  }
 
   cachedGeo = null;
   lastWeatherFetchAt = 0;
