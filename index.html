@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#060a12">
 <title>QUANTIX TECH Smart Irrigation</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
     --bg:#060a12;
@@ -526,6 +528,33 @@
   .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
   .info-list b{color:#fff}
 
+  .map-box{
+    width:100%;
+    height:215px;
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid #243856;
+    background:#09101d;
+    margin-top:10px;
+    position:relative;
+  }
+  .map-caption{
+    font-size:11px;
+    color:var(--sub);
+    margin-top:6px;
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .map-caption b{color:var(--cyan)}
+  .leaflet-container{background:#09101d;font-family:inherit}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{
+    background:#101827;
+    color:#f8fafc;
+    border:1px solid #293954;
+  }
+
   @media (max-width:520px){
     .wx-main{flex-direction:column;align-items:stretch}
     .wx-metrics{width:100%}
@@ -810,6 +839,12 @@
           </div>
         </div>
         <button type="button" class="b-ghost" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
+
+        <div id="coordMap" class="map-box"></div>
+        <div class="map-caption">
+          <span>Controller Pin: <b id="mapCoordLabel">Not set</b></span>
+          <span id="mapTileStatus">Ready</span>
+        </div>
       </div>
     </section>
 
@@ -879,6 +914,9 @@ let pendingFetchedCoord = null;
 let lastWeatherFetchAt = 0;
 let currentGraphStyle = "bar";
 let activeRangeFilter = null;
+let coordMapInstance = null;
+let coordMapMarker = null;
+let coordMapCircle = null;
 const dirtyInputs = new Set();
 
 function getSavedControllerCoord() {
@@ -898,6 +936,107 @@ function getSavedControllerCoord() {
   } catch (e) {
     return null;
   }
+}
+
+function initControllerMap() {
+  const mapEl = document.getElementById("coordMap");
+  const statusEl = document.getElementById("mapTileStatus");
+  if (!mapEl) return;
+
+  if (typeof L === "undefined") {
+    if (statusEl) statusEl.innerText = "Map library offline";
+    return;
+  }
+
+  if (!coordMapInstance) {
+    const saved = getSavedControllerCoord();
+    const startLat = saved ? saved.lat : 22.7506;
+    const startLon = saved ? saved.lon : 88.3426;
+    const startZoom = saved ? 15 : 6;
+
+    coordMapInstance = L.map("coordMap", {
+      center: [startLat, startLon],
+      zoom: startZoom,
+      zoomControl: true,
+      attributionControl: false
+    });
+
+    const tileLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19
+    });
+
+    tileLayer.on("tileerror", () => {
+      if (statusEl) statusEl.innerText = "Map tiles unavailable";
+    });
+    tileLayer.on("load", () => {
+      if (statusEl) statusEl.innerText = "Live Map";
+    });
+
+    tileLayer.addTo(coordMapInstance);
+  }
+
+  setTimeout(() => {
+    if (coordMapInstance) coordMapInstance.invalidateSize();
+  }, 120);
+
+  syncControllerMapPin();
+}
+
+function syncControllerMapPin(overrideLat = null, overrideLon = null, overrideTitle = null) {
+  const labelEl = document.getElementById("mapCoordLabel");
+  const saved = getSavedControllerCoord();
+
+  const lat = overrideLat !== null && !Number.isNaN(Number(overrideLat))
+    ? Number(overrideLat)
+    : (saved ? saved.lat : null);
+  const lon = overrideLon !== null && !Number.isNaN(Number(overrideLon))
+    ? Number(overrideLon)
+    : (saved ? saved.lon : null);
+
+  if (lat === null || lon === null || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+    if (labelEl) labelEl.innerText = "Not set";
+    if (coordMapInstance && coordMapMarker) {
+      coordMapInstance.removeLayer(coordMapMarker);
+      coordMapMarker = null;
+    }
+    if (coordMapInstance && coordMapCircle) {
+      coordMapInstance.removeLayer(coordMapCircle);
+      coordMapCircle = null;
+    }
+    return;
+  }
+
+  const titleText = overrideTitle || (saved && saved.place) || "Controller Location";
+  if (labelEl) labelEl.innerText = `${titleText} (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+
+  if (!coordMapInstance || typeof L === "undefined") return;
+
+  if (!coordMapMarker) {
+    coordMapMarker = L.circleMarker([lat, lon], {
+      radius: 8,
+      color: "#060a12",
+      weight: 2.5,
+      fillColor: "#00e5ff",
+      fillOpacity: 1
+    }).addTo(coordMapInstance);
+  } else {
+    coordMapMarker.setLatLng([lat, lon]);
+  }
+
+  if (!coordMapCircle) {
+    coordMapCircle = L.circle([lat, lon], {
+      radius: 80,
+      color: "#00e5ff",
+      weight: 1.2,
+      fillColor: "#00e5ff",
+      fillOpacity: 0.14
+    }).addTo(coordMapInstance);
+  } else {
+    coordMapCircle.setLatLng([lat, lon]);
+  }
+
+  coordMapMarker.bindPopup(`<b>${titleText}</b><br>${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+  coordMapInstance.setView([lat, lon], 15, { animate: true });
 }
 
 function renderSavedCoordSummary() {
@@ -921,6 +1060,7 @@ function renderSavedCoordSummary() {
     pl.innerText = "--";
     src.innerText = "--";
   }
+  syncControllerMapPin();
 }
 
 async function fetchFallbackIpCoord() {
@@ -968,6 +1108,7 @@ function applyFetchedCoordToUi(lat, lon, methodName, noteText) {
   }
   if (addBtn) addBtn.disabled = false;
 
+  syncControllerMapPin(nLat, nLon, "Fetched Coordinate");
   showMsg(noteText || "Coordinates ready. Tap 'Add Controller Coordinate'");
 }
 
@@ -1175,6 +1316,13 @@ function bindInputEditGuards() {
       if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
         refreshInsightsGraphs();
       }
+      if (inp.id === "manLat" || inp.id === "manLon") {
+        const vLat = Number(document.getElementById("manLat")?.value);
+        const vLon = Number(document.getElementById("manLon")?.value);
+        if (!Number.isNaN(vLat) && !Number.isNaN(vLon)) {
+          syncControllerMapPin(vLat, vLon, "Preview Coordinate");
+        }
+      }
     });
   });
 }
@@ -1207,6 +1355,7 @@ function switchTab(btn) {
     refreshInsightsGraphs();
   } else if (btn.dataset.tab === "tab-coord") {
     renderSavedCoordSummary();
+    initControllerMap();
   }
 }
 
@@ -2086,6 +2235,9 @@ document.addEventListener("visibilitychange", () => {
     fetchStatus();
     updateEspLinkState();
     updateAreaWeather(false);
+    if (document.getElementById("tab-coord")?.classList.contains("active") && coordMapInstance) {
+      setTimeout(() => coordMapInstance.invalidateSize(), 150);
+    }
   }
 });
 
