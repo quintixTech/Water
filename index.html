@@ -577,6 +577,10 @@
       <span class="ico">⚙️</span>
       <span>Targets</span>
     </button>
+    <button class="side-btn" data-tab="tab-coord" onclick="switchTab(this)">
+      <span class="ico">📍</span>
+      <span>Coords</span>
+    </button>
     <button class="side-btn" data-tab="tab-wifi" onclick="switchTab(this)">
       <span class="ico">📶</span>
       <span>Wi-Fi</span>
@@ -789,7 +793,33 @@
       </div>
     </section>
 
-    <!-- TAB 6: WI-FI SETUP -->
+    <!-- TAB 6: CONTROLLER COORDINATES (LEFT SIDE MENU) -->
+    <section id="tab-coord" class="tab-panel">
+      <div class="card">
+        <div class="sec-title"><span>Controller Coordinates</span><span class="chip" id="coordStatusChip">Not Set</span></div>
+        <div class="info-list" style="margin-bottom:8px">
+          <div>Saved Lat / Lon: <b id="savedCoordText">--</b></div>
+          <div>Resolved Place: <b id="savedCoordPlace">--</b></div>
+        </div>
+        <div class="grid2" style="margin:8px 0">
+          <button type="button" class="b-ghost" style="margin:0" onclick="getDeviceCoordinates()">Get Coordinates</button>
+          <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()" disabled>Add Controller Coordinate</button>
+        </div>
+        <div class="dt-grid">
+          <div class="dt-box">
+            <label for="manLat">Latitude</label>
+            <input id="manLat" class="dt-input" type="text" readonly placeholder="Tap Get Coordinates">
+          </div>
+          <div class="dt-box">
+            <label for="manLon">Longitude</label>
+            <input id="manLon" class="dt-input" type="text" readonly placeholder="Tap Get Coordinates">
+          </div>
+        </div>
+        <button type="button" class="b-ghost" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
+      </div>
+    </section>
+
+    <!-- TAB 7: WI-FI SETUP -->
     <section id="tab-wifi" class="tab-panel">
       <div class="card">
         <div class="sec-title">Router Wi-Fi Setup</div>
@@ -809,7 +839,7 @@
       </div>
     </section>
 
-    <!-- TAB 7: RTC DATE & TIME -->
+    <!-- TAB 8: RTC DATE & TIME -->
     <section id="tab-rtc" class="tab-panel">
       <div class="card">
         <div class="sec-title">DS3231 Date & Time</div>
@@ -841,6 +871,7 @@ const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebased
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
+const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
 const MAX_INSIGHT_LOGS = 500;
 
 let settingsLoaded = false;
@@ -850,10 +881,131 @@ let lastPayloadSig = "";
 let latestStatusData = null;
 let latestWeatherMetrics = null;
 let cachedGeo = null;
+let pendingFetchedCoord = null;
 let lastWeatherFetchAt = 0;
 let currentGraphStyle = "bar";
 let activeRangeFilter = null;
 const dirtyInputs = new Set();
+
+function getSavedControllerCoord() {
+  try {
+    const raw = localStorage.getItem(CONTROLLER_COORD_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    const lat = Number(d?.lat);
+    const lon = Number(d?.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
+    return {
+      lat,
+      lon,
+      place: d.place ? String(d.place).trim() : ""
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderSavedCoordSummary() {
+  const saved = getSavedControllerCoord();
+  const chip = document.getElementById("coordStatusChip");
+  const txt = document.getElementById("savedCoordText");
+  const pl = document.getElementById("savedCoordPlace");
+  if (!chip || !txt || !pl) return;
+
+  if (saved) {
+    chip.innerText = "Active";
+    chip.style.color = "#00e676";
+    txt.innerText = `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`;
+    pl.innerText = saved.place || "Resolving...";
+  } else {
+    chip.innerText = "Not Set";
+    chip.style.color = "#94a3b8";
+    txt.innerText = "--";
+    pl.innerText = "--";
+  }
+}
+
+function getDeviceCoordinates() {
+  if (!navigator.geolocation) {
+    showMsg("Geolocation not supported on this device", true);
+    return;
+  }
+
+  const addBtn = document.getElementById("addCoordBtn");
+  if (addBtn) addBtn.disabled = true;
+  showMsg("Fetching coordinates from device...");
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = Number(pos.coords.latitude);
+      const lon = Number(pos.coords.longitude);
+      pendingFetchedCoord = { lat, lon };
+
+      const latEl = document.getElementById("manLat");
+      const lonEl = document.getElementById("manLon");
+      if (latEl) latEl.value = lat.toFixed(6);
+      if (lonEl) lonEl.value = lon.toFixed(6);
+      if (addBtn) addBtn.disabled = false;
+
+      showMsg("Coordinates fetched. Tap 'Add Controller Coordinate'");
+    },
+    err => {
+      pendingFetchedCoord = null;
+      if (addBtn) addBtn.disabled = true;
+      showMsg("Location fetch failed: " + (err.message || "Permission denied"), true);
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+}
+
+async function addControllerCoordinate() {
+  const latVal = Number(pendingFetchedCoord?.lat ?? document.getElementById("manLat")?.value);
+  const lonVal = Number(pendingFetchedCoord?.lon ?? document.getElementById("manLon")?.value);
+
+  if (Number.isNaN(latVal) || Number.isNaN(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
+    showMsg("Tap 'Get Coordinates' first", true);
+    return;
+  }
+
+  const resolvedPlace =
+    (await reverseGeocodePlace(latVal, lonVal)) ||
+    `${latVal.toFixed(4)}, ${lonVal.toFixed(4)}`;
+
+  localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify({
+    lat: latVal,
+    lon: lonVal,
+    place: resolvedPlace
+  }));
+
+  cachedGeo = {
+    source: "controller_coord",
+    lat: latVal,
+    lon: lonVal,
+    place: resolvedPlace
+  };
+  lastWeatherFetchAt = 0;
+
+  renderSavedCoordSummary();
+  await updateAreaWeather(true);
+  showMsg("Controller coordinate added: " + resolvedPlace);
+}
+
+function clearControllerCoordinate() {
+  localStorage.removeItem(CONTROLLER_COORD_KEY);
+  pendingFetchedCoord = null;
+  const latEl = document.getElementById("manLat");
+  const lonEl = document.getElementById("manLon");
+  const addBtn = document.getElementById("addCoordBtn");
+  if (latEl) latEl.value = "";
+  if (lonEl) lonEl.value = "";
+  if (addBtn) addBtn.disabled = true;
+
+  cachedGeo = null;
+  lastWeatherFetchAt = 0;
+  renderSavedCoordSummary();
+  updateAreaWeather(true);
+  showMsg("Controller coordinate cleared");
+}
 
 function loadInsightLogs() {
   try {
@@ -972,6 +1124,8 @@ function switchTab(btn) {
   if (btn.dataset.tab === "tab-insights") {
     initDefaultDateRangeInputs();
     refreshInsightsGraphs();
+  } else if (btn.dataset.tab === "tab-coord") {
+    renderSavedCoordSummary();
   }
 }
 
@@ -1338,9 +1492,50 @@ async function reverseGeocodePlace(lat, lon) {
       0
     );
     const addr = r && r.address ? r.address : {};
-    const name = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || addr.state_district;
+    const name = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || addr.state_district || addr.state;
     if (name) return String(name).trim();
-  } catch (e) {}
+  } catch (e) {
+    console.warn("Reverse geocode failed:", e);
+  }
+  return null;
+}
+
+async function lookupGeoFromIp(ipStr = "") {
+  const cleanIp = String(ipStr || "").trim();
+  const suffix = cleanIp ? `/${encodeURIComponent(cleanIp)}` : "";
+
+  try {
+    const g = await fetchJsonSafe(`https://ipwho.is${suffix}`, {}, 0);
+    if (g && g.success !== false && g.latitude !== undefined && g.longitude !== undefined) {
+      const lat = Number(g.latitude);
+      const lon = Number(g.longitude);
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        const placeName = g.city || g.region || g.country;
+        if (placeName) {
+          return { ip: cleanIp || g.ip || "", lat, lon, place: String(placeName).trim() };
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("IP lookup (ipwho.is) failed:", e);
+  }
+
+  try {
+    const g2 = await fetchJsonSafe(`https://ipapi.co${suffix || ""}/json/`, {}, 0);
+    if (g2 && g2.latitude !== undefined && g2.longitude !== undefined) {
+      const lat = Number(g2.latitude);
+      const lon = Number(g2.longitude);
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        const placeName = g2.city || g2.region || g2.country_name;
+        if (placeName) {
+          return { ip: cleanIp || g2.ip || "", lat, lon, place: String(placeName).trim() };
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("IP lookup (ipapi.co) failed:", e);
+  }
+
   return null;
 }
 
@@ -1368,62 +1563,43 @@ async function resolveControllerGeo() {
         if (cachedGeo && cachedGeo.lat === lat && cachedGeo.lon === lon && cachedGeo.place) {
           placeName = cachedGeo.place;
         } else {
-          placeName = await reverseGeocodePlace(lat, lon);
+          placeName = (await reverseGeocodePlace(lat, lon)) || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
         }
       }
-      if (placeName) {
-        cachedGeo = { lat, lon, place: placeName };
-        return cachedGeo;
-      }
+      cachedGeo = { lat, lon, place: placeName };
+      return cachedGeo;
     }
   }
 
-  const ctrlIp = latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp;
+  const savedCoord = getSavedControllerCoord();
+  if (savedCoord) {
+    let placeName = savedCoord.place || (explicitPlace ? String(explicitPlace).trim() : "");
+    if (!placeName) {
+      placeName =
+        (await reverseGeocodePlace(savedCoord.lat, savedCoord.lon)) ||
+        `${savedCoord.lat.toFixed(4)}, ${savedCoord.lon.toFixed(4)}`;
+    }
+    cachedGeo = {
+      source: "controller_coord",
+      lat: savedCoord.lat,
+      lon: savedCoord.lon,
+      place: placeName
+    };
+    renderSavedCoordSummary();
+    return cachedGeo;
+  }
+
+  const ctrlIp = latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp || "";
   if (ctrlIp) {
     const cleanIp = String(ctrlIp).trim();
     if (cachedGeo && cachedGeo.ip === cleanIp && cachedGeo.place) {
       return cachedGeo;
     }
-    const encodedIp = encodeURIComponent(cleanIp);
-    try {
-      const g = await fetchJsonSafe(`https://ipwho.is/${encodedIp}`, {}, 0);
-      if (g && g.success !== false && g.latitude !== undefined && g.longitude !== undefined) {
-        const placeName = g.city || g.region || g.country;
-        if (placeName) {
-          cachedGeo = {
-            ip: cleanIp,
-            lat: Number(g.latitude),
-            lon: Number(g.longitude),
-            place: String(placeName).trim()
-          };
-          return cachedGeo;
-        }
-      }
-    } catch (e) {
-      console.warn("Controller IP lookup (ipwho.is) failed:", e);
+    const geoFromCtrlIp = await lookupGeoFromIp(cleanIp);
+    if (geoFromCtrlIp) {
+      cachedGeo = geoFromCtrlIp;
+      return cachedGeo;
     }
-
-    try {
-      const g2 = await fetchJsonSafe(`https://ipapi.co/${encodedIp}/json/`, {}, 0);
-      if (g2 && g2.latitude !== undefined && g2.longitude !== undefined) {
-        const placeName = g2.city || g2.region || g2.country_name;
-        if (placeName) {
-          cachedGeo = {
-            ip: cleanIp,
-            lat: Number(g2.latitude),
-            lon: Number(g2.longitude),
-            place: String(placeName).trim()
-          };
-          return cachedGeo;
-        }
-      }
-    } catch (e) {
-      console.warn("Controller IP lookup (ipapi.co) failed:", e);
-    }
-  }
-
-  if (explicitPlace) {
-    return null;
   }
 
   return null;
@@ -1850,6 +2026,7 @@ window.addEventListener("online", () => {
 bindInputEditGuards();
 initRtcInputs();
 initDefaultDateRangeInputs();
+renderSavedCoordSummary();
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
 fetchSettingsOnce();
