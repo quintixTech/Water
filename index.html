@@ -840,7 +840,6 @@
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
-const CONTROLLER_AREA_GEO = { lat: 22.7506, lon: 88.3426, place: "Serampore" };
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
 const MAX_INSIGHT_LOGS = 500;
 
@@ -1223,9 +1222,9 @@ function refreshInsightsGraphs() {
     document.getElementById("insMoistAvg").innerText = "Avg: --%";
     document.getElementById("insTotalLitres").innerText = "Total: -- L";
     document.getElementById("insWxTag").innerText = "No data";
-    renderEmptyBox("insMoistViz", "Selected date-time range-e kono moisture data pawa jayni.");
-    renderEmptyBox("insWaterViz", "Selected date-time range-e kono water usage data pawa jayni.");
-    renderEmptyBox("insWeatherViz", "Selected date-time range-e kono weather data pawa jayni.");
+    renderEmptyBox("insMoistViz", "No moisture records found in selected date-time range.");
+    renderEmptyBox("insWaterViz", "No water usage records found in selected date-time range.");
+    renderEmptyBox("insWeatherViz", "No weather records found in selected date-time range.");
     return;
   }
 
@@ -1326,7 +1325,7 @@ function renderWeatherNotFound(locText = "📍 Controller offline") {
 
   const adv = document.getElementById("wxAdvice");
   if (adv) {
-    adv.innerText = "Not Found";
+    adv.innerText = isEspAliveNow() ? "Not Found" : "Offline";
     adv.style.color = "#94a3b8";
   }
 }
@@ -1340,22 +1339,27 @@ async function reverseGeocodePlace(lat, lon) {
     );
     const addr = r && r.address ? r.address : {};
     const name = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || addr.state_district;
-    if (name) return String(name);
+    if (name) return String(name).trim();
   } catch (e) {}
   return null;
 }
 
 async function resolveControllerGeo() {
-  if (!isEspAliveNow()) return null;
+  if (!isEspAliveNow() || !latestStatusData) return null;
 
-  const explicitPlace = latestStatusData && (
+  const explicitPlace =
     latestStatusData.city ||
     latestStatusData.area ||
     latestStatusData.locationName ||
-    latestStatusData.place
-  );
+    latestStatusData.place;
 
-  if (latestStatusData && latestStatusData.lat !== undefined && latestStatusData.lon !== undefined) {
+  const hasCoords =
+    latestStatusData.lat !== undefined &&
+    latestStatusData.lat !== null &&
+    latestStatusData.lon !== undefined &&
+    latestStatusData.lon !== null;
+
+  if (hasCoords) {
     const lat = Number(latestStatusData.lat);
     const lon = Number(latestStatusData.lon);
     if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
@@ -1364,38 +1368,36 @@ async function resolveControllerGeo() {
         if (cachedGeo && cachedGeo.lat === lat && cachedGeo.lon === lon && cachedGeo.place) {
           placeName = cachedGeo.place;
         } else {
-          placeName = (await reverseGeocodePlace(lat, lon)) || CONTROLLER_AREA_GEO.place;
+          placeName = await reverseGeocodePlace(lat, lon);
         }
       }
-      cachedGeo = { lat, lon, place: placeName };
-      return cachedGeo;
+      if (placeName) {
+        cachedGeo = { lat, lon, place: placeName };
+        return cachedGeo;
+      }
     }
   }
 
-  if (explicitPlace) {
-    cachedGeo = {
-      lat: CONTROLLER_AREA_GEO.lat,
-      lon: CONTROLLER_AREA_GEO.lon,
-      place: String(explicitPlace).trim()
-    };
-    return cachedGeo;
-  }
-
-  if (cachedGeo && cachedGeo.place) return cachedGeo;
-
-  const ctrlIp = latestStatusData && (latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp);
+  const ctrlIp = latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp;
   if (ctrlIp) {
-    const encodedIp = encodeURIComponent(String(ctrlIp).trim());
+    const cleanIp = String(ctrlIp).trim();
+    if (cachedGeo && cachedGeo.ip === cleanIp && cachedGeo.place) {
+      return cachedGeo;
+    }
+    const encodedIp = encodeURIComponent(cleanIp);
     try {
       const g = await fetchJsonSafe(`https://ipwho.is/${encodedIp}`, {}, 0);
-      if (g && g.success !== false && g.latitude && g.longitude) {
-        const placeName = g.city || g.region || g.country || CONTROLLER_AREA_GEO.place;
-        cachedGeo = {
-          lat: Number(g.latitude),
-          lon: Number(g.longitude),
-          place: String(placeName)
-        };
-        return cachedGeo;
+      if (g && g.success !== false && g.latitude !== undefined && g.longitude !== undefined) {
+        const placeName = g.city || g.region || g.country;
+        if (placeName) {
+          cachedGeo = {
+            ip: cleanIp,
+            lat: Number(g.latitude),
+            lon: Number(g.longitude),
+            place: String(placeName).trim()
+          };
+          return cachedGeo;
+        }
       }
     } catch (e) {
       console.warn("Controller IP lookup (ipwho.is) failed:", e);
@@ -1403,26 +1405,33 @@ async function resolveControllerGeo() {
 
     try {
       const g2 = await fetchJsonSafe(`https://ipapi.co/${encodedIp}/json/`, {}, 0);
-      if (g2 && g2.latitude && g2.longitude) {
-        const placeName = g2.city || g2.region || g2.country_name || CONTROLLER_AREA_GEO.place;
-        cachedGeo = {
-          lat: Number(g2.latitude),
-          lon: Number(g2.longitude),
-          place: String(placeName)
-        };
-        return cachedGeo;
+      if (g2 && g2.latitude !== undefined && g2.longitude !== undefined) {
+        const placeName = g2.city || g2.region || g2.country_name;
+        if (placeName) {
+          cachedGeo = {
+            ip: cleanIp,
+            lat: Number(g2.latitude),
+            lon: Number(g2.longitude),
+            place: String(placeName).trim()
+          };
+          return cachedGeo;
+        }
       }
     } catch (e) {
       console.warn("Controller IP lookup (ipapi.co) failed:", e);
     }
   }
 
-  cachedGeo = { ...CONTROLLER_AREA_GEO };
-  return cachedGeo;
+  if (explicitPlace) {
+    return null;
+  }
+
+  return null;
 }
 
 async function updateAreaWeather(force = false) {
   if (!isEspAliveNow()) {
+    cachedGeo = null;
     renderWeatherNotFound("📍 Controller offline");
     refreshInsightsGraphs();
     return;
@@ -1435,8 +1444,8 @@ async function updateAreaWeather(force = false) {
 
   try {
     const geo = await resolveControllerGeo();
-    if (!geo) {
-      renderWeatherNotFound("📍 Controller offline");
+    if (!geo || !geo.place) {
+      renderWeatherNotFound("📍 Location unavailable");
       refreshInsightsGraphs();
       return;
     }
@@ -1492,7 +1501,7 @@ async function updateAreaWeather(force = false) {
     refreshInsightsGraphs();
   } catch (e) {
     console.warn("updateAreaWeather failed:", e);
-    renderWeatherNotFound("📍 Controller offline");
+    renderWeatherNotFound("📍 Location unavailable");
     refreshInsightsGraphs();
   }
 }
@@ -1753,6 +1762,7 @@ function updateEspLinkState() {
     badge.className = "status-pill offline";
     badge.innerText = "OFFLINE";
     syncTag.innerText = "ESP Offline";
+    cachedGeo = null;
     renderBanner("OFFLINE", false, false, false);
     renderWeatherNotFound("📍 Controller offline");
     refreshInsightsGraphs();
