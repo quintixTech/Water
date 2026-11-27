@@ -1100,30 +1100,52 @@ async function searchMapArea() {
   showMsg("Searching for " + query + "...");
 
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
-    const results = await fetchJsonSafe(url, {}, 1);
-    const best = Array.isArray(results) && results.length > 0 ? results[0] : null;
+    let lat = NaN;
+    let lon = NaN;
+    let shortName = query;
 
-    if (!best || best.lat === undefined || best.lon === undefined) {
-      if (statusEl) statusEl.innerText = "Place not found";
-      showMsg("Area not found. Try another name", true);
-      return;
+    // 1. Primary: ArcGIS World Geocoder (no API key needed)
+    try {
+      const arcUrl = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&SingleLine=${encodeURIComponent(query)}`;
+      const arcRes = await fetchJsonSafe(arcUrl, {}, 1);
+      const cand = arcRes && Array.isArray(arcRes.candidates) && arcRes.candidates.length > 0
+        ? arcRes.candidates[0]
+        : null;
+
+      if (cand && cand.location) {
+        lat = Number(cand.location.y);
+        lon = Number(cand.location.x);
+        if (cand.address) {
+          shortName = String(cand.address).split(",").slice(0, 2).join(", ").trim() || query;
+        }
+      }
+    } catch (e) {
+      console.warn("ArcGIS search fallback to Nominatim:", e);
     }
 
-    const lat = Number(best.lat);
-    const lon = Number(best.lon);
+    // 2. Fallback: Nominatim search
     if (Number.isNaN(lat) || Number.isNaN(lon)) {
-      showMsg("Invalid coordinates received for area", true);
+      const nomUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
+      const results = await fetchJsonSafe(nomUrl, {}, 1);
+      const best = Array.isArray(results) && results.length > 0 ? results[0] : null;
+      if (best && best.lat !== undefined && best.lon !== undefined) {
+        lat = Number(best.lat);
+        lon = Number(best.lon);
+        if (best.display_name) {
+          shortName = String(best.display_name).split(",").slice(0, 2).join(", ").trim() || query;
+        }
+      }
+    }
+
+    if (Number.isNaN(lat) || Number.isNaN(lon)) {
+      if (statusEl) statusEl.innerText = "Place not found";
+      showMsg("Area not found. Try another name", true);
       return;
     }
 
     if (!coordMapInstance) {
       initControllerMap();
     }
-
-    const shortName = best.display_name
-      ? String(best.display_name).split(",").slice(0, 2).join(", ").trim()
-      : query;
 
     applyFetchedCoordToUi(
       lat,
