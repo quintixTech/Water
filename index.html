@@ -207,9 +207,10 @@
     margin-top:1px;
   }
   .wx-loc{
-    font-size:10.5px;
-    color:var(--sub);
-    margin-top:1px;
+    font-size:11px;
+    font-weight:700;
+    color:#e2e8f0;
+    margin-top:2px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -250,7 +251,49 @@
   .wx-svg-float{animation:wxFloat 3.4s ease-in-out infinite}
   .wx-sun-rays{transform-origin:32px 32px;animation:wxSpin 18s linear infinite}
 
-  /* GRAPH STYLE SWITCHER */
+  /* INSIGHTS DATE-TIME FILTER & STYLE SWITCHER */
+  .dt-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:6px;
+  }
+  .dt-box{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .dt-box label{
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--sub);
+  }
+  .dt-input{
+    width:100%;
+    background:#090f1b;
+    border:1px solid #293954;
+    color:#fff;
+    padding:7px 8px;
+    border-radius:10px;
+    font-size:11.5px;
+    font-weight:700;
+  }
+  .dt-input:focus{outline:none;border-color:var(--cyan)}
+  .dt-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:8px;
+  }
+  .mini-btn{
+    width:100%;
+    padding:8px 10px;
+    border-radius:10px;
+    font-size:11.5px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
   .style-bar{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -448,6 +491,17 @@
     display:block;
   }
 
+  .empty-note{
+    padding:14px 10px;
+    text-align:center;
+    font-size:11.5px;
+    color:var(--sub);
+    background:#09101d;
+    border:1px dashed #253856;
+    border-radius:12px;
+    margin-top:6px;
+  }
+
   .legend-row{display:flex;gap:14px;font-size:11px;color:var(--sub);margin-top:8px;flex-wrap:wrap}
   .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
 
@@ -481,6 +535,7 @@
   @media (max-width:520px){
     .wx-main{flex-direction:column;align-items:stretch}
     .wx-metrics{width:100%}
+    .dt-grid{grid-template-columns:1fr}
     .style-bar{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:420px){
@@ -620,8 +675,26 @@
       </div>
     </section>
 
-    <!-- TAB 2: INSIGHTS (BAR / LINE / POINT / CIRCLE) -->
+    <!-- TAB 2: INSIGHTS (DATE-TIME RANGE + BAR / LINE / POINT / CIRCLE) -->
     <section id="tab-insights" class="tab-panel">
+      <div class="card">
+        <div class="sec-title"><span>Date & Time Range</span><span class="chip" id="insRangeInfo">All / Live</span></div>
+        <div class="dt-grid">
+          <div class="dt-box">
+            <label for="insFromDt">From Date & Time</label>
+            <input id="insFromDt" class="dt-input" type="datetime-local">
+          </div>
+          <div class="dt-box">
+            <label for="insToDt">To Date & Time</label>
+            <input id="insToDt" class="dt-input" type="datetime-local">
+          </div>
+        </div>
+        <div class="dt-actions">
+          <button class="mini-btn b-cyan" style="margin:0" onclick="applyDateRangeFilter()">Show Range Insights</button>
+          <button class="mini-btn b-ghost" style="margin:0" onclick="resetDateRangeFilter()">All / Latest</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="sec-title"><span>Graph Style</span><span class="chip" id="activeStyleChip">BAR</span></div>
         <div class="style-bar">
@@ -767,7 +840,9 @@
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
-const CONTROLLER_AREA_GEO = { lat: 22.9868, lon: 88.3736, place: "Controller Area" };
+const CONTROLLER_AREA_GEO = { lat: 22.7506, lon: 88.3426, place: "Serampore" };
+const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
+const MAX_INSIGHT_LOGS = 500;
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
@@ -778,7 +853,88 @@ let latestWeatherMetrics = null;
 let cachedGeo = null;
 let lastWeatherFetchAt = 0;
 let currentGraphStyle = "bar";
+let activeRangeFilter = null;
 const dirtyInputs = new Set();
+
+function loadInsightLogs() {
+  try {
+    const raw = localStorage.getItem(INSIGHT_LOG_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveInsightLogs(logs) {
+  try {
+    localStorage.setItem(INSIGHT_LOG_KEY, JSON.stringify(logs.slice(-MAX_INSIGHT_LOGS)));
+  } catch (e) {}
+}
+
+function recordInsightSnapshot(m1, m2, l1, l2, wx) {
+  if (!isEspAliveNow()) return;
+  const logs = loadInsightLogs();
+  const now = Date.now();
+  const last = logs[logs.length - 1];
+  if (
+    last &&
+    (now - last.ts) < 10000 &&
+    last.m1 === m1 &&
+    last.m2 === m2 &&
+    Number(last.l1).toFixed(2) === Number(l1).toFixed(2) &&
+    Number(last.l2).toFixed(2) === Number(l2).toFixed(2)
+  ) {
+    return;
+  }
+  logs.push({
+    ts: now,
+    m1: Number(m1),
+    m2: Number(m2),
+    l1: Number(l1),
+    l2: Number(l2),
+    wx: wx ? { ...wx } : null
+  });
+  saveInsightLogs(logs);
+}
+
+function toDatetimeLocalValue(ms) {
+  const d = new Date(ms);
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function initDefaultDateRangeInputs() {
+  const fromEl = document.getElementById("insFromDt");
+  const toEl = document.getElementById("insToDt");
+  const now = Date.now();
+  if (fromEl && !fromEl.value) fromEl.value = toDatetimeLocalValue(now - 24 * 3600 * 1000);
+  if (toEl && !toEl.value) toEl.value = toDatetimeLocalValue(now);
+}
+
+function applyDateRangeFilter() {
+  const fromVal = document.getElementById("insFromDt")?.value;
+  const toVal = document.getElementById("insToDt")?.value;
+  if (!fromVal || !toVal) {
+    showMsg("Select both From and To date-time", true);
+    return;
+  }
+  const fromMs = new Date(fromVal).getTime();
+  const toMs = new Date(toVal).getTime() + 59999;
+  if (Number.isNaN(fromMs) || Number.isNaN(toMs) || fromMs > toMs) {
+    showMsg("Invalid date-time range", true);
+    return;
+  }
+  activeRangeFilter = { fromMs, toMs };
+  refreshInsightsGraphs();
+  showMsg("Insights filtered by selected date-time");
+}
+
+function resetDateRangeFilter() {
+  activeRangeFilter = null;
+  refreshInsightsGraphs();
+  showMsg("Showing latest / all logged insights");
+}
 
 function bindInputEditGuards() {
   document.querySelectorAll("input").forEach(inp => {
@@ -815,6 +971,7 @@ function switchTab(btn) {
   btn.classList.add("active");
   document.getElementById(btn.dataset.tab).classList.add("active");
   if (btn.dataset.tab === "tab-insights") {
+    initDefaultDateRangeInputs();
     refreshInsightsGraphs();
   }
 }
@@ -846,6 +1003,11 @@ function colorHex(theme) {
   if (theme === "green") return "#00e676";
   if (theme === "amber") return "#fbbf24";
   return "#00e5ff";
+}
+
+function renderEmptyBox(containerId, text) {
+  const box = document.getElementById(containerId);
+  if (box) box.innerHTML = `<div class="empty-note">${text}</div>`;
 }
 
 function renderMetricSeries(containerId, items, style) {
@@ -1002,32 +1164,91 @@ function renderTargetSeries(style) {
   box.innerHTML = `<div class="svg-multi-wrap"><svg viewBox="0 0 ${w} ${h}">${gridSvg}${lineSvg}${dotsSvg}${xLabelsSvg}</svg></div>`;
 }
 
+function getInsightDatasetForRange() {
+  if (!activeRangeFilter) {
+    document.getElementById("insRangeInfo").innerText = "All / Live";
+    return {
+      empty: false,
+      m1: Math.max(0, Math.min(100, Number(latestStatusData?.m1 ?? 0))),
+      m2: Math.max(0, Math.min(100, Number(latestStatusData?.m2 ?? 0))),
+      l1: Math.max(0, Number(latestStatusData?.l1 ?? 0)),
+      l2: Math.max(0, Number(latestStatusData?.l2 ?? 0)),
+      wx: (latestWeatherMetrics && isEspAliveNow()) ? latestWeatherMetrics : null
+    };
+  }
+
+  const logs = loadInsightLogs().filter(item => item.ts >= activeRangeFilter.fromMs && item.ts <= activeRangeFilter.toMs);
+  document.getElementById("insRangeInfo").innerText = `${logs.length} pts`;
+
+  if (!logs.length) {
+    return { empty: true };
+  }
+
+  const avgM1 = logs.reduce((acc, r) => acc + Number(r.m1 || 0), 0) / logs.length;
+  const avgM2 = logs.reduce((acc, r) => acc + Number(r.m2 || 0), 0) / logs.length;
+  const firstL1 = Number(logs[0].l1 || 0);
+  const lastL1 = Number(logs[logs.length - 1].l1 || 0);
+  const firstL2 = Number(logs[0].l2 || 0);
+  const lastL2 = Number(logs[logs.length - 1].l2 || 0);
+  const deltaL1 = Math.max(0, lastL1 >= firstL1 ? lastL1 - firstL1 : lastL1);
+  const deltaL2 = Math.max(0, lastL2 >= firstL2 ? lastL2 - firstL2 : lastL2);
+
+  const wxLogs = logs.map(r => r.wx).filter(Boolean);
+  let wxAgg = null;
+  if (wxLogs.length) {
+    wxAgg = {
+      temp: Math.round(wxLogs.reduce((a, w) => a + Number(w.temp || 0), 0) / wxLogs.length),
+      hum: Math.round(wxLogs.reduce((a, w) => a + Number(w.hum || 0), 0) / wxLogs.length),
+      wind: Math.round(wxLogs.reduce((a, w) => a + Number(w.wind || 0), 0) / wxLogs.length),
+      precip: Number((wxLogs.reduce((a, w) => a + Number(w.precip || 0), 0) / wxLogs.length).toFixed(1)),
+      label: wxLogs[wxLogs.length - 1].label || "Range Avg"
+    };
+  }
+
+  return {
+    empty: false,
+    m1: Math.max(0, Math.min(100, Math.round(avgM1))),
+    m2: Math.max(0, Math.min(100, Math.round(avgM2))),
+    l1: deltaL1,
+    l2: deltaL2,
+    wx: wxAgg
+  };
+}
+
 function refreshInsightsGraphs() {
-  const m1 = Math.max(0, Math.min(100, Number(latestStatusData?.m1 ?? 0)));
-  const m2 = Math.max(0, Math.min(100, Number(latestStatusData?.m2 ?? 0)));
-  const l1 = Math.max(0, Number(latestStatusData?.l1 ?? 0));
-  const l2 = Math.max(0, Number(latestStatusData?.l2 ?? 0));
+  renderTargetSeries(currentGraphStyle);
+
+  const ds = getInsightDatasetForRange();
+  if (ds.empty) {
+    document.getElementById("insMoistAvg").innerText = "Avg: --%";
+    document.getElementById("insTotalLitres").innerText = "Total: -- L";
+    document.getElementById("insWxTag").innerText = "No data";
+    renderEmptyBox("insMoistViz", "Selected date-time range-e kono moisture data pawa jayni.");
+    renderEmptyBox("insWaterViz", "Selected date-time range-e kono water usage data pawa jayni.");
+    renderEmptyBox("insWeatherViz", "Selected date-time range-e kono weather data pawa jayni.");
+    return;
+  }
+
+  const { m1, m2, l1, l2, wx } = ds;
   const lComb = l1 + l2;
   const maxL = Math.max(10, l1, l2, lComb);
 
   const avgM = Math.round((m1 + m2) / 2);
   document.getElementById("insMoistAvg").innerText = `Avg: ${avgM}%`;
   renderMetricSeries("insMoistViz", [
-    { label: "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
-    { label: "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
+    { label: activeRangeFilter ? "Zone 1 Avg Moisture" : "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
+    { label: activeRangeFilter ? "Zone 2 Avg Moisture" : "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
   ], currentGraphStyle);
 
   document.getElementById("insTotalLitres").innerText = `Total: ${lComb.toFixed(2)} L`;
   renderMetricSeries("insWaterViz", [
-    { label: "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
-    { label: "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
+    { label: activeRangeFilter ? "Zone 1 Range Used" : "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
+    { label: activeRangeFilter ? "Zone 2 Range Used" : "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
     { label: "Combined Flow", valText: `${lComb.toFixed(2)} L`, pct: (lComb / maxL) * 100, theme: "green" }
   ], currentGraphStyle);
 
-  renderTargetSeries(currentGraphStyle);
-
-  if (latestWeatherMetrics && isEspAliveNow()) {
-    const { temp, hum, wind, precip, label } = latestWeatherMetrics;
+  if (wx) {
+    const { temp, hum, wind, precip, label } = wx;
     document.getElementById("insWxTag").innerText = label;
     renderMetricSeries("insWeatherViz", [
       { label: "Temperature (0–50°C)", valText: `${temp}°C`, pct: (temp / 50) * 100, theme: "amber" },
@@ -1110,23 +1331,57 @@ function renderWeatherNotFound(locText = "📍 Controller offline") {
   }
 }
 
+async function reverseGeocodePlace(lat, lon) {
+  try {
+    const r = await fetchJsonSafe(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=12`,
+      {},
+      0
+    );
+    const addr = r && r.address ? r.address : {};
+    const name = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || addr.state_district;
+    if (name) return String(name);
+  } catch (e) {}
+  return null;
+}
+
 async function resolveControllerGeo() {
   if (!isEspAliveNow()) return null;
+
+  const explicitPlace = latestStatusData && (
+    latestStatusData.city ||
+    latestStatusData.area ||
+    latestStatusData.locationName ||
+    latestStatusData.place
+  );
 
   if (latestStatusData && latestStatusData.lat !== undefined && latestStatusData.lon !== undefined) {
     const lat = Number(latestStatusData.lat);
     const lon = Number(latestStatusData.lon);
     if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-      cachedGeo = {
-        lat,
-        lon,
-        place: latestStatusData.city || latestStatusData.area || "Controller Area"
-      };
+      let placeName = explicitPlace ? String(explicitPlace).trim() : null;
+      if (!placeName) {
+        if (cachedGeo && cachedGeo.lat === lat && cachedGeo.lon === lon && cachedGeo.place) {
+          placeName = cachedGeo.place;
+        } else {
+          placeName = (await reverseGeocodePlace(lat, lon)) || CONTROLLER_AREA_GEO.place;
+        }
+      }
+      cachedGeo = { lat, lon, place: placeName };
       return cachedGeo;
     }
   }
 
-  if (cachedGeo) return cachedGeo;
+  if (explicitPlace) {
+    cachedGeo = {
+      lat: CONTROLLER_AREA_GEO.lat,
+      lon: CONTROLLER_AREA_GEO.lon,
+      place: String(explicitPlace).trim()
+    };
+    return cachedGeo;
+  }
+
+  if (cachedGeo && cachedGeo.place) return cachedGeo;
 
   const ctrlIp = latestStatusData && (latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp);
   if (ctrlIp) {
@@ -1134,10 +1389,11 @@ async function resolveControllerGeo() {
     try {
       const g = await fetchJsonSafe(`https://ipwho.is/${encodedIp}`, {}, 0);
       if (g && g.success !== false && g.latitude && g.longitude) {
+        const placeName = g.city || g.region || g.country || CONTROLLER_AREA_GEO.place;
         cachedGeo = {
           lat: Number(g.latitude),
           lon: Number(g.longitude),
-          place: [g.city, g.region].filter(Boolean).join(", ") || g.country || "Controller Area"
+          place: String(placeName)
         };
         return cachedGeo;
       }
@@ -1148,10 +1404,11 @@ async function resolveControllerGeo() {
     try {
       const g2 = await fetchJsonSafe(`https://ipapi.co/${encodedIp}/json/`, {}, 0);
       if (g2 && g2.latitude && g2.longitude) {
+        const placeName = g2.city || g2.region || g2.country_name || CONTROLLER_AREA_GEO.place;
         cachedGeo = {
           lat: Number(g2.latitude),
           lon: Number(g2.longitude),
-          place: [g2.city, g2.region].filter(Boolean).join(", ") || g2.country_name || "Controller Area"
+          place: String(placeName)
         };
         return cachedGeo;
       }
@@ -1160,7 +1417,7 @@ async function resolveControllerGeo() {
     }
   }
 
-  cachedGeo = CONTROLLER_AREA_GEO;
+  cachedGeo = { ...CONTROLLER_AREA_GEO };
   return cachedGeo;
 }
 
@@ -1179,7 +1436,7 @@ async function updateAreaWeather(force = false) {
   try {
     const geo = await resolveControllerGeo();
     if (!geo) {
-      renderWeatherNotFound("📍 Controller area not found");
+      renderWeatherNotFound("📍 Controller offline");
       refreshInsightsGraphs();
       return;
     }
@@ -1200,7 +1457,7 @@ async function updateAreaWeather(force = false) {
     const precip = Number(cur.precipitation ?? 0);
     const vis = getWeatherVisual(Number(cur.weather_code ?? 0), Number(cur.is_day ?? 1));
 
-    latestWeatherMetrics = { temp, hum, wind, precip, label: vis.label };
+    latestWeatherMetrics = { temp, hum, wind, precip, label: vis.label, place: geo.place };
 
     document.getElementById("wxIcon").innerHTML = vis.svg;
     document.getElementById("wxTemp").innerText = `${temp}°C`;
@@ -1222,10 +1479,20 @@ async function updateAreaWeather(force = false) {
       adv.style.color = "#00e676";
     }
 
+    if (latestStatusData) {
+      recordInsightSnapshot(
+        Number(latestStatusData.m1 ?? 0),
+        Number(latestStatusData.m2 ?? 0),
+        Number(latestStatusData.l1 ?? 0),
+        Number(latestStatusData.l2 ?? 0),
+        latestWeatherMetrics
+      );
+    }
+
     refreshInsightsGraphs();
   } catch (e) {
     console.warn("updateAreaWeather failed:", e);
-    renderWeatherNotFound("📍 Controller area");
+    renderWeatherNotFound("📍 Controller offline");
     refreshInsightsGraphs();
   }
 }
@@ -1532,6 +1799,10 @@ async function fetchStatus() {
     document.getElementById("curSsid").innerText = d.staSsid || "Not set";
     document.getElementById("curIp").innerText = d.staIP || "--";
 
+    if (isEspAliveNow()) {
+      recordInsightSnapshot(m1, m2, l1, l2, latestWeatherMetrics);
+    }
+
     populateInputsFromStatus(d);
     refreshInsightsGraphs();
     updateEspLinkState();
@@ -1568,6 +1839,7 @@ window.addEventListener("online", () => {
 
 bindInputEditGuards();
 initRtcInputs();
+initDefaultDateRangeInputs();
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
 fetchSettingsOnce();
