@@ -514,4 +514,550 @@
         <button class="b-cyan ctrl-btn" onclick="saveRtc(false)">Set Date & Time</button>
         <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
       </div>
-    </sectio
+    </section>
+  </div>
+</div>
+
+<script>
+const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
+const ESP_STALE_MS = 15000;
+const WEATHER_REFRESH_MS = 600000; // 10 min
+const FALLBACK_GEO = { lat: 22.9868, lon: 88.3736, place: "Controller Area" };
+
+let settingsLoaded = false;
+let lastSeenMillis = null;
+let lastSeenChangeAt = 0;
+let lastPayloadSig = "";
+let latestStatusData = null;
+let cachedGeo = null;
+let lastWeatherFetchAt = 0;
+const dirtyInputs = new Set();
+
+function bindInputEditGuards() {
+  document.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      if (inp.id) dirtyInputs.add(inp.id);
+    });
+  });
+}
+
+function clearDirtyGroup(ids) {
+  ids.forEach(id => dirtyInputs.delete(id));
+}
+
+function canAutoFill(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return false;
+  if (document.activeElement === el) return false;
+  if (dirtyInputs.has(inputId)) return false;
+  return true;
+}
+
+function setControlsEnabled(enabled) {
+  document.querySelectorAll(".ctrl-btn").forEach(btn => {
+    btn.disabled = !enabled;
+  });
+}
+
+function switchTab(btn) {
+  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(btn.dataset.tab).classList.add("active");
+}
+
+function bandLabel(m) {
+  if (m < 20) return "<20%";
+  if (m < 40) return "20-39%";
+  if (m < 60) return "40-59%";
+  if (m < 80) return "60-79%";
+  return "80-100%";
+}
+
+function getWeatherVisual(code, isDay = 1) {
+  const sunSvg = `<svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+    <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
+    <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
+      <line x1="32" y1="7" x2="32" y2="13"/><line x1="32" y1="51" x2="32" y2="57"/>
+      <line x1="7" y1="32" x2="13" y2="32"/><line x1="51" y1="32" x2="57" y2="32"/>
+      <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/><line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
+      <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/><line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
+    </g></svg>`;
+
+  const moonSvg = `<svg class="wx-svg-float" width="36" height="36" viewBox="0 0 64 64" fill="none">
+    <path d="M40 14a18 18 0 1 0 10 33 15 15 0 0 1-10-33z" fill="#fde68a"/>
+    <circle cx="46" cy="18" r="2" fill="#00e5ff"/><circle cx="51" cy="26" r="1.5" fill="#fff"/>
+  </svg>`;
+
+  const partlyCloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <circle cx="24" cy="24" r="10" fill="${isDay ? "#fbbf24" : "#fde68a"}"/>
+    <path d="M22 46h24a10 10 0 0 0 1.4-19.9A13 13 0 0 0 22.3 29 8.5 8.5 0 0 0 22 46z" fill="#e2e8f0"/>
+  </svg>`;
+
+  const cloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <path d="M18 45h28a11 11 0 0 0 1.5-21.9A14.5 14.5 0 0 0 19.5 26 9.5 9.5 0 0 0 18 45z" fill="#94a3b8"/>
+    <path d="M23 48h24a8 8 0 0 0 1-15.9A10.5 10.5 0 0 0 27.5 34 7 7 0 0 0 23 48z" fill="#cbd5e1"/>
+  </svg>`;
+
+  const rainSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <path d="M18 39h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 21 9 9 0 0 0 18 39z" fill="#cbd5e1"/>
+    <g stroke="#00e5ff" stroke-width="3" stroke-linecap="round">
+      <line x1="23" y1="44" x2="20" y2="52"/>
+      <line x1="33" y1="44" x2="30" y2="52"/>
+      <line x1="43" y1="44" x2="40" y2="52"/>
+    </g>
+  </svg>`;
+
+  const stormSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <path d="M18 38h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 20 9 9 0 0 0 18 38z" fill="#94a3b8"/>
+    <polygon points="33,38 25,49 32,49 29,58 41,45 34,45" fill="#fbbf24"/>
+  </svg>`;
+
+  if (code === 0) return { label: isDay ? "Clear Sky" : "Clear Night", svg: isDay ? sunSvg : moonSvg, rainRisk: false };
+  if (code <= 2) return { label: "Partly Cloudy", svg: partlyCloudSvg, rainRisk: false };
+  if (code === 3) return { label: "Overcast", svg: cloudSvg, rainRisk: false };
+  if (code === 45 || code === 48) return { label: "Fog / Mist", svg: cloudSvg, rainRisk: false };
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { label: "Rain / Showers", svg: rainSvg, rainRisk: true };
+  if (code >= 95) return { label: "Thunderstorm", svg: stormSvg, rainRisk: true };
+  return { label: "Cloudy", svg: cloudSvg, rainRisk: false };
+}
+
+async function resolveControllerGeo() {
+  if (cachedGeo) return cachedGeo;
+
+  if (latestStatusData && latestStatusData.lat !== undefined && latestStatusData.lon !== undefined) {
+    const lat = Number(latestStatusData.lat);
+    const lon = Number(latestStatusData.lon);
+    if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+      cachedGeo = {
+        lat,
+        lon,
+        place: latestStatusData.city || latestStatusData.area || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  }
+
+  const pubIp = latestStatusData && (latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp);
+  const queryIp = pubIp ? `/${encodeURIComponent(pubIp)}` : "";
+
+  try {
+    const g = await fetchJsonSafe(`https://ipwho.is${queryIp}`, {}, 0);
+    if (g && g.success !== false && g.latitude && g.longitude) {
+      cachedGeo = {
+        lat: Number(g.latitude),
+        lon: Number(g.longitude),
+        place: [g.city, g.region].filter(Boolean).join(", ") || g.country || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  } catch (e) {
+    console.warn("ipwho.is failed:", e);
+  }
+
+  try {
+    const g2 = await fetchJsonSafe(`https://ipapi.co${queryIp}/json/`, {}, 0);
+    if (g2 && g2.latitude && g2.longitude) {
+      cachedGeo = {
+        lat: Number(g2.latitude),
+        lon: Number(g2.longitude),
+        place: [g2.city, g2.region].filter(Boolean).join(", ") || g2.country_name || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  } catch (e) {
+    console.warn("ipapi.co failed:", e);
+  }
+
+  return FALLBACK_GEO;
+}
+
+async function updateAreaWeather(force = false) {
+  const now = Date.now();
+  if (!force && lastWeatherFetchAt > 0 && (now - lastWeatherFetchAt) < WEATHER_REFRESH_MS) return;
+
+  try {
+    const geo = await resolveControllerGeo();
+    if (!geo) {
+      document.getElementById("wxLoc").innerText = "📍 Area unavailable";
+      return;
+    }
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,is_day&timezone=auto`;
+    const w = await fetchJsonSafe(url, {}, 1);
+    if (!w || !w.current) return;
+
+    lastWeatherFetchAt = now;
+    const cur = w.current;
+    const temp = Math.round(Number(cur.temperature_2m ?? 0));
+    const hum = Math.round(Number(cur.relative_humidity_2m ?? 0));
+    const wind = Math.round(Number(cur.wind_speed_10m ?? 0));
+    const precip = Number(cur.precipitation ?? 0);
+    const vis = getWeatherVisual(Number(cur.weather_code ?? 0), Number(cur.is_day ?? 1));
+
+    document.getElementById("wxIcon").innerHTML = vis.svg;
+    document.getElementById("wxTemp").innerText = `${temp}°C`;
+    document.getElementById("wxCond").innerText = vis.label;
+    document.getElementById("wxLoc").innerText = `📍 ${geo.place}`;
+    document.getElementById("wxHum").innerText = `${hum}%`;
+    document.getElementById("wxWind").innerText = `${wind} km/h`;
+    document.getElementById("wxRain").innerText = `${precip.toFixed(1)} mm`;
+
+    const adv = document.getElementById("wxAdvice");
+    if (vis.rainRisk || precip > 0.2) {
+      adv.innerText = "🌧 Rain Alert";
+      adv.style.color = "#00e5ff";
+    } else if (temp >= 34) {
+      adv.innerText = "☀ High Heat";
+      adv.style.color = "#fbbf24";
+    } else {
+      adv.innerText = "✓ Good for Irrigation";
+      adv.style.color = "#00e676";
+    }
+  } catch (e) {
+    console.warn("updateAreaWeather failed:", e);
+    document.getElementById("wxCond").innerText = "Weather unavailable";
+  }
+}
+
+function showMsg(t, isErr=false) {
+  const m = document.getElementById("msg");
+  m.style.color = isErr ? "#ff8a80" : "#00e676";
+  m.innerText = t;
+  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
+}
+
+function confirmStop() {
+  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
+  if (confirm("Stop pump and close active valves now?")) sendCmd("stop");
+}
+
+function confirmReset() {
+  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
+  if (confirm("Reset total water counter (Litres) for both zones?")) sendCmd("resetL");
+}
+
+async function fetchJsonSafe(url, options = {}, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, { cache: "no-store", ...options });
+      if (res.ok) return await res.json();
+      if (res.status >= 500 && i < retries) {
+        await new Promise(r => setTimeout(r, 250 * (i + 1)));
+        continue;
+      }
+      throw new Error("HTTP " + res.status);
+    } catch (err) {
+      if (i === retries) throw err;
+      await new Promise(r => setTimeout(r, 250 * (i + 1)));
+    }
+  }
+}
+
+async function patchSettings(fields) {
+  const payload = { ...fields, updatedAt: Date.now() };
+  return fetchJsonSafe(`${DB_URL}/settings.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }, 2);
+}
+
+async function sendCmd(cmd) {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — command blocked", true);
+    return;
+  }
+  try {
+    await fetchJsonSafe(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cmd)
+    }, 2);
+    showMsg("Command sent: " + cmd.toUpperCase());
+  } catch (e) {
+    showMsg("Cmd failed: " + e.message, true);
+  }
+}
+
+async function saveSettings() {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot apply settings", true);
+    return;
+  }
+  const payload = {
+    s1h: Number(document.getElementById("s1h").value || 0),
+    s1m: Number(document.getElementById("s1m").value || 0),
+    s2h: Number(document.getElementById("s2h").value || 0),
+    s2m: Number(document.getElementById("s2m").value || 0),
+    c1: Number(document.getElementById("c1").value || 7.5),
+    c2: Number(document.getElementById("c2").value || 7.5),
+    z1_0: Number(document.getElementById("z1_0").value || 0),
+    z1_1: Number(document.getElementById("z1_1").value || 0),
+    z1_2: Number(document.getElementById("z1_2").value || 0),
+    z1_3: Number(document.getElementById("z1_3").value || 0),
+    z1_4: Number(document.getElementById("z1_4").value || 0),
+    z2_0: Number(document.getElementById("z2_0").value || 0),
+    z2_1: Number(document.getElementById("z2_1").value || 0),
+    z2_2: Number(document.getElementById("z2_2").value || 0),
+    z2_3: Number(document.getElementById("z2_3").value || 0),
+    z2_4: Number(document.getElementById("z2_4").value || 0)
+  };
+  try {
+    await patchSettings(payload);
+    clearDirtyGroup([
+      "s1h","s1m","s2h","s2m","c1","c2",
+      "z1_0","z1_1","z1_2","z1_3","z1_4",
+      "z2_0","z2_1","z2_2","z2_3","z2_4"
+    ]);
+    showMsg("Settings saved to cloud!");
+  } catch (e) {
+    showMsg("Save failed: " + e.message, true);
+  }
+}
+
+async function saveWifi() {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot save Wi-Fi", true);
+    return;
+  }
+  const ssid = document.getElementById("wifiSsid").value.trim();
+  const pass = document.getElementById("wifiPass").value;
+  if (!ssid) {
+    showMsg("Enter Wi-Fi SSID first", true);
+    return;
+  }
+  try {
+    await patchSettings({ wifiSsid: ssid, wifiPass: pass });
+    clearDirtyGroup(["wifiSsid", "wifiPass"]);
+    showMsg("Wi-Fi saved to cloud!");
+  } catch (e) {
+    showMsg("Wi-Fi save failed: " + e.message, true);
+  }
+}
+
+async function saveRtc(usePhoneNow) {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot sync RTC", true);
+    return;
+  }
+  let y, mo, d, h, mi, s;
+  if (usePhoneNow) {
+    const now = new Date();
+    y = now.getFullYear();
+    mo = now.getMonth() + 1;
+    d = now.getDate();
+    h = now.getHours();
+    mi = now.getMinutes();
+    s = now.getSeconds();
+  } else {
+    y = Number(document.getElementById("rtcY").value || 2026);
+    mo = Number(document.getElementById("rtcMo").value || 1);
+    d = Number(document.getElementById("rtcD").value || 1);
+    h = Number(document.getElementById("rtcH").value || 0);
+    mi = Number(document.getElementById("rtcMi").value || 0);
+    s = Number(document.getElementById("rtcS").value || 0);
+  }
+  try {
+    await patchSettings({
+      setRtc: true,
+      rtcY: y,
+      rtcMo: mo,
+      rtcD: d,
+      rtcH: h,
+      rtcMi: mi,
+      rtcS: s
+    });
+    clearDirtyGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
+    showMsg("RTC time saved to cloud!");
+  } catch (e) {
+    showMsg("RTC save failed: " + e.message, true);
+  }
+}
+
+function initRtcInputs() {
+  const now = new Date();
+  if (canAutoFill("rtcY")) document.getElementById("rtcY").value = now.getFullYear();
+  if (canAutoFill("rtcMo")) document.getElementById("rtcMo").value = now.getMonth() + 1;
+  if (canAutoFill("rtcD")) document.getElementById("rtcD").value = now.getDate();
+  if (canAutoFill("rtcH")) document.getElementById("rtcH").value = now.getHours();
+  if (canAutoFill("rtcMi")) document.getElementById("rtcMi").value = now.getMinutes();
+  if (canAutoFill("rtcS")) document.getElementById("rtcS").value = now.getSeconds();
+}
+
+function populateInputsFromSettings(s) {
+  if (!s) return;
+  if (s.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = s.s1h;
+  if (s.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = s.s1m;
+  if (s.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = s.s2h;
+  if (s.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = s.s2m;
+  if (s.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = s.c1;
+  if (s.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = s.c2;
+  if (s.wifiSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = s.wifiSsid;
+  for (let i = 0; i < 5; i++) {
+    if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i)) document.getElementById("z1_" + i).value = s["z1_" + i];
+    if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i)) document.getElementById("z2_" + i).value = s["z2_" + i];
+  }
+}
+
+function populateInputsFromStatus(d) {
+  if (!d) return;
+  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
+  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
+  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
+  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
+  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
+  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
+  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
+  for (let i = 0; i < 5; i++) {
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
+      document.getElementById("z1_" + i).value = d.z1[i];
+    }
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
+      document.getElementById("z2_" + i).value = d.z2[i];
+    }
+  }
+}
+
+async function fetchSettingsOnce() {
+  if (settingsLoaded) return;
+  try {
+    const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
+    if (s) {
+      populateInputsFromSettings(s);
+      settingsLoaded = true;
+    }
+  } catch (e) {}
+}
+
+function renderBanner(st, dryAlert, watering, espAlive) {
+  const box = document.getElementById("alertBanner");
+  if (!espAlive) { box.style.display = "none"; return; }
+  if (dryAlert || st === "DRY!") {
+    box.className = "banner dry";
+    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
+  } else if (watering || st === "RUN") {
+    box.className = "banner run";
+    box.innerHTML = "<span>💧 Irrigation Running</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
+  } else {
+    box.style.display = "none";
+  }
+}
+
+function isEspAliveNow() {
+  if (lastSeenChangeAt <= 0) return false;
+  return (Date.now() - lastSeenChangeAt) <= ESP_STALE_MS;
+}
+
+function updateEspLinkState() {
+  const dot = document.getElementById("netDot");
+  const badge = document.getElementById("stBadge");
+  const syncTag = document.getElementById("syncAgo");
+  const hbEl = document.getElementById("hbAge");
+  const alive = isEspAliveNow();
+
+  hbEl.innerText = lastSeenChangeAt > 0 ? Math.max(0, Math.floor((Date.now() - lastSeenChangeAt) / 1000)) + "s ago" : "--";
+
+  if (alive) {
+    setControlsEnabled(true);
+    dot.className = "pulse-dot";
+    syncTag.innerText = "ESP Online";
+    const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
+    badge.className = "status-pill";
+    badge.innerText = st === "RDY" ? "ONLINE" : st;
+    badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
+    renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
+  } else {
+    setControlsEnabled(false);
+    dot.className = "pulse-dot off";
+    badge.className = "status-pill offline";
+    badge.innerText = "OFFLINE";
+    syncTag.innerText = "ESP Offline";
+    renderBanner("OFFLINE", false, false, false);
+  }
+}
+
+async function fetchStatus() {
+  try {
+    const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
+    if (!d) return;
+    latestStatusData = d;
+
+    const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
+    if (rawSeen !== undefined && rawSeen !== null) {
+      const incomingSeen = Number(rawSeen);
+      if (incomingSeen !== lastSeenMillis) {
+        lastSeenMillis = incomingSeen;
+        lastSeenChangeAt = Date.now();
+      }
+    } else {
+      const fallbackSig = `${d.time}|${d.status}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`;
+      if (fallbackSig !== lastPayloadSig) {
+        lastPayloadSig = fallbackSig;
+        lastSeenChangeAt = Date.now();
+      }
+    }
+
+    const m1 = Number(d.m1 ?? 0);
+    const m2 = Number(d.m2 ?? 0);
+    const l1 = Number(d.l1 ?? 0);
+    const l2 = Number(d.l2 ?? 0);
+
+    document.getElementById("rtc").innerText = "RTC: " + (d.time || "--/--/---- --:--");
+    document.getElementById("m1").innerText = m1 + "%";
+    document.getElementById("m2").innerText = m2 + "%";
+    document.getElementById("band1").innerText = bandLabel(m1);
+    document.getElementById("band2").innerText = bandLabel(m2);
+    document.getElementById("b1").style.width = Math.max(0, Math.min(100, m1)) + "%";
+    document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
+    document.getElementById("l1").innerText = l1.toFixed(2) + " L";
+    document.getElementById("l2").innerText = l2.toFixed(2) + " L";
+    document.getElementById("wifiState").innerText = d.staSsid || "Not set";
+    document.getElementById("ipState").innerText = d.staIP || "--";
+    document.getElementById("curSsid").innerText = d.staSsid || "Not set";
+    document.getElementById("curIp").innerText = d.staIP || "--";
+
+    populateInputsFromStatus(d);
+    updateEspLinkState();
+    updateAreaWeather(false);
+  } catch (e) {
+    console.warn("fetchStatus failed:", e);
+    updateEspLinkState();
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    fetchSettingsOnce();
+    fetchStatus();
+    updateEspLinkState();
+    updateAreaWeather(false);
+  }
+});
+
+window.addEventListener("focus", () => {
+  fetchSettingsOnce();
+  fetchStatus();
+  updateEspLinkState();
+  updateAreaWeather(false);
+});
+
+window.addEventListener("online", () => {
+  showMsg("Internet reconnected — syncing...");
+  fetchSettingsOnce();
+  fetchStatus();
+  updateEspLinkState();
+  updateAreaWeather(true);
+});
+
+bindInputEditGuards();
+initRtcInputs();
+fetchSettingsOnce();
+setControlsEnabled(false);
+setInterval(updateEspLinkState, 1000);
+setInterval(fetchStatus, 2500);
+fetchStatus();
+updateAreaWeather(true);
+</script>
+</body>
+</html>
