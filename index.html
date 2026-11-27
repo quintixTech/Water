@@ -16,6 +16,7 @@
     --mag:#e879f9;
     --green:#00e676;
     --red:#ff5252;
+    --amber:#fbbf24;
     --text:#f8fafc;
     --sub:#94a3b8;
   }
@@ -133,6 +134,102 @@
   .stat-line{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
   .stat-line b{color:#fff}
 
+  /* WEATHER CARD STYLES */
+  .wx-card{
+    background:linear-gradient(135deg,#11243e 0%,#0f1a2e 55%,#14233b 100%);
+    border:1px solid rgba(0,229,255,.28);
+    position:relative;
+    overflow:hidden;
+  }
+  .wx-card::after{
+    content:"";
+    position:absolute;
+    right:-28px;top:-28px;
+    width:120px;height:120px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(0,229,255,.16) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .wx-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .wx-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+  }
+  .wx-art{
+    width:62px;
+    height:62px;
+    flex-shrink:0;
+    border-radius:16px;
+    background:rgba(9,16,30,.65);
+    border:1px solid rgba(0,229,255,.22);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:inset 0 0 14px rgba(0,229,255,.08);
+  }
+  .wx-temp{
+    font-size:28px;
+    font-weight:900;
+    line-height:1.05;
+    color:#fff;
+  }
+  .wx-desc{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--cyan);
+    margin-top:2px;
+  }
+  .wx-loc{
+    font-size:11px;
+    color:var(--sub);
+    margin-top:2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .wx-metrics{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-top:11px;
+    padding-top:10px;
+    border-top:1px solid rgba(31,47,74,.85);
+  }
+  .wx-pill{
+    background:rgba(9,15,27,.65);
+    border:1px solid #1d2d47;
+    border-radius:11px;
+    padding:7px 8px;
+    text-align:center;
+  }
+  .wx-pill span{
+    display:block;
+    font-size:10px;
+    color:var(--sub);
+    margin-bottom:2px;
+  }
+  .wx-pill b{
+    font-size:12.5px;
+    color:#fff;
+  }
+  @keyframes wxFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-2.5px)}
+  }
+  @keyframes wxSpin{
+    from{transform:rotate(0deg)}
+    to{transform:rotate(360deg)}
+  }
+  .wx-svg-float{animation:wxFloat 3.4s ease-in-out infinite}
+  .wx-sun-rays{transform-origin:32px 32px;animation:wxSpin 18s linear infinite}
+
   .sec-title{font-size:13px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:6px}
   button{border:none;border-radius:12px;padding:11px 12px;font-weight:800;font-size:12.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
   button:active:not(:disabled){transform:scale(.97);opacity:.92}
@@ -164,6 +261,7 @@
     .grid2{grid-template-columns:1fr}
     .side-rail{width:74px;padding:10px 6px}
     .moist-val{font-size:25px}
+    .wx-temp{font-size:24px}
   }
 </style>
 </head>
@@ -219,6 +317,43 @@
 
     <!-- TAB 1: HOME -->
     <section id="tab-home" class="tab-panel active">
+      <!-- LOCAL WEATHER CARD (CONTROLLER AREA) -->
+      <div class="card wx-card">
+        <div class="sec-title" style="margin-bottom:8px">
+          <span>Controller Area Weather</span>
+          <span class="chip" id="wxAdvice">Detecting area...</span>
+        </div>
+        <div class="wx-top">
+          <div class="wx-left">
+            <div class="wx-art" id="wxIcon">
+              <svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
+                <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
+                  <line x1="32" y1="7" x2="32" y2="13"/>
+                  <line x1="32" y1="51" x2="32" y2="57"/>
+                  <line x1="7" y1="32" x2="13" y2="32"/>
+                  <line x1="51" y1="32" x2="57" y2="32"/>
+                  <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/>
+                  <line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
+                  <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/>
+                  <line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
+                </g>
+              </svg>
+            </div>
+            <div style="min-width:0">
+              <div class="wx-temp" id="wxTemp">--°C</div>
+              <div class="wx-desc" id="wxCond">Loading weather...</div>
+              <div class="wx-loc" id="wxLoc">📍 Detecting controller location...</div>
+            </div>
+          </div>
+        </div>
+        <div class="wx-metrics">
+          <div class="wx-pill"><span>Humidity</span><b id="wxHum">--%</b></div>
+          <div class="wx-pill"><span>Wind</span><b id="wxWind">-- km/h</b></div>
+          <div class="wx-pill"><span>Rain / Precip</span><b id="wxRain">-- mm</b></div>
+        </div>
+      </div>
+
       <div class="grid2">
         <div class="card z1" style="margin:0">
           <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
@@ -365,12 +500,15 @@
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const ESP_STALE_MS = 15000;
+const WEATHER_REFRESH_MS = 600000; // 10 min
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
 let lastPayloadSig = "";
 let latestStatusData = null;
+let cachedGeo = null;
+let lastWeatherFetchAt = 0;
 const dirtyInputs = new Set();
 
 function bindInputEditGuards() {
@@ -412,6 +550,132 @@ function bandLabel(m) {
   if (m < 60) return "40-59%";
   if (m < 80) return "60-79%";
   return "80-100%";
+}
+
+function getWeatherVisual(code, isDay = 1) {
+  const sunSvg = `<svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+    <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
+    <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
+      <line x1="32" y1="7" x2="32" y2="13"/><line x1="32" y1="51" x2="32" y2="57"/>
+      <line x1="7" y1="32" x2="13" y2="32"/><line x1="51" y1="32" x2="57" y2="32"/>
+      <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/><line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
+      <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/><line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
+    </g></svg>`;
+
+  const moonSvg = `<svg class="wx-svg-float" width="46" height="46" viewBox="0 0 64 64" fill="none">
+    <path d="M40 14a18 18 0 1 0 10 33 15 15 0 0 1-10-33z" fill="#fde68a"/>
+    <circle cx="46" cy="18" r="2" fill="#00e5ff"/><circle cx="51" cy="26" r="1.5" fill="#fff"/>
+  </svg>`;
+
+  const partlyCloudSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
+    <circle cx="24" cy="24" r="10" fill="${isDay ? "#fbbf24" : "#fde68a"}"/>
+    <path d="M22 46h24a10 10 0 0 0 1.4-19.9A13 13 0 0 0 22.3 29 8.5 8.5 0 0 0 22 46z" fill="#e2e8f0"/>
+  </svg>`;
+
+  const cloudSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
+    <path d="M18 45h28a11 11 0 0 0 1.5-21.9A14.5 14.5 0 0 0 19.5 26 9.5 9.5 0 0 0 18 45z" fill="#94a3b8"/>
+    <path d="M23 48h24a8 8 0 0 0 1-15.9A10.5 10.5 0 0 0 27.5 34 7 7 0 0 0 23 48z" fill="#cbd5e1"/>
+  </svg>`;
+
+  const rainSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
+    <path d="M18 39h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 21 9 9 0 0 0 18 39z" fill="#cbd5e1"/>
+    <g stroke="#00e5ff" stroke-width="3" stroke-linecap="round">
+      <line x1="23" y1="44" x2="20" y2="52"/>
+      <line x1="33" y1="44" x2="30" y2="52"/>
+      <line x1="43" y1="44" x2="40" y2="52"/>
+    </g>
+  </svg>`;
+
+  const stormSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
+    <path d="M18 38h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 20 9 9 0 0 0 18 38z" fill="#94a3b8"/>
+    <polygon points="33,38 25,49 32,49 29,58 41,45 34,45" fill="#fbbf24"/>
+  </svg>`;
+
+  if (code === 0) return { label: isDay ? "Clear Sky" : "Clear Night", svg: isDay ? sunSvg : moonSvg, rainRisk: false };
+  if (code <= 2) return { label: "Partly Cloudy", svg: partlyCloudSvg, rainRisk: false };
+  if (code === 3) return { label: "Overcast", svg: cloudSvg, rainRisk: false };
+  if (code === 45 || code === 48) return { label: "Fog / Mist", svg: cloudSvg, rainRisk: false };
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { label: "Rain / Showers", svg: rainSvg, rainRisk: true };
+  if (code >= 95) return { label: "Thunderstorm", svg: stormSvg, rainRisk: true };
+  return { label: "Cloudy", svg: cloudSvg, rainRisk: false };
+}
+
+async function resolveControllerGeo() {
+  if (cachedGeo) return cachedGeo;
+  const pubIp = latestStatusData && (latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp);
+  const queryIp = pubIp ? `/${encodeURIComponent(pubIp)}` : "";
+  try {
+    const g = await fetchJsonSafe(`https://ipwho.is${queryIp}`, {}, 1);
+    if (g && g.success !== false && g.latitude && g.longitude) {
+      cachedGeo = {
+        lat: Number(g.latitude),
+        lon: Number(g.longitude),
+        place: [g.city, g.region].filter(Boolean).join(", ") || g.country || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  } catch (e) {}
+
+  try {
+    const g2 = await fetchJsonSafe(`https://ipapi.co${queryIp}/json/`, {}, 1);
+    if (g2 && g2.latitude && g2.longitude) {
+      cachedGeo = {
+        lat: Number(g2.latitude),
+        lon: Number(g2.longitude),
+        place: [g2.city, g2.region].filter(Boolean).join(", ") || g2.country_name || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  } catch (e) {}
+
+  return null;
+}
+
+async function updateAreaWeather(force = false) {
+  const now = Date.now();
+  if (!force && lastWeatherFetchAt > 0 && (now - lastWeatherFetchAt) < WEATHER_REFRESH_MS) return;
+
+  try {
+    const geo = await resolveControllerGeo();
+    if (!geo) {
+      document.getElementById("wxLoc").innerText = "📍 Area unavailable";
+      return;
+    }
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,is_day&timezone=auto`;
+    const w = await fetchJsonSafe(url, {}, 1);
+    if (!w || !w.current) return;
+
+    lastWeatherFetchAt = now;
+    const cur = w.current;
+    const temp = Math.round(Number(cur.temperature_2m ?? 0));
+    const hum = Math.round(Number(cur.relative_humidity_2m ?? 0));
+    const wind = Math.round(Number(cur.wind_speed_10m ?? 0));
+    const precip = Number(cur.precipitation ?? 0);
+    const vis = getWeatherVisual(Number(cur.weather_code ?? 0), Number(cur.is_day ?? 1));
+
+    document.getElementById("wxIcon").innerHTML = vis.svg;
+    document.getElementById("wxTemp").innerText = `${temp}°C`;
+    document.getElementById("wxCond").innerText = vis.label;
+    document.getElementById("wxLoc").innerText = `📍 ${geo.place}`;
+    document.getElementById("wxHum").innerText = `${hum}%`;
+    document.getElementById("wxWind").innerText = `${wind} km/h`;
+    document.getElementById("wxRain").innerText = `${precip.toFixed(1)} mm`;
+
+    const adv = document.getElementById("wxAdvice");
+    if (vis.rainRisk || precip > 0.2) {
+      adv.innerText = "🌧 Rain Alert";
+      adv.style.color = "#00e5ff";
+    } else if (temp >= 34) {
+      adv.innerText = "☀ High Heat";
+      adv.style.color = "#fbbf24";
+    } else {
+      adv.innerText = "✓ Good for Irrigation";
+      adv.style.color = "#00e676";
+    }
+  } catch (e) {
+    document.getElementById("wxCond").innerText = "Weather unavailable";
+  }
 }
 
 function showMsg(t, isErr=false) {
@@ -713,6 +977,7 @@ async function fetchStatus() {
 
     populateInputsFromStatus(d);
     updateEspLinkState();
+    updateAreaWeather(false);
   } catch (e) {
     updateEspLinkState();
   }
@@ -723,6 +988,7 @@ document.addEventListener("visibilitychange", () => {
     fetchSettingsOnce();
     fetchStatus();
     updateEspLinkState();
+    updateAreaWeather(false);
   }
 });
 
@@ -737,6 +1003,7 @@ window.addEventListener("online", () => {
   fetchSettingsOnce();
   fetchStatus();
   updateEspLinkState();
+  updateAreaWeather(true);
 });
 
 bindInputEditGuards();
@@ -746,6 +1013,7 @@ setControlsEnabled(false);
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
 fetchStatus();
+updateAreaWeather(true);
 </script>
 </body>
 </html>
