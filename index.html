@@ -93,6 +93,8 @@
     flex:1;
     min-width:0;
     padding:12px;
+    display:flex;
+    flex-direction:column;
   }
 
   .appbar{
@@ -528,6 +530,42 @@
   .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
   .info-list b{color:#fff}
 
+  .lock-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:12px;
+    background:#09101d;
+    border:1px solid #1e2f4b;
+  }
+  .lock-status{
+    font-size:11px;
+    font-weight:800;
+    color:var(--sub);
+  }
+  .lock-status.locked{
+    color:var(--amber);
+  }
+  .lock-toggle-btn{
+    width:auto;
+    padding:7px 12px;
+    border-radius:10px;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+    background:var(--card2);
+    color:#fff;
+    border:1px solid var(--line);
+  }
+  .lock-toggle-btn.is-locked{
+    background:rgba(251,191,36,.15);
+    color:var(--amber);
+    border-color:rgba(251,191,36,.45);
+  }
+
   .map-search-row{
     display:grid;
     grid-template-columns:1fr auto;
@@ -591,6 +629,20 @@
     background:#101827;
     color:#f8fafc;
     border:1px solid #293954;
+  }
+
+  .app-footer{
+    text-align:center;
+    font-size:9.5px;
+    line-height:1.4;
+    color:var(--sub);
+    opacity:.65;
+    padding:10px 6px 6px;
+    margin-top:auto;
+  }
+  .app-footer b{
+    color:#cbd5e1;
+    font-weight:700;
   }
 
   @media (max-width:520px){
@@ -863,7 +915,7 @@
           <div>Coordinate Source: <b id="coordSourceText">--</b></div>
         </div>
         <div class="grid2" style="margin:8px 0">
-          <button type="button" class="b-ghost" style="margin:0" onclick="getDeviceCoordinates()">Get Coordinates</button>
+          <button type="button" class="b-ghost" style="margin:0" id="getCoordBtn" onclick="getDeviceCoordinates()">Get Coordinates</button>
           <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()">Add Controller Coordinate</button>
         </div>
         <div class="dt-grid">
@@ -876,7 +928,12 @@
             <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon (e.g. 88.3426)">
           </div>
         </div>
-        <button type="button" class="b-ghost" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
+        <button type="button" class="b-ghost" id="clearCoordBtn" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
+
+        <div class="lock-bar">
+          <span class="lock-status" id="coordLockStatus">🔓 Unlocked (Editable)</span>
+          <button type="button" class="lock-toggle-btn" id="coordLockBtn" onclick="toggleCoordLock()">🔒 Lock Pin</button>
+        </div>
 
         <div class="map-search-row">
           <input id="mapSearchInput" class="dt-input" type="text" placeholder="Search area, village, town or road..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapArea();}">
@@ -939,6 +996,10 @@
         <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
       </div>
     </section>
+
+    <footer class="app-footer">
+      app development by <b>Abishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
+    </footer>
   </div>
 </div>
 
@@ -948,6 +1009,7 @@ const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
 const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
+const CONTROLLER_LOCK_KEY = "quantix_coord_locked_v1";
 const MAX_INSIGHT_LOGS = 500;
 
 let settingsLoaded = false;
@@ -968,6 +1030,7 @@ let coordStreetLayer = null;
 let coordSatelliteLayer = null;
 let coordLabelsLayer = null;
 let currentMapMode = "street";
+let isCoordLocked = localStorage.getItem(CONTROLLER_LOCK_KEY) === "1";
 const dirtyInputs = new Set();
 
 function getSavedControllerCoord() {
@@ -987,6 +1050,53 @@ function getSavedControllerCoord() {
   } catch (e) {
     return null;
   }
+}
+
+function setCoordLockState(locked, showToast = false) {
+  isCoordLocked = Boolean(locked);
+  try {
+    localStorage.setItem(CONTROLLER_LOCK_KEY, isCoordLocked ? "1" : "0");
+  } catch (e) {}
+
+  const statusEl = document.getElementById("coordLockStatus");
+  const btnEl = document.getElementById("coordLockBtn");
+  const latEl = document.getElementById("manLat");
+  const lonEl = document.getElementById("manLon");
+  const searchInp = document.getElementById("mapSearchInput");
+  const searchBtn = document.getElementById("mapSearchBtn");
+  const addBtn = document.getElementById("addCoordBtn");
+  const clrBtn = document.getElementById("clearCoordBtn");
+  const getBtn = document.getElementById("getCoordBtn");
+
+  if (statusEl) {
+    statusEl.innerText = isCoordLocked ? "🔒 Pin Locked (Protected)" : "🔓 Unlocked (Editable)";
+    statusEl.classList.toggle("locked", isCoordLocked);
+  }
+  if (btnEl) {
+    btnEl.innerText = isCoordLocked ? "🔓 Unlock Pin" : "🔒 Lock Pin";
+    btnEl.classList.toggle("is-locked", isCoordLocked);
+  }
+
+  if (latEl) latEl.readOnly = isCoordLocked;
+  if (lonEl) lonEl.readOnly = isCoordLocked;
+  if (searchInp) searchInp.disabled = isCoordLocked;
+  if (searchBtn) searchBtn.disabled = isCoordLocked;
+  if (addBtn) addBtn.disabled = isCoordLocked;
+  if (clrBtn) clrBtn.disabled = isCoordLocked;
+  if (getBtn) getBtn.disabled = isCoordLocked;
+
+  if (showToast) {
+    showMsg(isCoordLocked ? "Controller pin locked" : "Controller pin unlocked for editing");
+  }
+}
+
+function toggleCoordLock() {
+  const saved = getSavedControllerCoord();
+  if (!isCoordLocked && !saved) {
+    showMsg("Save a coordinate first before locking", true);
+    return;
+  }
+  setCoordLockState(!isCoordLocked, true);
 }
 
 function setControllerMapMode(mode) {
@@ -1066,6 +1176,10 @@ function initControllerMap() {
     }
 
     coordMapInstance.on("click", e => {
+      if (isCoordLocked) {
+        showMsg("Pin is locked. Unlock first to move pin", true);
+        return;
+      }
       const clickedLat = Number(e.latlng.lat);
       const clickedLon = Number(e.latlng.lng);
       applyFetchedCoordToUi(
@@ -1085,6 +1199,11 @@ function initControllerMap() {
 }
 
 async function searchMapArea() {
+  if (isCoordLocked) {
+    showMsg("Pin is locked. Unlock first to search & change area", true);
+    return;
+  }
+
   const inputEl = document.getElementById("mapSearchInput");
   const btnEl = document.getElementById("mapSearchBtn");
   const statusEl = document.getElementById("mapTileStatus");
@@ -1293,13 +1412,18 @@ function applyFetchedCoordToUi(lat, lon, methodName, noteText) {
     lonEl.value = nLon.toFixed(6);
     dirtyInputs.add("manLon");
   }
-  if (addBtn) addBtn.disabled = false;
+  if (addBtn && !isCoordLocked) addBtn.disabled = false;
 
   syncControllerMapPin(nLat, nLon, "Fetched Coordinate");
   showMsg(noteText || "Coordinates ready. Tap 'Add Controller Coordinate'");
 }
 
 function getDeviceCoordinates() {
+  if (isCoordLocked) {
+    showMsg("Pin is locked. Unlock first to fetch new coordinates", true);
+    return;
+  }
+
   showMsg("Fetching coordinates from app...");
 
   const tryIpFallback = async () => {
@@ -1351,6 +1475,11 @@ function getDeviceCoordinates() {
 }
 
 async function addControllerCoordinate() {
+  if (isCoordLocked) {
+    showMsg("Pin is locked. Unlock first to update coordinate", true);
+    return;
+  }
+
   const rawLat = document.getElementById("manLat")?.value?.trim();
   const rawLon = document.getElementById("manLon")?.value?.trim();
 
@@ -1391,11 +1520,17 @@ async function addControllerCoordinate() {
   lastWeatherFetchAt = 0;
 
   renderSavedCoordSummary();
+  setCoordLockState(true, false);
   await updateAreaWeather(true);
-  showMsg("Controller coordinate added: " + resolvedPlace);
+  showMsg("Controller coordinate added & locked: " + resolvedPlace);
 }
 
 function clearControllerCoordinate() {
+  if (isCoordLocked) {
+    showMsg("Pin is locked. Unlock first to clear coordinate", true);
+    return;
+  }
+
   localStorage.removeItem(CONTROLLER_COORD_KEY);
   pendingFetchedCoord = null;
   const latEl = document.getElementById("manLat");
@@ -1412,6 +1547,7 @@ function clearControllerCoordinate() {
   cachedGeo = null;
   lastWeatherFetchAt = 0;
   renderSavedCoordSummary();
+  setCoordLockState(false, false);
   updateAreaWeather(true);
   showMsg("Controller coordinate cleared");
 }
@@ -1503,7 +1639,7 @@ function bindInputEditGuards() {
       if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
         refreshInsightsGraphs();
       }
-      if (inp.id === "manLat" || inp.id === "manLon") {
+      if (!isCoordLocked && (inp.id === "manLat" || inp.id === "manLon")) {
         const vLat = Number(document.getElementById("manLat")?.value);
         const vLon = Number(document.getElementById("manLon")?.value);
         if (!Number.isNaN(vLat) && !Number.isNaN(vLon)) {
@@ -1542,6 +1678,7 @@ function switchTab(btn) {
     refreshInsightsGraphs();
   } else if (btn.dataset.tab === "tab-coord") {
     renderSavedCoordSummary();
+    setCoordLockState(isCoordLocked, false);
     initControllerMap();
   }
 }
@@ -2447,6 +2584,7 @@ bindInputEditGuards();
 initRtcInputs();
 initDefaultDateRangeInputs();
 renderSavedCoordSummary();
+setCoordLockState(isCoordLocked, false);
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
 fetchSettingsOnce();
