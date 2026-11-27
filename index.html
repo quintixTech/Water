@@ -528,14 +528,35 @@
   .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
   .info-list b{color:#fff}
 
+  .map-toolbar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:10px;
+  }
+  .map-mode-btn{
+    padding:8px 10px;
+    border-radius:10px;
+    background:var(--card2);
+    color:var(--sub);
+    border:1px solid var(--line);
+    font-size:11.5px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .map-mode-btn.active{
+    background:rgba(0,229,255,.15);
+    color:var(--cyan);
+    border-color:var(--cyan);
+  }
   .map-box{
     width:100%;
-    height:215px;
+    height:255px;
     border-radius:14px;
     overflow:hidden;
     border:1px solid #243856;
     background:#09101d;
-    margin-top:10px;
+    margin-top:8px;
     position:relative;
   }
   .map-caption{
@@ -840,10 +861,14 @@
         </div>
         <button type="button" class="b-ghost" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
 
+        <div class="map-toolbar">
+          <button type="button" class="map-mode-btn active" id="btnMapStreet" onclick="setControllerMapMode('street')">🗺 Map View</button>
+          <button type="button" class="map-mode-btn" id="btnMapSat" onclick="setControllerMapMode('satellite')">🛰 Satellite View</button>
+        </div>
         <div id="coordMap" class="map-box"></div>
         <div class="map-caption">
           <span>Controller Pin: <b id="mapCoordLabel">Not set</b></span>
-          <span id="mapTileStatus">Ready</span>
+          <span id="mapTileStatus">Tap map to pick</span>
         </div>
       </div>
     </section>
@@ -917,6 +942,9 @@ let activeRangeFilter = null;
 let coordMapInstance = null;
 let coordMapMarker = null;
 let coordMapCircle = null;
+let coordStreetLayer = null;
+let coordSatelliteLayer = null;
+let currentMapMode = "street";
 const dirtyInputs = new Set();
 
 function getSavedControllerCoord() {
@@ -938,6 +966,22 @@ function getSavedControllerCoord() {
   }
 }
 
+function setControllerMapMode(mode) {
+  currentMapMode = mode === "satellite" ? "satellite" : "street";
+  document.getElementById("btnMapStreet")?.classList.toggle("active", currentMapMode === "street");
+  document.getElementById("btnMapSat")?.classList.toggle("active", currentMapMode === "satellite");
+
+  if (!coordMapInstance || !coordStreetLayer || !coordSatelliteLayer) return;
+
+  if (currentMapMode === "satellite") {
+    if (coordMapInstance.hasLayer(coordStreetLayer)) coordMapInstance.removeLayer(coordStreetLayer);
+    if (!coordMapInstance.hasLayer(coordSatelliteLayer)) coordSatelliteLayer.addTo(coordMapInstance);
+  } else {
+    if (coordMapInstance.hasLayer(coordSatelliteLayer)) coordMapInstance.removeLayer(coordSatelliteLayer);
+    if (!coordMapInstance.hasLayer(coordStreetLayer)) coordStreetLayer.addTo(coordMapInstance);
+  }
+}
+
 function initControllerMap() {
   const mapEl = document.getElementById("coordMap");
   const statusEl = document.getElementById("mapTileStatus");
@@ -950,9 +994,9 @@ function initControllerMap() {
 
   if (!coordMapInstance) {
     const saved = getSavedControllerCoord();
-    const startLat = saved ? saved.lat : 22.7506;
-    const startLon = saved ? saved.lon : 88.3426;
-    const startZoom = saved ? 15 : 6;
+    const startLat = saved ? saved.lat : 26.7271;
+    const startLon = saved ? saved.lon : 88.3953;
+    const startZoom = saved ? 16 : 13;
 
     coordMapInstance = L.map("coordMap", {
       center: [startLat, startLon],
@@ -961,18 +1005,42 @@ function initControllerMap() {
       attributionControl: false
     });
 
-    const tileLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    coordStreetLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19
     });
 
-    tileLayer.on("tileerror", () => {
-      if (statusEl) statusEl.innerText = "Map tiles unavailable";
-    });
-    tileLayer.on("load", () => {
-      if (statusEl) statusEl.innerText = "Live Map";
+    coordSatelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19
     });
 
-    tileLayer.addTo(coordMapInstance);
+    const attachTileEvents = layer => {
+      layer.on("tileerror", () => {
+        if (statusEl) statusEl.innerText = "Tile load issue";
+      });
+      layer.on("load", () => {
+        if (statusEl) statusEl.innerText = "Tap map or save pin";
+      });
+    };
+
+    attachTileEvents(coordStreetLayer);
+    attachTileEvents(coordSatelliteLayer);
+
+    if (currentMapMode === "satellite") {
+      coordSatelliteLayer.addTo(coordMapInstance);
+    } else {
+      coordStreetLayer.addTo(coordMapInstance);
+    }
+
+    coordMapInstance.on("click", e => {
+      const clickedLat = Number(e.latlng.lat);
+      const clickedLon = Number(e.latlng.lng);
+      applyFetchedCoordToUi(
+        clickedLat,
+        clickedLon,
+        "Map Pin Selection",
+        "Map point selected. Tap 'Add Controller Coordinate' to save"
+      );
+    });
   }
 
   setTimeout(() => {
