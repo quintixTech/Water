@@ -528,11 +528,28 @@
   .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
   .info-list b{color:#fff}
 
+  .map-search-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:8px;
+    margin-top:10px;
+  }
+  .map-search-btn{
+    width:auto;
+    padding:8px 14px;
+    border-radius:10px;
+    background:var(--cyan);
+    color:#04151c;
+    font-size:11.5px;
+    font-weight:800;
+    cursor:pointer;
+    white-space:nowrap;
+  }
   .map-toolbar{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    margin-top:10px;
+    margin-top:8px;
   }
   .map-mode-btn{
     padding:8px 10px;
@@ -861,6 +878,11 @@
         </div>
         <button type="button" class="b-ghost" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
 
+        <div class="map-search-row">
+          <input id="mapSearchInput" class="dt-input" type="text" placeholder="Search area, village, town or road..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapArea();}">
+          <button type="button" class="map-search-btn" id="mapSearchBtn" onclick="searchMapArea()">🔍 Search</button>
+        </div>
+
         <div class="map-toolbar">
           <button type="button" class="map-mode-btn active" id="btnMapStreet" onclick="setControllerMapMode('street')">🗺 Map View</button>
           <button type="button" class="map-mode-btn" id="btnMapSat" onclick="setControllerMapMode('satellite')">🛰 Satellite View</button>
@@ -944,6 +966,7 @@ let coordMapMarker = null;
 let coordMapCircle = null;
 let coordStreetLayer = null;
 let coordSatelliteLayer = null;
+let coordLabelsLayer = null;
 let currentMapMode = "street";
 const dirtyInputs = new Set();
 
@@ -971,13 +994,15 @@ function setControllerMapMode(mode) {
   document.getElementById("btnMapStreet")?.classList.toggle("active", currentMapMode === "street");
   document.getElementById("btnMapSat")?.classList.toggle("active", currentMapMode === "satellite");
 
-  if (!coordMapInstance || !coordStreetLayer || !coordSatelliteLayer) return;
+  if (!coordMapInstance || !coordStreetLayer || !coordSatelliteLayer || !coordLabelsLayer) return;
 
   if (currentMapMode === "satellite") {
     if (coordMapInstance.hasLayer(coordStreetLayer)) coordMapInstance.removeLayer(coordStreetLayer);
     if (!coordMapInstance.hasLayer(coordSatelliteLayer)) coordSatelliteLayer.addTo(coordMapInstance);
+    if (!coordMapInstance.hasLayer(coordLabelsLayer)) coordLabelsLayer.addTo(coordMapInstance);
   } else {
     if (coordMapInstance.hasLayer(coordSatelliteLayer)) coordMapInstance.removeLayer(coordSatelliteLayer);
+    if (coordMapInstance.hasLayer(coordLabelsLayer)) coordMapInstance.removeLayer(coordLabelsLayer);
     if (!coordMapInstance.hasLayer(coordStreetLayer)) coordStreetLayer.addTo(coordMapInstance);
   }
 }
@@ -994,9 +1019,9 @@ function initControllerMap() {
 
   if (!coordMapInstance) {
     const saved = getSavedControllerCoord();
-    const startLat = saved ? saved.lat : 26.7271;
-    const startLon = saved ? saved.lon : 88.3953;
-    const startZoom = saved ? 16 : 13;
+    const startLat = saved ? saved.lat : 26.51667;
+    const startLon = saved ? saved.lon : 88.73333;
+    const startZoom = saved ? 16 : 14;
 
     coordMapInstance = L.map("coordMap", {
       center: [startLat, startLon],
@@ -1005,13 +1030,20 @@ function initControllerMap() {
       attributionControl: false
     });
 
-    coordStreetLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19
-    });
+    coordStreetLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19 }
+    );
 
-    coordSatelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 19
-    });
+    coordSatelliteLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19 }
+    );
+
+    coordLabelsLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19 }
+    );
 
     const attachTileEvents = layer => {
       layer.on("tileerror", () => {
@@ -1024,9 +1056,11 @@ function initControllerMap() {
 
     attachTileEvents(coordStreetLayer);
     attachTileEvents(coordSatelliteLayer);
+    attachTileEvents(coordLabelsLayer);
 
     if (currentMapMode === "satellite") {
       coordSatelliteLayer.addTo(coordMapInstance);
+      coordLabelsLayer.addTo(coordMapInstance);
     } else {
       coordStreetLayer.addTo(coordMapInstance);
     }
@@ -1048,6 +1082,69 @@ function initControllerMap() {
   }, 120);
 
   syncControllerMapPin();
+}
+
+async function searchMapArea() {
+  const inputEl = document.getElementById("mapSearchInput");
+  const btnEl = document.getElementById("mapSearchBtn");
+  const statusEl = document.getElementById("mapTileStatus");
+  const query = inputEl ? inputEl.value.trim() : "";
+
+  if (!query) {
+    showMsg("Enter an area or place name to search", true);
+    return;
+  }
+
+  if (btnEl) btnEl.disabled = true;
+  if (statusEl) statusEl.innerText = "Searching area...";
+  showMsg("Searching for " + query + "...");
+
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
+    const results = await fetchJsonSafe(url, {}, 1);
+    const best = Array.isArray(results) && results.length > 0 ? results[0] : null;
+
+    if (!best || best.lat === undefined || best.lon === undefined) {
+      if (statusEl) statusEl.innerText = "Place not found";
+      showMsg("Area not found. Try another name", true);
+      return;
+    }
+
+    const lat = Number(best.lat);
+    const lon = Number(best.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) {
+      showMsg("Invalid coordinates received for area", true);
+      return;
+    }
+
+    if (!coordMapInstance) {
+      initControllerMap();
+    }
+
+    const shortName = best.display_name
+      ? String(best.display_name).split(",").slice(0, 2).join(", ").trim()
+      : query;
+
+    applyFetchedCoordToUi(
+      lat,
+      lon,
+      "Area Search",
+      `Found: ${shortName}. Tap 'Add Controller Coordinate' to save`
+    );
+
+    if (coordMapInstance) {
+      coordMapInstance.setView([lat, lon], 15, { animate: true });
+      syncControllerMapPin(lat, lon, shortName);
+    }
+
+    if (statusEl) statusEl.innerText = shortName;
+  } catch (e) {
+    console.warn("searchMapArea failed:", e);
+    if (statusEl) statusEl.innerText = "Search error";
+    showMsg("Area search failed. Check internet and try again", true);
+  } finally {
+    if (btnEl) btnEl.disabled = false;
+  }
 }
 
 function syncControllerMapPin(overrideLat = null, overrideLon = null, overrideTitle = null) {
