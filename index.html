@@ -126,6 +126,47 @@
   .tab-panel.active{display:block}
   @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
+  .page-lock-strip{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    margin-bottom:10px;
+    border-radius:14px;
+    background:#0c1424;
+    border:1px solid #1e2f4b;
+  }
+  .page-lock-label{
+    font-size:11px;
+    font-weight:800;
+    color:var(--sub);
+  }
+  .page-lock-label.locked{
+    color:var(--amber);
+  }
+  .page-lock-btn{
+    width:auto;
+    padding:6px 11px;
+    border-radius:10px;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+    background:var(--card2);
+    color:#e2e8f0;
+    border:1px solid var(--line);
+  }
+  .page-lock-btn.locked{
+    background:rgba(251,191,36,.16);
+    color:var(--amber);
+    border-color:rgba(251,191,36,.5);
+  }
+  .tab-panel.page-locked .page-body{
+    opacity:.62;
+    pointer-events:none;
+    user-select:none;
+  }
+
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   .card{background:var(--card);border-radius:16px;padding:13px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .z1{border-top:3px solid var(--cyan)}.z2{border-top:3px solid var(--mag)}
@@ -753,247 +794,295 @@
     <div class="toast" id="msg"></div>
 
     <!-- TAB 1: HOME -->
-    <section id="tab-home" class="tab-panel active">
-      <div class="grid2">
-        <div class="card z1" style="margin:0">
-          <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
-          <div class="moist-val" id="m1">--%</div>
-          <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
-          <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
-        </div>
-        <div class="card z2" style="margin:0">
-          <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
-          <div class="moist-val" id="m2">--%</div>
-          <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
-          <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
-        </div>
+    <section id="tab-home" class="tab-panel active" data-page-name="Home">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-home">🔓 Home Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-home" onclick="togglePageLock('tab-home')">🔒 Lock Page</button>
       </div>
-
-      <div class="card">
-        <div class="sec-title"><span>Quick Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
-        <div class="grid2" style="margin:0">
-          <button class="b-green ctrl-btn" onclick="sendCmd('start')">START BOTH</button>
-          <button class="b-red ctrl-btn" onclick="confirmStop()">STOP ALL</button>
+      <div class="page-body">
+        <div class="grid2">
+          <div class="card z1" style="margin:0">
+            <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+            <div class="moist-val" id="m1">--%</div>
+            <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
+            <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
+          </div>
+          <div class="card z2" style="margin:0">
+            <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+            <div class="moist-val" id="m2">--%</div>
+            <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
+            <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
+          </div>
         </div>
-        <div class="grid2" style="margin-top:8px;margin-bottom:0">
-          <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
-          <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="sec-title">Controller Telemetry</div>
-        <div class="info-list">
-          <div>Wi-Fi Router: <b id="wifiState">--</b></div>
-          <div>Local IP: <b id="ipState">--</b></div>
-          <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
+        <div class="card">
+          <div class="sec-title"><span>Quick Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
+          <div class="grid2" style="margin:0">
+            <button class="b-green ctrl-btn" onclick="sendCmd('start')">START BOTH</button>
+            <button class="b-red ctrl-btn" onclick="confirmStop()">STOP ALL</button>
+          </div>
+          <div class="grid2" style="margin-top:8px;margin-bottom:0">
+            <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
+            <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="sec-title">Controller Telemetry</div>
+          <div class="info-list">
+            <div>Wi-Fi Router: <b id="wifiState">--</b></div>
+            <div>Local IP: <b id="ipState">--</b></div>
+            <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- TAB 2: INSIGHTS -->
-    <section id="tab-insights" class="tab-panel">
-      <div class="card">
-        <div class="sec-title"><span>Date & Time Range</span><span class="chip" id="insRangeInfo">All / Live</span></div>
-        <div class="dt-grid">
-          <div class="dt-box">
-            <label for="insFromDt">From Date & Time</label>
-            <input id="insFromDt" class="dt-input" type="datetime-local">
+    <section id="tab-insights" class="tab-panel" data-page-name="Insights">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-insights">🔓 Insights Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-insights" onclick="togglePageLock('tab-insights')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title"><span>Date & Time Range</span><span class="chip" id="insRangeInfo">All / Live</span></div>
+          <div class="dt-grid">
+            <div class="dt-box">
+              <label for="insFromDt">From Date & Time</label>
+              <input id="insFromDt" class="dt-input" type="datetime-local">
+            </div>
+            <div class="dt-box">
+              <label for="insToDt">To Date & Time</label>
+              <input id="insToDt" class="dt-input" type="datetime-local">
+            </div>
           </div>
-          <div class="dt-box">
-            <label for="insToDt">To Date & Time</label>
-            <input id="insToDt" class="dt-input" type="datetime-local">
+          <div class="dt-actions">
+            <button class="mini-btn b-cyan" style="margin:0" onclick="applyDateRangeFilter()">Show Range Insights</button>
+            <button class="mini-btn b-ghost" style="margin:0" onclick="resetDateRangeFilter()">All / Latest</button>
           </div>
         </div>
-        <div class="dt-actions">
-          <button class="mini-btn b-cyan" style="margin:0" onclick="applyDateRangeFilter()">Show Range Insights</button>
-          <button class="mini-btn b-ghost" style="margin:0" onclick="resetDateRangeFilter()">All / Latest</button>
+
+        <div class="card">
+          <div class="sec-title"><span>Graph Style</span><span class="chip" id="activeStyleChip">BAR</span></div>
+          <div class="style-bar">
+            <button class="style-btn active" data-gstyle="bar" onclick="setGraphStyle('bar')">📊 Bar</button>
+            <button class="style-btn" data-gstyle="line" onclick="setGraphStyle('line')">📈 Line</button>
+            <button class="style-btn" data-gstyle="point" onclick="setGraphStyle('point')">⚫ Point</button>
+            <button class="style-btn" data-gstyle="circle" onclick="setGraphStyle('circle')">⭕ Circle</button>
+          </div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="sec-title"><span>Graph Style</span><span class="chip" id="activeStyleChip">BAR</span></div>
-        <div class="style-bar">
-          <button class="style-btn active" data-gstyle="bar" onclick="setGraphStyle('bar')">📊 Bar</button>
-          <button class="style-btn" data-gstyle="line" onclick="setGraphStyle('line')">📈 Line</button>
-          <button class="style-btn" data-gstyle="point" onclick="setGraphStyle('point')">⚫ Point</button>
-          <button class="style-btn" data-gstyle="circle" onclick="setGraphStyle('circle')">⭕ Circle</button>
+        <div class="card">
+          <div class="sec-title"><span>Soil Moisture</span><span class="chip" id="insMoistAvg">Avg: --%</span></div>
+          <div id="insMoistViz"></div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="sec-title"><span>Soil Moisture</span><span class="chip" id="insMoistAvg">Avg: --%</span></div>
-        <div id="insMoistViz"></div>
-      </div>
-
-      <div class="card">
-        <div class="sec-title"><span>Water Usage (Litres)</span><span class="chip" id="insTotalLitres">Total: 0.00 L</span></div>
-        <div id="insWaterViz"></div>
-      </div>
-
-      <div class="card">
-        <div class="sec-title"><span>Moisture Band Targets (ml)</span><span class="chip">Z1 vs Z2</span></div>
-        <div id="insTargetViz"></div>
-        <div class="legend-row">
-          <span><i class="legend-dot" style="background:var(--cyan)"></i>Zone 1 (ml)</span>
-          <span><i class="legend-dot" style="background:var(--mag)"></i>Zone 2 (ml)</span>
+        <div class="card">
+          <div class="sec-title"><span>Water Usage (Litres)</span><span class="chip" id="insTotalLitres">Total: 0.00 L</span></div>
+          <div id="insWaterViz"></div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="sec-title"><span>Area Weather Metrics</span><span class="chip" id="insWxTag">Weather info not found</span></div>
-        <div id="insWeatherViz"></div>
+        <div class="card">
+          <div class="sec-title"><span>Moisture Band Targets (ml)</span><span class="chip">Z1 vs Z2</span></div>
+          <div id="insTargetViz"></div>
+          <div class="legend-row">
+            <span><i class="legend-dot" style="background:var(--cyan)"></i>Zone 1 (ml)</span>
+            <span><i class="legend-dot" style="background:var(--mag)"></i>Zone 2 (ml)</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="sec-title"><span>Area Weather Metrics</span><span class="chip" id="insWxTag">Weather info not found</span></div>
+          <div id="insWeatherViz"></div>
+        </div>
       </div>
     </section>
 
     <!-- TAB 3: CONTROL -->
-    <section id="tab-ctrl" class="tab-panel">
-      <div class="card">
-        <div class="sec-title">Pump & Solenoid Valves</div>
-        <button class="b-green ctrl-btn" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
-        <div class="grid2" style="margin-top:8px">
-          <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">Zone 1 Only</button>
-          <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">Zone 2 Only</button>
+    <section id="tab-ctrl" class="tab-panel" data-page-name="Control">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-ctrl">🔓 Control Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-ctrl" onclick="togglePageLock('tab-ctrl')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title">Pump & Solenoid Valves</div>
+          <button class="b-green ctrl-btn" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
+          <div class="grid2" style="margin-top:8px">
+            <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">Zone 1 Only</button>
+            <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">Zone 2 Only</button>
+          </div>
+          <button class="b-red ctrl-btn" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
+          <button class="b-ghost ctrl-btn" onclick="confirmReset()">Reset Total Litres Counter</button>
         </div>
-        <button class="b-red ctrl-btn" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
-        <button class="b-ghost ctrl-btn" onclick="confirmReset()">Reset Total Litres Counter</button>
       </div>
     </section>
 
     <!-- TAB 4: SCHEDULE -->
-    <section id="tab-sched" class="tab-panel">
-      <div class="card">
-        <div class="sec-title">Daily Irrigation Schedules & Flow</div>
-        <div class="row">
-          <label>Morning Sch 1 (HH:MM)</label>
-          <div>
-            <input id="s1h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
-            <input id="s1m" type="number" min="0" max="59" style="width:54px;text-align:center">
+    <section id="tab-sched" class="tab-panel" data-page-name="Schedule">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-sched">🔓 Schedule Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-sched" onclick="togglePageLock('tab-sched')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title">Daily Irrigation Schedules & Flow</div>
+          <div class="row">
+            <label>Morning Sch 1 (HH:MM)</label>
+            <div>
+              <input id="s1h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
+              <input id="s1m" type="number" min="0" max="59" style="width:54px;text-align:center">
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <label>Evening Sch 2 (HH:MM)</label>
-          <div>
-            <input id="s2h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
-            <input id="s2m" type="number" min="0" max="59" style="width:54px;text-align:center">
+          <div class="row">
+            <label>Evening Sch 2 (HH:MM)</label>
+            <div>
+              <input id="s2h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
+              <input id="s2m" type="number" min="0" max="59" style="width:54px;text-align:center">
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <label>Flow Cal Z1 / Z2</label>
-          <div>
-            <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
-            <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+          <div class="row">
+            <label>Flow Cal Z1 / Z2</label>
+            <div>
+              <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+              <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+            </div>
           </div>
+          <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Schedule & Flow Cal</button>
         </div>
-        <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Schedule & Flow Cal</button>
       </div>
     </section>
 
     <!-- TAB 5: TARGETS -->
-    <section id="tab-cfg" class="tab-panel">
-      <div class="card">
-        <div class="sec-title">Moisture Band Water Targets (ml)</div>
-        <table>
-          <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
-          <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
-          <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
-          <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
-          <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
-          <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
-        </table>
-        <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Moisture Targets</button>
+    <section id="tab-cfg" class="tab-panel" data-page-name="Targets">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-cfg">🔓 Targets Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-cfg" onclick="togglePageLock('tab-cfg')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title">Moisture Band Water Targets (ml)</div>
+          <table>
+            <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
+            <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
+            <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
+            <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
+            <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
+            <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
+          </table>
+          <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Moisture Targets</button>
+        </div>
       </div>
     </section>
 
     <!-- TAB 6: CONTROLLER COORDINATES -->
-    <section id="tab-coord" class="tab-panel">
-      <div class="card">
-        <div class="sec-title"><span>Controller Coordinates</span><span class="chip" id="coordStatusChip">Not Set</span></div>
-        <div class="info-list" style="margin-bottom:8px">
-          <div>Saved Lat / Lon: <b id="savedCoordText">--</b></div>
-          <div>Resolved Place: <b id="savedCoordPlace">--</b></div>
-          <div>Coordinate Source: <b id="coordSourceText">--</b></div>
-        </div>
-        <div class="grid2" style="margin:8px 0">
-          <button type="button" class="b-ghost" style="margin:0" id="getCoordBtn" onclick="getDeviceCoordinates()">Get Coordinates</button>
-          <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()">Add Controller Coordinate</button>
-        </div>
-        <div class="dt-grid">
-          <div class="dt-box">
-            <label for="manLat">Latitude</label>
-            <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat (e.g. 22.7506)">
+    <section id="tab-coord" class="tab-panel" data-page-name="Coords">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-coord">🔓 Coords Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-coord" onclick="togglePageLock('tab-coord')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title"><span>Controller Coordinates</span><span class="chip" id="coordStatusChip">Not Set</span></div>
+          <div class="info-list" style="margin-bottom:8px">
+            <div>Saved Lat / Lon: <b id="savedCoordText">--</b></div>
+            <div>Resolved Place: <b id="savedCoordPlace">--</b></div>
+            <div>Coordinate Source: <b id="coordSourceText">--</b></div>
           </div>
-          <div class="dt-box">
-            <label for="manLon">Longitude</label>
-            <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon (e.g. 88.3426)">
+          <div class="grid2" style="margin:8px 0">
+            <button type="button" class="b-ghost" style="margin:0" id="getCoordBtn" onclick="getDeviceCoordinates()">Get Coordinates</button>
+            <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()">Add Controller Coordinate</button>
           </div>
-        </div>
-        <button type="button" class="b-ghost" id="clearCoordBtn" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
+          <div class="dt-grid">
+            <div class="dt-box">
+              <label for="manLat">Latitude</label>
+              <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat (e.g. 22.7506)">
+            </div>
+            <div class="dt-box">
+              <label for="manLon">Longitude</label>
+              <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon (e.g. 88.3426)">
+            </div>
+          </div>
+          <button type="button" class="b-ghost" id="clearCoordBtn" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
 
-        <div class="lock-bar">
-          <span class="lock-status" id="coordLockStatus">🔓 Unlocked (Editable)</span>
-          <button type="button" class="lock-toggle-btn" id="coordLockBtn" onclick="toggleCoordLock()">🔒 Lock Pin</button>
-        </div>
+          <div class="lock-bar">
+            <span class="lock-status" id="coordLockStatus">🔓 Unlocked (Editable)</span>
+            <button type="button" class="lock-toggle-btn" id="coordLockBtn" onclick="toggleCoordLock()">🔒 Lock Pin</button>
+          </div>
 
-        <div class="map-search-row">
-          <input id="mapSearchInput" class="dt-input" type="text" placeholder="Search area, village, town or road..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapArea();}">
-          <button type="button" class="map-search-btn" id="mapSearchBtn" onclick="searchMapArea()">🔍 Search</button>
-        </div>
+          <div class="map-search-row">
+            <input id="mapSearchInput" class="dt-input" type="text" placeholder="Search area, village, town or road..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapArea();}">
+            <button type="button" class="map-search-btn" id="mapSearchBtn" onclick="searchMapArea()">🔍 Search</button>
+          </div>
 
-        <div class="map-toolbar">
-          <button type="button" class="map-mode-btn active" id="btnMapStreet" onclick="setControllerMapMode('street')">🗺 Map View</button>
-          <button type="button" class="map-mode-btn" id="btnMapSat" onclick="setControllerMapMode('satellite')">🛰 Satellite View</button>
-        </div>
-        <div id="coordMap" class="map-box"></div>
-        <div class="map-caption">
-          <span>Controller Pin: <b id="mapCoordLabel">Not set</b></span>
-          <span id="mapTileStatus">Tap map to pick</span>
+          <div class="map-toolbar">
+            <button type="button" class="map-mode-btn active" id="btnMapStreet" onclick="setControllerMapMode('street')">🗺 Map View</button>
+            <button type="button" class="map-mode-btn" id="btnMapSat" onclick="setControllerMapMode('satellite')">🛰 Satellite View</button>
+          </div>
+          <div id="coordMap" class="map-box"></div>
+          <div class="map-caption">
+            <span>Controller Pin: <b id="mapCoordLabel">Not set</b></span>
+            <span id="mapTileStatus">Tap map to pick</span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- TAB 7: WI-FI SETUP -->
-    <section id="tab-wifi" class="tab-panel">
-      <div class="card">
-        <div class="sec-title">Router Wi-Fi Setup</div>
-        <div class="info-list" style="margin-bottom:8px">
-          <div>Current SSID: <b id="curSsid">--</b></div>
-          <div>Current IP: <b id="curIp">--</b></div>
+    <section id="tab-wifi" class="tab-panel" data-page-name="Wi-Fi">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-wifi">🔓 Wi-Fi Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-wifi" onclick="togglePageLock('tab-wifi')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title">Router Wi-Fi Setup</div>
+          <div class="info-list" style="margin-bottom:8px">
+            <div>Current SSID: <b id="curSsid">--</b></div>
+            <div>Current IP: <b id="curIp">--</b></div>
+          </div>
+          <div class="field-col">
+            <label for="wifiSsid">Wi-Fi User ID / SSID</label>
+            <input id="wifiSsid" class="full" type="text" placeholder="Enter router SSID">
+          </div>
+          <div class="field-col">
+            <label for="wifiPass">Wi-Fi Password</label>
+            <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
+          </div>
+          <button class="b-cyan ctrl-btn" onclick="saveWifi()">Save Wi-Fi Credentials</button>
         </div>
-        <div class="field-col">
-          <label for="wifiSsid">Wi-Fi User ID / SSID</label>
-          <input id="wifiSsid" class="full" type="text" placeholder="Enter router SSID">
-        </div>
-        <div class="field-col">
-          <label for="wifiPass">Wi-Fi Password</label>
-          <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
-        </div>
-        <button class="b-cyan ctrl-btn" onclick="saveWifi()">Save Wi-Fi Credentials</button>
       </div>
     </section>
 
     <!-- TAB 8: RTC DATE & TIME -->
-    <section id="tab-rtc" class="tab-panel">
-      <div class="card">
-        <div class="sec-title">DS3231 Date & Time</div>
-        <div class="row">
-          <label>Date (YYYY/MM/DD)</label>
-          <div>
-            <input id="rtcY" type="number" min="2020" max="2099" style="width:68px;text-align:center"> /
-            <input id="rtcMo" type="number" min="1" max="12" style="width:48px;text-align:center"> /
-            <input id="rtcD" type="number" min="1" max="31" style="width:48px;text-align:center">
+    <section id="tab-rtc" class="tab-panel" data-page-name="RTC">
+      <div class="page-lock-strip">
+        <span class="page-lock-label" id="pageLockLabel_tab-rtc">🔓 RTC Unlocked</span>
+        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-rtc" onclick="togglePageLock('tab-rtc')">🔒 Lock Page</button>
+      </div>
+      <div class="page-body">
+        <div class="card">
+          <div class="sec-title">DS3231 Date & Time</div>
+          <div class="row">
+            <label>Date (YYYY/MM/DD)</label>
+            <div>
+              <input id="rtcY" type="number" min="2020" max="2099" style="width:68px;text-align:center"> /
+              <input id="rtcMo" type="number" min="1" max="12" style="width:48px;text-align:center"> /
+              <input id="rtcD" type="number" min="1" max="31" style="width:48px;text-align:center">
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <label>Time (HH:MM:SS)</label>
-          <div>
-            <input id="rtcH" type="number" min="0" max="23" style="width:48px;text-align:center"> :
-            <input id="rtcMi" type="number" min="0" max="59" style="width:48px;text-align:center"> :
-            <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
+          <div class="row">
+            <label>Time (HH:MM:SS)</label>
+            <div>
+              <input id="rtcH" type="number" min="0" max="23" style="width:48px;text-align:center"> :
+              <input id="rtcMi" type="number" min="0" max="59" style="width:48px;text-align:center"> :
+              <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
+            </div>
           </div>
+          <button class="b-cyan ctrl-btn" onclick="saveRtc(false)">Set Date & Time</button>
+          <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
         </div>
-        <button class="b-cyan ctrl-btn" onclick="saveRtc(false)">Set Date & Time</button>
-        <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date & Time</button>
       </div>
     </section>
 
@@ -1010,6 +1099,7 @@ const WEATHER_REFRESH_MS = 600000; // 10 min
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
 const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
 const CONTROLLER_LOCK_KEY = "quantix_coord_locked_v1";
+const PAGE_LOCKS_KEY = "quantix_page_locks_v1";
 const MAX_INSIGHT_LOGS = 500;
 
 let settingsLoaded = false;
@@ -1031,7 +1121,73 @@ let coordSatelliteLayer = null;
 let coordLabelsLayer = null;
 let currentMapMode = "street";
 let isCoordLocked = localStorage.getItem(CONTROLLER_LOCK_KEY) === "1";
+let pageLocks = loadPageLocks();
 const dirtyInputs = new Set();
+
+function loadPageLocks() {
+  try {
+    const raw = localStorage.getItem(PAGE_LOCKS_KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    return obj && typeof obj === "object" ? obj : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function savePageLocks() {
+  try {
+    localStorage.setItem(PAGE_LOCKS_KEY, JSON.stringify(pageLocks));
+  } catch (e) {}
+}
+
+function isPageLocked(tabId) {
+  return Boolean(pageLocks[tabId]);
+}
+
+function applyPageLockUi(tabId) {
+  const panel = document.getElementById(tabId);
+  if (!panel) return;
+  const locked = isPageLocked(tabId);
+  const pageName = panel.dataset.pageName || "Page";
+  const lbl = document.getElementById("pageLockLabel_" + tabId);
+  const btn = document.getElementById("pageLockBtn_" + tabId);
+
+  panel.classList.toggle("page-locked", locked);
+  if (lbl) {
+    lbl.innerText = locked ? `🔒 ${pageName} Locked` : `🔓 ${pageName} Unlocked`;
+    lbl.classList.toggle("locked", locked);
+  }
+  if (btn) {
+    btn.innerText = locked ? "🔓 Unlock Page" : "🔒 Lock Page";
+    btn.classList.toggle("locked", locked);
+  }
+}
+
+function applyAllPageLocksUi() {
+  document.querySelectorAll(".tab-panel").forEach(p => {
+    if (p.id) applyPageLockUi(p.id);
+  });
+}
+
+function togglePageLock(tabId) {
+  const panel = document.getElementById(tabId);
+  const pageName = panel?.dataset?.pageName || "Page";
+  const nextState = !isPageLocked(tabId);
+  pageLocks[tabId] = nextState;
+  savePageLocks();
+  applyPageLockUi(tabId);
+  showMsg(nextState ? `${pageName} page locked` : `${pageName} page unlocked`);
+}
+
+function guardUnlockedPage(tabId) {
+  if (!tabId) return true;
+  if (isPageLocked(tabId)) {
+    const pageName = document.getElementById(tabId)?.dataset?.pageName || "Page";
+    showMsg(`${pageName} is locked. Unlock page first`, true);
+    return false;
+  }
+  return true;
+}
 
 function getSavedControllerCoord() {
   try {
@@ -1091,6 +1247,7 @@ function setCoordLockState(locked, showToast = false) {
 }
 
 function toggleCoordLock() {
+  if (!guardUnlockedPage("tab-coord")) return;
   const saved = getSavedControllerCoord();
   if (!isCoordLocked && !saved) {
     showMsg("Save a coordinate first before locking", true);
@@ -1100,6 +1257,7 @@ function toggleCoordLock() {
 }
 
 function setControllerMapMode(mode) {
+  if (!guardUnlockedPage("tab-coord")) return;
   currentMapMode = mode === "satellite" ? "satellite" : "street";
   document.getElementById("btnMapStreet")?.classList.toggle("active", currentMapMode === "street");
   document.getElementById("btnMapSat")?.classList.toggle("active", currentMapMode === "satellite");
@@ -1176,6 +1334,7 @@ function initControllerMap() {
     }
 
     coordMapInstance.on("click", e => {
+      if (!guardUnlockedPage("tab-coord")) return;
       if (isCoordLocked) {
         showMsg("Pin is locked. Unlock first to move pin", true);
         return;
@@ -1199,6 +1358,7 @@ function initControllerMap() {
 }
 
 async function searchMapArea() {
+  if (!guardUnlockedPage("tab-coord")) return;
   if (isCoordLocked) {
     showMsg("Pin is locked. Unlock first to search & change area", true);
     return;
@@ -1419,6 +1579,7 @@ function applyFetchedCoordToUi(lat, lon, methodName, noteText) {
 }
 
 function getDeviceCoordinates() {
+  if (!guardUnlockedPage("tab-coord")) return;
   if (isCoordLocked) {
     showMsg("Pin is locked. Unlock first to fetch new coordinates", true);
     return;
@@ -1475,6 +1636,7 @@ function getDeviceCoordinates() {
 }
 
 async function addControllerCoordinate() {
+  if (!guardUnlockedPage("tab-coord")) return;
   if (isCoordLocked) {
     showMsg("Pin is locked. Unlock first to update coordinate", true);
     return;
@@ -1526,6 +1688,7 @@ async function addControllerCoordinate() {
 }
 
 function clearControllerCoordinate() {
+  if (!guardUnlockedPage("tab-coord")) return;
   if (isCoordLocked) {
     showMsg("Pin is locked. Unlock first to clear coordinate", true);
     return;
@@ -1609,6 +1772,7 @@ function initDefaultDateRangeInputs() {
 }
 
 function applyDateRangeFilter() {
+  if (!guardUnlockedPage("tab-insights")) return;
   const fromVal = document.getElementById("insFromDt")?.value;
   const toVal = document.getElementById("insToDt")?.value;
   if (!fromVal || !toVal) {
@@ -1627,6 +1791,7 @@ function applyDateRangeFilter() {
 }
 
 function resetDateRangeFilter() {
+  if (!guardUnlockedPage("tab-insights")) return;
   activeRangeFilter = null;
   refreshInsightsGraphs();
   showMsg("Showing latest / all logged insights");
@@ -1673,6 +1838,7 @@ function switchTab(btn) {
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
   btn.classList.add("active");
   document.getElementById(btn.dataset.tab).classList.add("active");
+  applyAllPageLocksUi();
   if (btn.dataset.tab === "tab-insights") {
     initDefaultDateRangeInputs();
     refreshInsightsGraphs();
@@ -1684,6 +1850,7 @@ function switchTab(btn) {
 }
 
 function setGraphStyle(style) {
+  if (!guardUnlockedPage("tab-insights")) return;
   currentGraphStyle = style;
   document.querySelectorAll(".style-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.gstyle === style);
@@ -2244,11 +2411,14 @@ function showMsg(t, isErr=false) {
 }
 
 function confirmStop() {
+  if (!guardUnlockedPage("tab-ctrl") && document.getElementById("tab-ctrl")?.classList.contains("active")) return;
+  if (!guardUnlockedPage("tab-home") && document.getElementById("tab-home")?.classList.contains("active")) return;
   if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
   if (confirm("Stop pump and close active valves now?")) sendCmd("stop");
 }
 
 function confirmReset() {
+  if (!guardUnlockedPage("tab-ctrl")) return;
   if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
   if (confirm("Reset total water counter (Litres) for both zones?")) sendCmd("resetL");
 }
@@ -2280,6 +2450,8 @@ async function patchSettings(fields) {
 }
 
 async function sendCmd(cmd) {
+  const activeTab = document.querySelector(".tab-panel.active")?.id;
+  if (!guardUnlockedPage(activeTab)) return;
   if (!isEspAliveNow()) {
     showMsg("ESP is OFFLINE — command blocked", true);
     return;
@@ -2297,6 +2469,8 @@ async function sendCmd(cmd) {
 }
 
 async function saveSettings() {
+  const activeTab = document.querySelector(".tab-panel.active")?.id;
+  if (!guardUnlockedPage(activeTab)) return;
   if (!isEspAliveNow()) {
     showMsg("ESP is OFFLINE — cannot apply settings", true);
     return;
@@ -2334,6 +2508,7 @@ async function saveSettings() {
 }
 
 async function saveWifi() {
+  if (!guardUnlockedPage("tab-wifi")) return;
   if (!isEspAliveNow()) {
     showMsg("ESP is OFFLINE — cannot save Wi-Fi", true);
     return;
@@ -2354,6 +2529,7 @@ async function saveWifi() {
 }
 
 async function saveRtc(usePhoneNow) {
+  if (!guardUnlockedPage("tab-rtc")) return;
   if (!isEspAliveNow()) {
     showMsg("ESP is OFFLINE — cannot sync RTC", true);
     return;
@@ -2583,6 +2759,7 @@ window.addEventListener("online", () => {
 bindInputEditGuards();
 initRtcInputs();
 initDefaultDateRangeInputs();
+applyAllPageLocksUi();
 renderSavedCoordSummary();
 setCoordLockState(isCoordLocked, false);
 renderWeatherNotFound("📍 Controller offline");
