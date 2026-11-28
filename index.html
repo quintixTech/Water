@@ -31,6 +31,10 @@
     min-height:100vh;
     padding:10px 10px 24px calc(var(--rail-base) + 10px);
     overflow-x:hidden;
+    transition:background .25s ease;
+  }
+  body.dry-active{
+    background:radial-gradient(circle at 60% -10%,#38111b 0%,var(--bg) 62%);
   }
   .rail-backdrop{
     position:fixed;inset:0;background:rgba(2,6,14,.55);
@@ -154,20 +158,27 @@
   .card{
     background:var(--card);border-radius:14px;padding:12px;
     border:1px solid var(--line);margin-bottom:10px;
-    min-width:0;
+    min-width:0;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+  }
+  .card.dry-alert{
+    background:linear-gradient(160deg,#250d14 0%,var(--card) 70%);
+    border-color:rgba(255,82,82,.7);
+    box-shadow:0 0 0 1px rgba(255,82,82,.25),0 8px 24px rgba(255,82,82,.16);
   }
   .z1{border-top:3px solid var(--cyan)}
   .z2{border-top:3px solid var(--mag)}
+  .card.dry-alert.z1,.card.dry-alert.z2{border-top:3px solid var(--red)}
   .z-head{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:11px;font-weight:800}
   .z1 .z-head{color:var(--cyan)}
   .z2 .z-head{color:var(--mag)}
+  .card.dry-alert .z-head{color:var(--red)}
   .chip{
     font-size:10px;padding:2px 7px;border-radius:999px;
     background:var(--card2);color:var(--sub);border:1px solid var(--line);
     white-space:nowrap;flex-shrink:0;
   }
   .chip.run{color:var(--green);border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.08)}
-  .chip.dry{color:var(--red);border-color:rgba(255,82,82,.4);background:rgba(255,82,82,.1)}
+  .chip.dry{color:#ff8a80;border-color:rgba(255,82,82,.55);background:rgba(255,82,82,.18)}
   .val{font-size:24px;font-weight:900;margin:6px 0}
   .meter{
     height:8px;background:#09101d;border-radius:999px;overflow:hidden;
@@ -177,6 +188,9 @@
     height:100%;width:0%;
     background:linear-gradient(90deg,#00c853,#00e676);
     transition:width .3s ease;
+  }
+  .meter-fill.dry{
+    background:linear-gradient(90deg,#ff1744,#ff5252);
   }
   .stat{display:flex;justify-content:space-between;font-size:11.5px;color:var(--sub)}
   .stat b{color:#fff}
@@ -227,10 +241,65 @@
     font-size:11px;color:var(--sub);background:#09101d;border:1px solid #1b2a44;
     border-radius:12px;padding:10px;line-height:1.5;word-break:break-word;
   }
+
+  /* Theme-matched DRY popup modal */
+  .dry-modal-backdrop{
+    position:fixed;inset:0;background:rgba(4,8,16,.72);
+    z-index:120;display:none;align-items:center;justify-content:center;
+    padding:16px;backdrop-filter:blur(4px);
+  }
+  .dry-modal-backdrop.show{
+    display:flex;
+  }
+  .dry-modal{
+    width:100%;max-width:340px;
+    background:linear-gradient(165deg,#240c13 0%,var(--card) 42%,var(--card2) 100%);
+    border:1px solid rgba(255,82,82,.65);
+    border-top:3px solid var(--red);
+    border-radius:16px;padding:16px;
+    box-shadow:0 16px 40px rgba(0,0,0,.65),0 0 24px rgba(255,82,82,.22);
+    animation:popIn .18s ease;
+  }
+  @keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+  .dry-modal-head{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    margin-bottom:8px;
+  }
+  .dry-modal-title{
+    font-size:14px;font-weight:900;color:#ff8a80;letter-spacing:.3px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .dry-modal-body{
+    font-size:12.5px;color:var(--text);line-height:1.45;margin-bottom:12px;
+  }
+  .dry-modal-sub{
+    font-size:11px;color:var(--sub);margin-top:4px;
+  }
 </style>
 </head>
 <body>
 <div class="rail-backdrop" onclick="setRailOpen(false)"></div>
+
+<!-- DRY WARNING POPUP -->
+<div class="dry-modal-backdrop" id="dryModalBackdrop" onclick="dismissDryPopup()">
+  <div class="dry-modal" onclick="event.stopPropagation()">
+    <div class="dry-modal-head">
+      <div class="dry-modal-title">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ff5252" stroke-width="2.3">
+          <path d="M12 3L2.5 19.5h19L12 3Z" fill="rgba(255,82,82,.18)"/>
+          <path d="M12 9v5M12 17h.01" stroke-linecap="round"/>
+        </svg>
+        <span>DRY ALERT</span>
+      </div>
+      <span class="chip dry" id="dryTimerChip">5s</span>
+    </div>
+    <div class="dry-modal-body" id="dryModalText">
+      Moisture level DRY detected!
+      <div class="dry-modal-sub">Returning to normal state in 5 seconds...</div>
+    </div>
+    <button type="button" class="b-red" onclick="dismissDryPopup()">OK / Dismiss</button>
+  </div>
+</div>
 
 <nav class="side-rail" id="sideRail" aria-label="Page Navigation Rail">
   <div class="rail-top">
@@ -322,13 +391,13 @@
       <span class="chip" id="zonePageChip">LIVE</span>
     </div>
     <div class="grid2">
-      <div class="card z1" style="margin:0">
+      <div class="card z1" id="cardZ1" style="margin:0">
         <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
         <div class="val" id="m1Val">--%</div>
         <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
         <div class="stat"><span>Used</span><b id="l1Val">0.00 L</b></div>
       </div>
-      <div class="card z2" style="margin:0">
+      <div class="card z2" id="cardZ2" style="margin:0">
         <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
         <div class="val" id="m2Val">--%</div>
         <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
@@ -494,6 +563,7 @@
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const STALE_MS = 30000;
+const DRY_HOLD_MS = 5000;
 const SCHED_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
 const BAND_IDS = [
   "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
@@ -509,6 +579,11 @@ let rtcDefaultsFilled = false;
 let msgTimer = null;
 let railOpen = false;
 let activePageId = "pageZones";
+let dryUntil = 0;
+let dryInterval = null;
+let lastDryTriggerAt = 0;
+let audioCtx = null;
+
 const pageUnlocked = {
   schedule: false,
   bands: false,
@@ -522,6 +597,93 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function playWarningBeep() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    const now = audioCtx.currentTime;
+    [0, 0.18].forEach(offset => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(880, now + offset);
+      gain.gain.setValueAtTime(0.08, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.14);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.14);
+    });
+  } catch (e) {}
+}
+
+function clearDryStateToNormal() {
+  dryUntil = 0;
+  if (dryInterval) {
+    clearInterval(dryInterval);
+    dryInterval = null;
+  }
+  document.body.classList.remove("dry-active");
+  document.getElementById("cardZ1")?.classList.remove("dry-alert");
+  document.getElementById("cardZ2")?.classList.remove("dry-alert");
+  document.getElementById("b1Fill")?.classList.remove("dry");
+  document.getElementById("b2Fill")?.classList.remove("dry");
+  document.getElementById("dryModalBackdrop")?.classList.remove("show");
+
+  const modeChip = document.getElementById("modeChip");
+  if (modeChip && modeChip.innerText === "DRY!") {
+    modeChip.innerText = "IDLE";
+    modeChip.className = "chip";
+  }
+}
+
+function dismissDryPopup() {
+  document.getElementById("dryModalBackdrop")?.classList.remove("show");
+}
+
+function triggerDryAlert(reasonText) {
+  const now = Date.now();
+  if (now - lastDryTriggerAt < 5200 && dryUntil > now) return;
+  lastDryTriggerAt = now;
+  dryUntil = now + DRY_HOLD_MS;
+
+  document.body.classList.add("dry-active");
+  document.getElementById("cardZ1")?.classList.add("dry-alert");
+  document.getElementById("cardZ2")?.classList.add("dry-alert");
+  document.getElementById("b1Fill")?.classList.add("dry");
+  document.getElementById("b2Fill")?.classList.add("dry");
+
+  const modeChip = document.getElementById("modeChip");
+  if (modeChip) {
+    modeChip.innerText = "DRY!";
+    modeChip.className = "chip dry";
+  }
+
+  const modalText = document.getElementById("dryModalText");
+  if (modalText) {
+    modalText.innerHTML = `${reasonText}<div class="dry-modal-sub">Returning to normal state in 5 seconds...</div>`;
+  }
+  document.getElementById("dryModalBackdrop")?.classList.add("show");
+  playWarningBeep();
+
+  if (dryInterval) clearInterval(dryInterval);
+  const updateCountdown = () => {
+    const remMs = dryUntil - Date.now();
+    const remSec = Math.max(0, Math.ceil(remMs / 1000));
+    const chip = document.getElementById("dryTimerChip");
+    if (chip) chip.innerText = remSec + "s";
+    if (remMs <= 0) {
+      clearDryStateToNormal();
+    }
+  };
+  updateCountdown();
+  dryInterval = setInterval(updateCountdown, 200);
+}
 
 function applyPageLockState(key) {
   const unlocked = Boolean(pageUnlocked[key]);
@@ -750,11 +912,14 @@ async function fetchStatus() {
     document.getElementById("l1Val").innerText = Number(d.l1 ?? 0).toFixed(2) + " L";
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
 
+    const st = d.status ? String(d.status) : "";
+    const isDry = (st === "DRY!");
     const modeChip = document.getElementById("modeChip");
-    if (d.status) {
-      const st = String(d.status);
+    if (isDry) {
+      triggerDryAlert(`Zone Moisture DRY detected (Z1: ${m1}%, Z2: ${m2}%)`);
+    } else if (st && Date.now() >= dryUntil) {
       modeChip.innerText = st;
-      modeChip.className = "chip" + (st === "DRY!" ? " dry" : (st === "RUN" ? " run" : ""));
+      modeChip.className = "chip" + (st === "RUN" ? " run" : "");
     }
 
     const ssidDisp = d.staSsid || latestSettings.wifiSsid || "None";
