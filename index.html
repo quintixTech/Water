@@ -30,60 +30,69 @@
     background:radial-gradient(circle at top,#2a0912 0%,var(--bg) 62%);
   }
 
+  /* Collapsible Left Drawer Menu */
   .rail-backdrop{
-    position:fixed;inset:0;background:rgba(2,6,14,.58);
+    position:fixed;inset:0;background:rgba(2,6,14,.65);
     z-index:88;display:none;backdrop-filter:blur(2px);
   }
   body.rail-open .rail-backdrop{display:block}
 
   .side-rail{
-    position:fixed;top:0;left:0;bottom:0;width:66px;
-    background:#09101d;border-right:1px solid var(--line);
-    z-index:95;display:flex;flex-direction:column;align-items:center;
-    padding:10px 6px;gap:6px;overflow-y:auto;
-    transition:width .2s ease;
+    position:fixed;top:0;left:0;bottom:0;
+    width:0;
+    background:#09101d;
+    border-right:1px solid transparent;
+    z-index:95;
+    display:flex;flex-direction:column;align-items:stretch;
+    padding:0;gap:6px;
+    overflow-y:auto;overflow-x:hidden;
+    opacity:0;pointer-events:none;
+    transform:translateX(-100%);
+    transition:width .24s cubic-bezier(.22,1,.36,1),
+                transform .24s cubic-bezier(.22,1,.36,1),
+                opacity .18s ease,
+                padding .24s ease;
   }
   body.rail-open .side-rail{
-    width:176px;align-items:stretch;padding:10px;
+    width:192px;
+    padding:10px;
+    border-right-color:var(--line);
+    opacity:1;pointer-events:auto;
+    transform:translateX(0);
   }
+
   .rail-top{
-    display:flex;align-items:center;justify-content:center;gap:8px;
-    padding:4px 2px 8px;border-bottom:1px solid var(--line);margin-bottom:2px;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:4px 4px 10px;border-bottom:1px solid var(--line);margin-bottom:4px;
+    white-space:nowrap;
   }
-  body.rail-open .rail-top{justify-content:flex-start;padding-left:6px}
+  .rail-brand-wrap{display:flex;align-items:center;gap:8px}
   .rail-logo{
-    width:36px;height:36px;border-radius:11px;
-    background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(0,230,118,.12));
-    border:1px solid rgba(0,229,255,.35);
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(0,229,255,.18),rgba(0,230,118,.14));
+    border:1px solid rgba(0,229,255,.4);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
   .rail-brand-txt{
-    display:none;font-size:12px;font-weight:900;letter-spacing:.5px;color:#fff;white-space:nowrap;
+    font-size:12.5px;font-weight:900;letter-spacing:.5px;color:#fff;
   }
   .rail-brand-txt span{color:var(--cyan)}
-  body.rail-open .rail-brand-txt{display:inline}
-
-  .rail-toggle{
-    width:100%;padding:7px 8px;border-radius:10px;
-    background:var(--card);border:1px solid var(--line);color:var(--cyan);
-    display:flex;align-items:center;justify-content:center;gap:6px;
-    font-size:10.5px;font-weight:800;cursor:pointer;margin-bottom:2px;
+  .rail-close-btn{
+    width:28px;height:28px;padding:0;border-radius:8px;
+    background:var(--card);border:1px solid var(--line);color:var(--sub);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
-  body.rail-open .rail-toggle{justify-content:flex-start;padding-left:10px}
-  .rail-toggle span{display:none}
-  body.rail-open .rail-toggle span{display:inline}
+  .rail-close-btn:hover{color:#fff;border-color:var(--cyan)}
 
   .rail-btn{
-    width:100%;padding:8px 4px;border-radius:11px;
+    width:100%;padding:9px 10px;border-radius:11px;
     background:transparent;border:1px solid transparent;
-    color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:3px;
-    font-size:9px;font-weight:800;letter-spacing:.3px;cursor:pointer;
+    color:var(--sub);display:flex;flex-direction:row;align-items:center;justify-content:flex-start;
+    gap:10px;font-size:11px;font-weight:800;letter-spacing:.35px;cursor:pointer;
+    white-space:nowrap;
     transition:background .15s ease,border-color .15s ease,color .15s ease;
   }
-  body.rail-open .rail-btn{
-    flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px;font-size:11px;
-  }
-  .rail-btn svg{width:19px;height:19px;flex-shrink:0;color:var(--ico-col,var(--cyan))}
+  .rail-btn svg{width:18px;height:18px;flex-shrink:0;color:var(--ico-col,var(--cyan))}
   .rail-btn.active{
     background:var(--card2);
     border-color:color-mix(in srgb, var(--ico-col, var(--cyan)) 55%, transparent);
@@ -91,12 +100,19 @@
   }
 
   .wrap{
-    margin-left:66px;
-    max-width:640px;
+    margin-left:0;
+    max-width:660px;
+    margin-right:auto;
     padding:12px 12px 24px;
     min-height:100vh;
     display:flex;
     flex-direction:column;
+    transition:margin-left .24s cubic-bezier(.22,1,.36,1);
+  }
+  @media(min-width:720px){
+    body.rail-open .wrap{
+      margin-left:192px;
+    }
   }
 
   .appbar{
@@ -104,9 +120,16 @@
     background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:10px 12px;margin-bottom:10px;
   }
-  .brand{font-size:15px;font-weight:900;letter-spacing:.5px}
+  .appbar-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .menu-trigger{
+    width:38px;height:38px;padding:0;border-radius:11px;
+    background:var(--card2);border:1px solid var(--line);color:var(--cyan);
+    display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .menu-trigger:hover{border-color:var(--cyan);background:#192844}
+  .brand{font-size:15px;font-weight:900;letter-spacing:.5px;white-space:nowrap}
   .brand span{color:var(--cyan)}
-  .sub{font-size:11px;color:var(--sub);margin-top:2px}
+  .sub{font-size:11px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pill{
     font-size:10.5px;font-weight:800;padding:5px 10px;border-radius:999px;
     background:rgba(255,82,82,.14);color:#ff8a80;border:1px solid rgba(255,82,82,.4);
@@ -153,7 +176,7 @@
   }
   .z1{border-top:3px solid var(--cyan)}
   .z2{border-top:3px solid var(--mag)}
-  .weather-card{border-top:3px solid var(--blue)}
+  .weather-card{border-top:3px solid var(--blue);position:relative;overflow:hidden}
   .card.dry-alert.z1,.card.dry-alert.z2{border-top:3px solid var(--red)}
   .z-head{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:11px;font-weight:800}
   .z1 .z-head{color:var(--cyan)}
@@ -207,16 +230,69 @@
     border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
   }
 
-  .weather-main{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    margin-bottom:8px;
+  /* Weather Card + Animations */
+  .weather-banner{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    background:linear-gradient(135deg,rgba(56,189,248,.11),rgba(14,22,38,.92));
+    border:1px solid rgba(56,189,248,.25);
+    border-radius:12px;padding:10px 12px;margin-bottom:8px;
+    position:relative;overflow:hidden;
   }
+  .weather-main{display:flex;align-items:center;gap:10px;min-width:0}
+  .weather-anim-box{
+    width:68px;height:54px;flex-shrink:0;
+    background:rgba(6,10,18,.55);border:1px solid rgba(56,189,248,.22);
+    border-radius:10px;display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .weather-svg{width:64px;height:52px;display:block}
   .weather-temp{
-    font-size:28px;font-weight:900;color:#fff;line-height:1.1;
+    font-size:26px;font-weight:900;color:#fff;line-height:1.1;
   }
   .weather-cond{
-    font-size:12px;font-weight:800;color:var(--blue);margin-top:2px;
+    font-size:11.5px;font-weight:800;color:var(--blue);margin-top:2px;
   }
+  @keyframes sunSpin{
+    from{transform:rotate(0deg)}
+    to{transform:rotate(360deg)}
+  }
+  @keyframes sunPulse{
+    0%,100%{opacity:.45;transform:scale(.92)}
+    50%{opacity:.95;transform:scale(1.1)}
+  }
+  @keyframes cloudDrift{
+    0%,100%{transform:translateX(-2px)}
+    50%{transform:translateX(3px)}
+  }
+  @keyframes rainDrop{
+    0%{transform:translateY(-4px);opacity:0}
+    25%{opacity:1}
+    100%{transform:translateY(14px);opacity:0}
+  }
+  @keyframes windSweep{
+    0%{stroke-dashoffset:24;opacity:.25}
+    50%{opacity:.95}
+    100%{stroke-dashoffset:-24;opacity:.25}
+  }
+  .w-sun-rays{
+    transform-origin:24px 22px;
+    animation:sunSpin 10s linear infinite;
+  }
+  .w-sun-halo{
+    transform-origin:24px 22px;
+    animation:sunPulse 2.4s ease-in-out infinite;
+  }
+  .w-cloud-float{
+    animation:cloudDrift 3.6s ease-in-out infinite;
+  }
+  .w-rain-1{animation:rainDrop 1.05s linear infinite}
+  .w-rain-2{animation:rainDrop 1.05s linear .35s infinite}
+  .w-rain-3{animation:rainDrop 1.05s linear .7s infinite}
+  .w-wind-line{
+    stroke-dasharray:10 6;
+    animation:windSweep 1.8s linear infinite;
+  }
+
   .weather-meta{
     display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
   }
@@ -456,24 +532,25 @@
   </div>
 </div>
 
-<nav class="side-rail" id="sideRail" aria-label="Page Navigation Rail">
+<!-- COLLAPSIBLE LEFT NAVIGATION DRAWER -->
+<nav class="side-rail" id="sideRail" aria-label="Page Navigation Menu">
   <div class="rail-top">
-    <div class="rail-logo" title="QUANTIX TECH">
-      <svg viewBox="0 0 28 28" width="20" height="20" fill="none">
-        <circle cx="14" cy="14" r="9.5" stroke="#00e5ff" stroke-width="2.2"/>
-        <circle cx="14" cy="14" r="4" stroke="#00e676" stroke-width="1.8"/>
-        <path d="M17.5 17.5L23.5 23.5" stroke="#ffab00" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
+    <div class="rail-brand-wrap">
+      <div class="rail-logo" title="QUANTIX TECH">
+        <svg viewBox="0 0 28 28" width="18" height="18" fill="none">
+          <circle cx="14" cy="14" r="9.5" stroke="#00e5ff" stroke-width="2.2"/>
+          <circle cx="14" cy="14" r="4" stroke="#00e676" stroke-width="1.8"/>
+          <path d="M17.5 17.5L23.5 23.5" stroke="#ffab00" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="rail-brand-txt">QUAN<span>TIX</span></span>
     </div>
-    <span class="rail-brand-txt">QUAN<span>TIX</span></span>
+    <button type="button" class="rail-close-btn" onclick="setRailOpen(false)" title="Collapse Menu">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
   </div>
-
-  <button type="button" class="rail-toggle" id="railToggleBtn" onclick="toggleRailOpen()" title="Expand / Collapse Menu">
-    <svg id="railToggleIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 18l6-6-6-6"/>
-    </svg>
-    <span id="railToggleLabel">Menu</span>
-  </button>
 
   <button type="button" class="rail-btn active" style="--ico-col:#00e5ff" data-page="pageZones" onclick="openPage('pageZones', this)" title="Home Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
@@ -486,7 +563,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
       <polygon points="6 4 20 12 6 20 6 4" fill="rgba(0,230,118,.2)"/>
     </svg>
-    <span>CTRL</span>
+    <span>CONTROL</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#ffab00" data-page="pageSchedule" onclick="openPage('pageSchedule', this)" title="Schedule Page">
@@ -494,14 +571,14 @@
       <circle cx="12" cy="12" r="8.5" fill="rgba(255,171,0,.16)"/>
       <path d="M12 7.5V12l3 2" stroke-linecap="round"/>
     </svg>
-    <span>SCH</span>
+    <span>SCHEDULE</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#e879f9" data-page="pageBands" onclick="openPage('pageBands', this)" title="Moisture ML Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M4 18V11M10 18V7M16 18V13M22 18V4" stroke-linecap="round"/>
     </svg>
-    <span>ML</span>
+    <span>MOISTURE ML</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#2dd4bf" data-page="pageRtc" onclick="openPage('pageRtc', this)" title="RTC Clock Page">
@@ -509,7 +586,7 @@
       <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="rgba(45,212,191,.16)"/>
       <path d="M3.5 9.5H20.5M8 3v4M16 3v4" stroke-linecap="round"/>
     </svg>
-    <span>RTC</span>
+    <span>RTC CLOCK</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#38bdf8" data-page="pageWifi" onclick="openPage('pageWifi', this)" title="Router Wi-Fi Page">
@@ -517,7 +594,7 @@
       <path d="M3.5 9.5a12.5 12.5 0 0 1 17 0M7 13a7.5 7.5 0 0 1 10 0M10.5 16.5a2.5 2.5 0 0 1 3 0" stroke-linecap="round"/>
       <circle cx="12" cy="19.5" r="1.4" fill="currentColor" stroke="none"/>
     </svg>
-    <span>WIFI</span>
+    <span>ROUTER WI-FI</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#34d399" data-page="pageLocation" onclick="openPage('pageLocation', this)" title="Controller Location Page">
@@ -525,7 +602,7 @@
       <path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21Z" fill="rgba(52,211,153,.18)"/>
       <circle cx="12" cy="9.5" r="2.4"/>
     </svg>
-    <span>LOC</span>
+    <span>LOCATION</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#a78bfa" data-page="pageInsight" onclick="openPage('pageInsight', this)" title="Insight Page">
@@ -542,7 +619,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M3 12h4l2.5-6 5 12 2.5-6H21" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span>LOG</span>
+    <span>DIAGNOSTICS</span>
   </button>
 
   <button type="button" class="rail-btn" style="--ico-col:#facc15" data-page="pageAbout" onclick="openPage('pageAbout', this)" title="About & Disclaimer Page">
@@ -556,9 +633,16 @@
 
 <div class="wrap">
   <header class="appbar" id="topBar">
-    <div>
-      <div class="brand">QUAN<span>TIX</span> TECH</div>
-      <div class="sub" id="rtcText">RTC: --/--/---- --:--</div>
+    <div class="appbar-left">
+      <button type="button" class="menu-trigger" id="menuTriggerBtn" onclick="toggleRailOpen()" aria-label="Toggle Menu" title="Toggle Menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+          <path d="M4 6.5h16M4 12h16M4 17.5h16"/>
+        </svg>
+      </button>
+      <div style="min-width:0">
+        <div class="brand">QUAN<span>TIX</span> TECH</div>
+        <div class="sub" id="rtcText">RTC: --/--/---- --:--</div>
+      </div>
     </div>
     <div class="pill" id="linkPill">OFFLINE</div>
   </header>
@@ -577,12 +661,45 @@
         <span style="color:var(--blue)">CONTROLLER WEATHER</span>
         <span class="chip" id="weatherLocChip">NO LON/LAT</span>
       </div>
-      <div class="weather-main">
-        <div>
-          <div class="weather-temp" id="wTempVal">--°C</div>
-          <div class="weather-cond" id="wCondText">Set controller location in LOC menu</div>
+      <div class="weather-banner">
+        <div class="weather-main">
+          <div class="weather-anim-box" id="weatherAnimBox">
+            <svg class="weather-svg" id="weatherAnimSvg" viewBox="0 0 64 52">
+              <!-- Animated Sun + Cloud + Rain/Wind -->
+              <g id="wSunGroup">
+                <circle class="w-sun-halo" cx="22" cy="19" r="13" fill="rgba(255,171,0,.22)"/>
+                <circle cx="22" cy="19" r="7.5" fill="#ffab00"/>
+                <g class="w-sun-rays" stroke="#ffd54f" stroke-width="1.8" stroke-linecap="round">
+                  <line x1="22" y1="7" x2="22" y2="10"/>
+                  <line x1="22" y1="28" x2="22" y2="31"/>
+                  <line x1="10" y1="19" x2="13" y2="19"/>
+                  <line x1="31" y1="19" x2="34" y2="19"/>
+                  <line x1="13.5" y1="10.5" x2="15.6" y2="12.6"/>
+                  <line x1="28.4" y1="25.4" x2="30.5" y2="27.5"/>
+                  <line x1="28.4" y1="10.5" x2="26.3" y2="12.6"/>
+                  <line x1="15.6" y1="25.4" x2="13.5" y2="27.5"/>
+                </g>
+              </g>
+              <g class="w-cloud-float" id="wCloudGroup">
+                <path d="M23 35h22a7.5 7.5 0 0 0 .8-14.96A10 10 0 0 0 26.3 17a7 7 0 0 0-3.3 18Z"
+                      fill="#1e3a5f" stroke="#7dd3fc" stroke-width="1.8" stroke-linejoin="round"/>
+              </g>
+              <g id="wRainGroup" opacity="0">
+                <line class="w-rain-1" x1="28" y1="37" x2="26" y2="44" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                <line class="w-rain-2" x1="36" y1="37" x2="34" y2="44" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                <line class="w-rain-3" x1="44" y1="37" x2="42" y2="44" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+              </g>
+              <g id="wWindGroup" opacity="0.55">
+                <path class="w-wind-line" d="M8 44h20" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <div class="weather-temp" id="wTempVal">--°C</div>
+            <div class="weather-cond" id="wCondText">Set controller location in LOCATION menu</div>
+          </div>
         </div>
-        <div style="text-align:right;font-size:10.5px;color:var(--sub)">
+        <div style="text-align:right;font-size:10.5px;color:var(--sub);flex-shrink:0">
           <div>Lat: <b id="wLatDisp" style="color:#fff">--</b></div>
           <div>Lon: <b id="wLonDisp" style="color:#fff">--</b></div>
         </div>
@@ -856,7 +973,7 @@
         Fetch Location (GPS + Network Fallback)
       </button>
       <div style="font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.45">
-        GPS/Network location na pele IP location diye lon, lat niye sorasori database-e save hoy (locally save hoy na).
+        If GPS/network location is unavailable, IP location is used to save longitude and latitude directly to the database.
       </div>
     </div>
 
@@ -976,9 +1093,9 @@
     </div>
 
     <div class="card" style="border-top:3px solid var(--cyan)">
-      <div class="title"><span>About Quantix Tech</span><span class="chip run">IoT &amp; AUTOMATION</span></div>
+      <div class="title"><span>About Quantix Tech</span><span class="chip run">IOT &amp; AUTOMATION</span></div>
       <p class="about-p">
-        <b>Quantix Tech</b> holo ekta <b>Kolkata-based automation company</b>, ja <b>IoT</b>, <b>embedded system</b>, ebong <b>industrial controller</b> niye kaj kore. Smart monitoring, real-time telemetry, ebong reliable hardware-software integration-er maddhome practical automation solution toiri kora-i Quantix Tech-er mul lokkho.
+        <b>Quantix Tech</b> is a <b>Kolkata-based automation company</b> focused on <b>IoT</b>, <b>embedded systems</b>, and <b>industrial controllers</b>. We build practical hardware and software automation solutions for smart monitoring, real-time telemetry, and reliable control.
       </p>
       <div class="founder-grid">
         <div class="founder-box">
@@ -995,7 +1112,7 @@
     <div class="card" style="border-top:3px solid var(--amber)">
       <div class="title"><span style="color:var(--amber)">Disclaimer</span><span class="chip dry">SAFETY NOTICE</span></div>
       <p class="disc-text">
-        <b>Disclaimer:</b> Ei dashboard ebong connected controller-ti shudhu monitoring o automation assistance-er jonno toiri. Network delay, sensor reading error, power fluctuation, ba dry-run condition-er somoy pump, solenoid valve, ba electrical line-er physical safety nijer dayittwe jaachai kore bebohar korun. Industrial ba high-load khetre proper fuse, relay rating, o emergency cut-off protection bebohar kora batadhhyotamulok; kono porokkho ba protokkho khoti-r jonno Quantix Tech dayi thakbe na.
+        <b>Disclaimer:</b> This dashboard and connected controller are provided for monitoring and automation assistance. Verify physical safety for pumps, solenoid valves, power lines, and dry-run conditions before operation. For industrial or high-load setups, use proper fuses, rated relays, and emergency cut-off protection; Quantix Tech is not liable for indirect or consequential damages.
       </p>
     </div>
   </section>
@@ -1091,6 +1208,25 @@ function weatherCodeToLabel(code) {
   return "Weather Info";
 }
 
+function updateWeatherAnimation(code, rainMm, windKmh) {
+  const c = Number(code);
+  const rainVal = Number(rainMm) || 0;
+  const windVal = Number(windKmh) || 0;
+
+  const sunGroup = document.getElementById("wSunGroup");
+  const cloudGroup = document.getElementById("wCloudGroup");
+  const rainGroup = document.getElementById("wRainGroup");
+  const windGroup = document.getElementById("wWindGroup");
+
+  const isRainy = (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95 || rainVal > 0.1;
+  const isClear = c === 0 && !isRainy;
+
+  if (sunGroup) sunGroup.setAttribute("opacity", isClear || c === 1 || c === 2 ? "1" : "0.35");
+  if (cloudGroup) cloudGroup.setAttribute("opacity", isClear ? "0.25" : "1");
+  if (rainGroup) rainGroup.setAttribute("opacity", isRainy ? "1" : "0");
+  if (windGroup) windGroup.setAttribute("opacity", windVal >= 12 ? "0.95" : "0.45");
+}
+
 function renderLocationDisplay() {
   const hasLoc = Number.isFinite(controllerLocation.lat) && Number.isFinite(controllerLocation.lon);
   const locChip = document.getElementById("locDbChip");
@@ -1163,6 +1299,8 @@ async function fetchWeatherFromCoords(lat, lon, force = false) {
     if (humEl && cur.relative_humidity_2m !== undefined) humEl.textContent = `${Math.round(cur.relative_humidity_2m)}%`;
     if (windEl && cur.wind_speed_10m !== undefined) windEl.textContent = `${Number(cur.wind_speed_10m).toFixed(1)} km/h`;
     if (rainEl && cur.rain !== undefined) rainEl.textContent = `${Number(cur.rain).toFixed(1)} mm`;
+
+    updateWeatherAnimation(cur.weather_code, cur.rain, cur.wind_speed_10m);
   } catch (e) {}
 }
 
@@ -2169,15 +2307,6 @@ function togglePageLock(key) {
 function setRailOpen(open) {
   railOpen = Boolean(open);
   document.body.classList.toggle("rail-open", railOpen);
-  const icon = document.getElementById("railToggleIcon");
-  const lbl = document.getElementById("railToggleLabel");
-  if (railOpen) {
-    icon.innerHTML = '<path d="M15 18l-6-6 6-6"/>';
-    lbl.innerText = "Close";
-  } else {
-    icon.innerHTML = '<path d="M9 18l6-6-6-6"/>';
-    lbl.innerText = "Menu";
-  }
 }
 
 function toggleRailOpen() {
