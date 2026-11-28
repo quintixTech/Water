@@ -1107,6 +1107,7 @@ const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebased
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
 const SETTINGS_WRITE_LOCK_MS = 10000; // 10 sec guard after saving settings
+const SETTINGS_POLL_MS = 3000;
 const MAX_INSIGHT_LOGS = 500;
 
 const STORAGE_KEYS = {
@@ -1116,7 +1117,6 @@ const STORAGE_KEYS = {
   MANUAL_RUN: "quantix_manual_run_v1"
 };
 
-let settingsLoaded = false;
 let lastSettingsWriteAt = 0;
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
@@ -2589,14 +2589,32 @@ function populateInputsFromSettings(s) {
   refreshInsightsGraphs();
 }
 
-async function fetchSettingsOnce(force = false) {
+function populateInputsFromStatus(d) {
+  if (!d || isSettingsWriteCoolingDown()) return;
+  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
+  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
+  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
+  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
+  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
+  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
+  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
+  for (let i = 0; i < 5; i++) {
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
+      document.getElementById("z1_" + i).value = d.z1[i];
+    }
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
+      document.getElementById("z2_" + i).value = d.z2[i];
+    }
+  }
+  refreshInsightsGraphs();
+}
+
+async function pollSettings() {
   if (isSettingsWriteCoolingDown()) return;
-  if (settingsLoaded && !force) return;
   try {
     const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
     if (s && !isSettingsWriteCoolingDown()) {
       populateInputsFromSettings(s);
-      settingsLoaded = true;
     }
   } catch (e) {}
 }
@@ -2702,6 +2720,7 @@ async function fetchStatus() {
     document.getElementById("curSsid").innerText = d.staSsid || "Not set";
     document.getElementById("curIp").innerText = d.staIP || "--";
 
+    populateInputsFromStatus(d);
     if (isEspAliveNow()) {
       recordInsightPoint(m1, m2, l1, l2, latestWeatherData);
     }
@@ -2720,7 +2739,7 @@ document.addEventListener("pointerdown", () => {
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
-    fetchSettingsOnce();
+    pollSettings();
     fetchStatus();
     updateEspLinkState();
     updateAreaWeather(false);
@@ -2731,14 +2750,14 @@ document.addEventListener("visibilitychange", () => {
 });
 
 window.addEventListener("focus", () => {
-  fetchSettingsOnce();
+  pollSettings();
   fetchStatus();
   updateEspLinkState();
 });
 
 window.addEventListener("online", () => {
   showMsg("Internet reconnected — syncing...");
-  fetchSettingsOnce();
+  pollSettings();
   fetchStatus();
   updateEspLinkState();
   updateAreaWeather(true);
@@ -2755,7 +2774,8 @@ setControlsEnabled(false);
 updateRigVisuals();
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
-fetchSettingsOnce();
+setInterval(pollSettings, SETTINGS_POLL_MS);
+pollSettings();
 fetchStatus();
 updateAreaWeather(true);
 </script>
