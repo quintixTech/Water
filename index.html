@@ -1494,7 +1494,7 @@ const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebased
 const CONTROLLER_COORD_CLOUD_PATH = `${DB_URL}/settings/controllerCoord.json`;
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000;
-const SAVE_HOLD_MS = 15000;
+const SAVE_HOLD_MS = 2500;
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
 const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
 const CONTROLLER_LOCK_KEY = "quantix_coord_locked_v1";
@@ -2735,6 +2735,8 @@ function switchTab(btn) {
     renderSavedCoordSummary();
     setCoordLockState(isCoordLocked, false);
     initControllerMap();
+  } else if (btn.dataset.tab === "tab-sched" || btn.dataset.tab === "tab-cfg" || btn.dataset.tab === "tab-wifi" || btn.dataset.tab === "tab-rtc") {
+    forceSyncAllFromCloud();
   }
 }
 
@@ -3377,7 +3379,7 @@ async function saveSettings() {
   const activeTab = document.querySelector(".tab-panel.active")?.id;
   if (!guardUnlockedPage(activeTab)) return;
 
-  const payload = {};
+  const payload = { applySettings: true };
   const mapNum = [
     ["s1h", 0], ["s1m", 0], ["s2h", 0], ["s2m", 0],
     ["c1", 7.5], ["c2", 7.5],
@@ -3396,8 +3398,10 @@ async function saveSettings() {
       "z1_0","z1_1","z1_2","z1_3","z1_4",
       "z2_0","z2_1","z2_2","z2_3","z2_4"
     ]);
+    settingsLoaded = false;
     refreshInsightsGraphs();
-    showMsg(isEspAliveNow() ? "Settings saved to cloud!" : "Settings saved to cloud (ESP offline — will apply on next poll)");
+    await forceSyncAllFromCloud();
+    showMsg(isEspAliveNow() ? "Settings synced to cloud!" : "Saved to cloud (ESP offline — will apply on next poll)");
   } catch (e) {
     showMsg("Save failed: " + e.message, true);
   }
@@ -3412,9 +3416,11 @@ async function saveWifi() {
     return;
   }
   try {
-    await patchSettings({ wifiSsid: ssid, wifiPass: pass });
+    await patchSettings({ wifiSsid: ssid, wifiPass: pass, applyWifi: true });
     markRecentSavedGroup(["wifiSsid", "wifiPass"]);
-    showMsg(isEspAliveNow() ? "Wi-Fi saved to cloud!" : "Wi-Fi saved to cloud (ESP offline — will apply on next poll)");
+    settingsLoaded = false;
+    await forceSyncAllFromCloud();
+    showMsg(isEspAliveNow() ? "Wi-Fi synced to cloud!" : "Wi-Fi saved to cloud (ESP offline — will apply on next poll)");
   } catch (e) {
     showMsg("Wi-Fi save failed: " + e.message, true);
   }
@@ -3456,7 +3462,9 @@ async function saveRtc(usePhoneNow) {
       rtcS: s
     });
     markRecentSavedGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
-    showMsg(isEspAliveNow() ? "RTC time saved to cloud!" : "RTC time saved to cloud (ESP offline — will apply on next poll)");
+    settingsLoaded = false;
+    await forceSyncAllFromCloud();
+    showMsg(isEspAliveNow() ? "RTC synced to cloud!" : "RTC saved to cloud (ESP offline — will apply on next poll)");
   } catch (e) {
     showMsg("RTC save failed: " + e.message, true);
   }
@@ -3542,8 +3550,8 @@ function populateInputsFromStatus(d) {
   }
 }
 
-async function fetchSettingsOnce() {
-  if (settingsLoaded) return;
+async function fetchSettingsOnce(force = false) {
+  if (!force && settingsLoaded) return;
   try {
     const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
     if (s) {
@@ -3551,6 +3559,12 @@ async function fetchSettingsOnce() {
       settingsLoaded = true;
     }
   } catch (e) {}
+}
+
+async function forceSyncAllFromCloud() {
+  await fetchSettingsOnce(true);
+  await syncControllerCoordFromCloud(true);
+  await fetchStatus();
 }
 
 function renderBanner(st, dryAlert, watering, espAlive) {
@@ -3697,7 +3711,7 @@ document.addEventListener("visibilitychange", () => {
     return;
   }
   ensureAudioRunningForBackground();
-  fetchSettingsOnce();
+  fetchSettingsOnce(true);
   syncControllerCoordFromCloud(true);
   fetchStatus();
   updateEspLinkState();
@@ -3709,7 +3723,7 @@ document.addEventListener("visibilitychange", () => {
 
 window.addEventListener("focus", () => {
   ensureAudioRunningForBackground();
-  fetchSettingsOnce();
+  fetchSettingsOnce(true);
   syncControllerCoordFromCloud(true);
   fetchStatus();
   updateEspLinkState();
@@ -3718,7 +3732,7 @@ window.addEventListener("focus", () => {
 
 window.addEventListener("online", () => {
   showMsg("Internet reconnected — syncing...");
-  fetchSettingsOnce();
+  fetchSettingsOnce(true);
   syncControllerCoordFromCloud(true);
   fetchStatus();
   updateEspLinkState();
@@ -3734,7 +3748,7 @@ setCoordLockState(isCoordLocked, false);
 restoreManualSessionOnLoad();
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
-fetchSettingsOnce();
+fetchSettingsOnce(true);
 syncControllerCoordFromCloud(true);
 setControlsEnabled(false);
 updatePumpAndValvesVisual();
