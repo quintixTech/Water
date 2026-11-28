@@ -634,6 +634,13 @@ async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
     setRtc: true
   };
   await patchSettings(rtcPayload, btnId, okText);
+  setTimeout(() => {
+    fetch(`${DB_URL}/settings.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ setRtc: false })
+    }).catch(() => {});
+  }, 4000);
   const p2 = n => String(n).padStart(2, "0");
   setDiag(`RTC pushed -> ${rtcPayload.rtcY}-${p2(rtcPayload.rtcMo)}-${p2(rtcPayload.rtcD)} ${p2(rtcPayload.rtcH)}:${p2(rtcPayload.rtcMi)}:${p2(rtcPayload.rtcS)} (setRtc=true)`);
 }
