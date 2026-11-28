@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QUANTIX TECH — Irrigation Controller</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   :root{
     --bg:#060a12;
@@ -230,6 +231,58 @@
     border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
   }
 
+  /* Map & Search Styles */
+  .search-bar{
+    display:flex;gap:6px;align-items:center;margin-bottom:8px;
+  }
+  .search-bar input{
+    flex:1;width:auto;text-align:left;padding:8px 10px;font-size:12px;
+  }
+  .search-btn{
+    width:auto;padding:8px 12px;border-radius:9px;background:var(--cyan);
+    color:#04151c;font-size:11.5px;font-weight:900;flex-shrink:0;
+  }
+  .search-results{
+    background:#09101d;border:1px solid #1e2f4d;border-radius:10px;
+    margin-bottom:8px;max-height:155px;overflow-y:auto;display:none;
+  }
+  .search-results.show{display:block}
+  .search-item{
+    padding:8px 10px;font-size:11px;color:var(--text);
+    border-bottom:1px solid #152136;cursor:pointer;line-height:1.35;
+  }
+  .search-item:last-child{border-bottom:none}
+  .search-item:hover{background:var(--card2);color:var(--cyan)}
+  .search-item span{display:block;font-size:9.5px;color:var(--sub);margin-top:2px}
+
+  .map-frame{
+    width:100%;height:240px;border-radius:12px;overflow:hidden;
+    border:1px solid #24385c;background:#08101e;position:relative;
+    z-index:1;
+  }
+  .map-frame.map-locked-overlay::after{
+    content:"LOCKED — Tap UNLOCKED above to pin or search";
+    position:absolute;inset:0;
+    background:rgba(6,10,18,.52);
+    color:#ffca28;font-size:11px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    pointer-events:none;z-index:500;text-align:center;padding:12px;
+  }
+  .leaflet-container{
+    background:#08101e !important;
+    font-family:inherit !important;
+  }
+  .map-pin-bar{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+    gap:8px;margin-top:8px;background:#09101d;border:1px solid #1b2a44;
+    border-radius:10px;padding:8px 10px;font-size:11px;color:var(--sub);
+  }
+  .map-pin-bar b{color:#fff}
+  .save-pin-btn{
+    width:auto;padding:7px 12px;border-radius:9px;font-size:11px;font-weight:900;
+    background:var(--green);color:#03140b;flex-shrink:0;
+  }
+
   /* Weather Card + Animations */
   .weather-banner{
     display:flex;justify-content:space-between;align-items:center;gap:12px;
@@ -275,11 +328,11 @@
     100%{stroke-dashoffset:-24;opacity:.25}
   }
   .w-sun-rays{
-    transform-origin:24px 22px;
+    transform-origin:22px 19px;
     animation:sunSpin 10s linear infinite;
   }
   .w-sun-halo{
-    transform-origin:24px 22px;
+    transform-origin:22px 19px;
     animation:sunPulse 2.4s ease-in-out infinite;
   }
   .w-cloud-float{
@@ -665,7 +718,6 @@
         <div class="weather-main">
           <div class="weather-anim-box" id="weatherAnimBox">
             <svg class="weather-svg" id="weatherAnimSvg" viewBox="0 0 64 52">
-              <!-- Animated Sun + Cloud + Rain/Wind -->
               <g id="wSunGroup">
                 <circle class="w-sun-halo" cx="22" cy="19" r="13" fill="rgba(255,171,0,.22)"/>
                 <circle cx="22" cy="19" r="7.5" fill="#ffab00"/>
@@ -963,17 +1015,33 @@
         <button type="button" class="lock-btn" id="lockBtnLocation" onclick="togglePageLock('location')">LOCKED</button>
       </div>
     </div>
+
     <div class="card" style="border-top:3px solid #34d399">
-      <div class="title"><span>Controller GPS / Coordinates (Database)</span></div>
-      <div class="coord-box" id="locDbDisplay">
+      <div class="title"><span>Interactive Map, Search &amp; Pin to DB</span><span class="chip" id="pinStateChip">PIN READY</span></div>
+
+      <div class="search-bar">
+        <input id="locSearchInput" class="lockable-location" type="text" placeholder="Search place, city, area, PIN..." disabled onkeydown="if(event.key==='Enter'){event.preventDefault();searchPlaceOnMap();}">
+        <button type="button" class="search-btn lockable-location" id="locSearchBtn" onclick="searchPlaceOnMap()" disabled>Search</button>
+      </div>
+      <div class="search-results" id="locSearchResults"></div>
+
+      <div class="map-frame map-locked-overlay" id="controllerMapBox"></div>
+
+      <div class="map-pin-bar">
+        <div id="pinnedCoordText">Pin: <b>Not pinned</b> (Tap map or search)</div>
+        <button type="button" class="save-pin-btn lockable-location" id="savePinToDbBtn" onclick="savePinnedLocationToDb()" disabled>Save Pin to DB</button>
+      </div>
+
+      <div class="coord-box" id="locDbDisplay" style="margin-top:8px">
         Controller Lon / Lat: <b>Not set in DB</b><br>
         Accuracy: <b>--</b> · Updated: <b>--</b>
       </div>
+
       <button type="button" class="b-green lockable-location" id="fetchLocBtn" onclick="fetchAndSaveControllerLocation()" style="margin-top:10px" disabled>
         Fetch Location (GPS + Network Fallback)
       </button>
       <div style="font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.45">
-        If GPS/network location is unavailable, IP location is used to save longitude and latitude directly to the database.
+        Map-e click/tap kore ba pin drag kore/search select kore <b>Save Pin to DB</b> chaple lon, lat sorasori database-e save hobe. GPS/network na pele IP location fallback kaj kore.
       </div>
     </div>
 
@@ -1126,6 +1194,7 @@
   </footer>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const STALE_MS = 8000;
@@ -1172,7 +1241,10 @@ let prevL2 = null;
 let equipState = { pump: false, z1: false, z2: false, dry: false };
 
 let controllerLocation = { lat: null, lon: null, acc: null, updatedAt: null };
+let pinnedCoord = { lat: null, lon: null };
 let lastWeatherCoordsKey = "";
+let leafletMap = null;
+let leafletMarker = null;
 
 let insightGraphType = "bar";
 let insightMetric = "runtime";
@@ -1193,6 +1265,163 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function renderPinnedCoordLabel() {
+  const el = document.getElementById("pinnedCoordText");
+  if (!el) return;
+  if (Number.isFinite(pinnedCoord.lat) && Number.isFinite(pinnedCoord.lon)) {
+    el.innerHTML = `Pin: <b>Lon ${Number(pinnedCoord.lon).toFixed(6)}, Lat ${Number(pinnedCoord.lat).toFixed(6)}</b>`;
+  } else {
+    el.innerHTML = `Pin: <b>Not pinned</b> (Tap map or search)`;
+  }
+}
+
+function syncMarkerDraggableState() {
+  if (!leafletMarker || !leafletMarker.dragging) return;
+  if (pageUnlocked.location) leafletMarker.dragging.enable();
+  else leafletMarker.dragging.disable();
+}
+
+function placePinOnMap(lat, lon, shouldPan = true) {
+  const numLat = Number(Number(lat).toFixed(6));
+  const numLon = Number(Number(lon).toFixed(6));
+  if (!Number.isFinite(numLat) || !Number.isFinite(numLon)) return;
+
+  pinnedCoord = { lat: numLat, lon: numLon };
+  renderPinnedCoordLabel();
+
+  const latInp = document.getElementById("manualLatInput");
+  const lonInp = document.getElementById("manualLonInput");
+  if (latInp) latInp.value = numLat.toFixed(6);
+  if (lonInp) lonInp.value = numLon.toFixed(6);
+
+  if (typeof L !== "undefined" && leafletMap) {
+    if (!leafletMarker) {
+      leafletMarker = L.marker([numLat, numLon], { draggable: pageUnlocked.location }).addTo(leafletMap);
+      leafletMarker.on("dragend", () => {
+        if (!pageUnlocked.location) return;
+        const pos = leafletMarker.getLatLng();
+        placePinOnMap(pos.lat, pos.lng, false);
+      });
+    } else {
+      leafletMarker.setLatLng([numLat, numLon]);
+      syncMarkerDraggableState();
+    }
+    if (shouldPan) {
+      leafletMap.setView([numLat, numLon], Math.max(leafletMap.getZoom(), 14));
+    }
+  }
+}
+
+function initControllerMap() {
+  const box = document.getElementById("controllerMapBox");
+  if (!box || typeof L === "undefined") return;
+
+  if (!leafletMap) {
+    const startLat = Number.isFinite(controllerLocation.lat) ? controllerLocation.lat : 22.5726;
+    const startLon = Number.isFinite(controllerLocation.lon) ? controllerLocation.lon : 88.3639;
+    const startZoom = Number.isFinite(controllerLocation.lat) ? 14 : 10;
+
+    leafletMap = L.map("controllerMapBox", { zoomControl: true }).setView([startLat, startLon], startZoom);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(leafletMap);
+
+    leafletMap.on("click", e => {
+      if (!pageUnlocked.location) {
+        showMsg("LOCATION is LOCKED — tap UNLOCKED first", true);
+        return;
+      }
+      placePinOnMap(e.latlng.lat, e.latlng.lng, false);
+    });
+
+    if (Number.isFinite(controllerLocation.lat) && Number.isFinite(controllerLocation.lon)) {
+      placePinOnMap(controllerLocation.lat, controllerLocation.lon, true);
+    }
+  }
+
+  setTimeout(() => {
+    if (leafletMap) leafletMap.invalidateSize();
+  }, 120);
+}
+
+async function searchPlaceOnMap() {
+  if (!pageUnlocked.location) {
+    showMsg("LOCATION is LOCKED", true);
+    return;
+  }
+  const qInput = document.getElementById("locSearchInput");
+  const resultsEl = document.getElementById("locSearchResults");
+  const query = (qInput?.value || "").trim();
+  if (!query) {
+    showMsg("Type a location name to search", true);
+    return;
+  }
+
+  const btn = document.getElementById("locSearchBtn");
+  if (btn) btn.disabled = true;
+  if (resultsEl) {
+    resultsEl.className = "search-results show";
+    resultsEl.innerHTML = `<div class="search-item">Searching "${query}"...</div>`;
+  }
+
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`;
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const list = await res.json();
+
+    if (!Array.isArray(list) || !list.length) {
+      if (resultsEl) resultsEl.innerHTML = `<div class="search-item">No matching place found</div>`;
+      return;
+    }
+
+    if (resultsEl) {
+      resultsEl.innerHTML = list.map((item, idx) => {
+        const parts = (item.display_name || "").split(",");
+        const mainTitle = parts.slice(0, 2).join(",").trim() || item.display_name;
+        const subTitle = parts.slice(2, 5).join(",").trim();
+        return `<div class="search-item" data-idx="${idx}">
+          <b>${mainTitle}</b>
+          <span>${subTitle} · Lon ${Number(item.lon).toFixed(4)}, Lat ${Number(item.lat).toFixed(4)}</span>
+        </div>`;
+      }).join("");
+
+      resultsEl.querySelectorAll(".search-item").forEach(row => {
+        row.addEventListener("click", () => {
+          const item = list[Number(row.dataset.idx)];
+          if (!item) return;
+          initControllerMap();
+          placePinOnMap(Number(item.lat), Number(item.lon), true);
+          resultsEl.classList.remove("show");
+          showMsg(`Pinned: ${(item.display_name || "").split(",")[0]} — tap Save Pin to DB`);
+        });
+      });
+    }
+  } catch (e) {
+    if (resultsEl) resultsEl.innerHTML = `<div class="search-item">Search error: ${e.message}</div>`;
+  } finally {
+    if (btn && pageUnlocked.location) btn.disabled = false;
+  }
+}
+
+async function savePinnedLocationToDb() {
+  if (!pageUnlocked.location) return;
+  if (!Number.isFinite(pinnedCoord.lat) || !Number.isFinite(pinnedCoord.lon)) {
+    showMsg("Tap map or search to place a pin first", true);
+    return;
+  }
+  const btn = document.getElementById("savePinToDbBtn");
+  if (btn) btn.disabled = true;
+  try {
+    await writeLocationToDb(pinnedCoord.lat, pinnedCoord.lon, 15, "MAP PIN");
+  } catch (e) {
+    showMsg("Save pin failed: " + e.message, true);
+  } finally {
+    if (btn && pageUnlocked.location) btn.disabled = false;
+  }
+}
 
 function weatherCodeToLabel(code) {
   const c = Number(code);
@@ -1257,6 +1486,10 @@ function renderLocationDisplay() {
     }
     if (latInp && document.activeElement !== latInp && !latInp.value) latInp.value = latStr;
     if (lonInp && document.activeElement !== lonInp && !lonInp.value) lonInp.value = lonStr;
+    if (!Number.isFinite(pinnedCoord.lat) || !Number.isFinite(pinnedCoord.lon)) {
+      pinnedCoord = { lat: Number(controllerLocation.lat), lon: Number(controllerLocation.lon) };
+      renderPinnedCoordLabel();
+    }
   } else {
     if (locChip) {
       locChip.textContent = "NO DB LOC";
@@ -1324,6 +1557,9 @@ async function fetchControllerLocationFromDb() {
         updatedAt: d.updatedAt || null
       };
       renderLocationDisplay();
+      if (leafletMap && (!leafletMarker || !pageUnlocked.location)) {
+        placePinOnMap(lat, lon, true);
+      }
       await fetchWeatherFromCoords(lat, lon, false);
     } else {
       controllerLocation = { lat: null, lon: null, acc: null, updatedAt: null };
@@ -1350,7 +1586,10 @@ async function writeLocationToDb(latVal, lonVal, accVal, sourceTag) {
   if (!res.ok) throw new Error("HTTP " + res.status);
 
   controllerLocation = payload;
+  pinnedCoord = { lat, lon };
   renderLocationDisplay();
+  renderPinnedCoordLabel();
+  if (leafletMap) placePinOnMap(lat, lon, true);
   await fetchWeatherFromCoords(lat, lon, true);
   showMsg(`Saved to DB (${lat}, ${lon}) [${sourceTag}]`);
   setDiag(`location PATCH OK (${sourceTag}) -> lat=${lat}, lon=${lon}`);
@@ -2296,6 +2535,13 @@ function applyPageLockState(key) {
     btn.classList.toggle("unlocked", unlocked);
     btn.innerText = unlocked ? "UNLOCKED" : "LOCKED";
   }
+  if (key === "location") {
+    const mapBox = document.getElementById("controllerMapBox");
+    if (mapBox) mapBox.classList.toggle("map-locked-overlay", !unlocked);
+    const resBox = document.getElementById("locSearchResults");
+    if (!unlocked && resBox) resBox.classList.remove("show");
+    syncMarkerDraggableState();
+  }
 }
 
 function togglePageLock(key) {
@@ -2335,6 +2581,7 @@ function openPage(pageId, btn) {
     renderEquipmentAnimation();
   }
   if (pageId === "pageLocation") {
+    initControllerMap();
     fetchControllerLocationFromDb();
   }
   if (pageId === "pageZones") {
@@ -2815,6 +3062,7 @@ async function saveWifiCreds() {
 
 if (!rtcDefaultsFilled) fillRtcInputsFromPhone();
 renderLocationDisplay();
+renderPinnedCoordLabel();
 renderEquipmentAnimation();
 updateManualUiBanner();
 initInsightDates();
