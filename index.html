@@ -251,31 +251,38 @@ function formatSchedChip(s) {
   return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
 }
 
-function normalizeSettingsObj(src, allowArrayFallback = true) {
+function normalizeSettingsObj(src) {
   const out = { ...latestSettings };
   SCHED_IDS.forEach(k => {
-    if (src[k] !== undefined && src[k] !== null) out[k] = Number(src[k]);
+    if (src[k] !== undefined && src[k] !== null && src[k] !== "") {
+      const n = Number(src[k]);
+      if (Number.isFinite(n)) out[k] = n;
+    }
   });
   for (let i = 0; i < 5; i++) {
     const k1 = `z1_${i}`;
     const k2 = `z2_${i}`;
-    if (src[k1] !== undefined && src[k1] !== null) {
-      out[k1] = Number(src[k1]);
-    } else if (allowArrayFallback && Array.isArray(src.z1) && src.z1[i] !== undefined) {
-      out[k1] = Number(src.z1[i]);
+    if (src[k1] !== undefined && src[k1] !== null && src[k1] !== "") {
+      const n = Number(src[k1]);
+      if (Number.isFinite(n)) out[k1] = Math.trunc(n);
+    } else if (Array.isArray(src.z1) && src.z1[i] !== undefined) {
+      const n = Number(src.z1[i]);
+      if (Number.isFinite(n)) out[k1] = Math.trunc(n);
     }
 
-    if (src[k2] !== undefined && src[k2] !== null) {
-      out[k2] = Number(src[k2]);
-    } else if (allowArrayFallback && Array.isArray(src.z2) && src.z2[i] !== undefined) {
-      out[k2] = Number(src.z2[i]);
+    if (src[k2] !== undefined && src[k2] !== null && src[k2] !== "") {
+      const n = Number(src[k2]);
+      if (Number.isFinite(n)) out[k2] = Math.trunc(n);
+    } else if (Array.isArray(src.z2) && src.z2[i] !== undefined) {
+      const n = Number(src.z2[i]);
+      if (Number.isFinite(n)) out[k2] = Math.trunc(n);
     }
   }
   return out;
 }
 
-function applySettingsToUi(src, forceFill = false, allowArrayFallback = true) {
-  latestSettings = normalizeSettingsObj(src, allowArrayFallback);
+function applySettingsToUi(src, forceFill = false) {
+  latestSettings = normalizeSettingsObj(src);
   document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
 
   const sig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + (src.updatedAt ?? "");
@@ -293,7 +300,7 @@ function applySettingsToUi(src, forceFill = false, allowArrayFallback = true) {
   });
 
   lastSettingsSig = sig;
-  setDiag(`Sync -> z1_0=${latestSettings.z1_0}, z1_1=${latestSettings.z1_1}, z2_0=${latestSettings.z2_0}, z2_1=${latestSettings.z2_1}`);
+  setDiag(`Sync -> z1=[${latestSettings.z1_0},${latestSettings.z1_1},${latestSettings.z1_2},${latestSettings.z1_3},${latestSettings.z1_4}] z2=[${latestSettings.z2_0},${latestSettings.z2_1},${latestSettings.z2_2},${latestSettings.z2_3},${latestSettings.z2_4}]`);
 }
 
 async function sendCmd(cmd) {
@@ -368,7 +375,7 @@ async function fetchSettings(forceFill = false) {
       setDiag("/settings is null in RTDB");
       return null;
     }
-    applySettingsToUi(s, forceFill, true);
+    applySettingsToUi(s, forceFill);
     return s;
   } catch (e) {
     setDiag(`settings GET error: ${e.message}`);
@@ -395,7 +402,6 @@ async function patchSettings(payload, btnId, okText) {
 
   const ts = Date.now();
   payload.updatedAt = ts;
-  payload.appUpdatedAt = ts;
 
   try {
     const res = await fetch(`${DB_URL}/settings.json`, {
@@ -410,12 +416,15 @@ async function patchSettings(payload, btnId, okText) {
       return;
     }
 
-    justSavedUntil = Date.now() + 6000;
+    justSavedUntil = Date.now() + 5000;
     ALL_INPUT_IDS.forEach(id => editing.delete(id));
     latestSettings = { ...latestSettings, ...payload };
     lastSettingsSig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + ts;
     showMsg(okText);
-    setDiag(`PATCH OK -> z1_0=${latestSettings.z1_0}, z2_0=${latestSettings.z2_0}, ts=${ts}`);
+
+    await new Promise(r => setTimeout(r, 400));
+    const verified = await fetchSettings(true);
+    setDiag(`Saved ts=${ts} | DB z1_0=${verified?.z1_0 ?? payload.z1_0} z2_0=${verified?.z2_0 ?? payload.z2_0}`);
   } catch (e) {
     showMsg(`Error: ${e.message}`, true);
     setDiag(`PATCH error: ${e.message}`);
