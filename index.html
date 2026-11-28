@@ -1112,6 +1112,32 @@ async function fetchControllerLocationFromDb() {
   }
 }
 
+async function saveCoordsToDatabase(pos, sourceTag) {
+  const lat = Number(pos.coords.latitude.toFixed(6));
+  const lon = Number(pos.coords.longitude.toFixed(6));
+  const acc = Number(pos.coords.accuracy.toFixed(1));
+  const nowTs = Date.now();
+  const payload = { lat, lon, acc, updatedAt: nowTs };
+
+  const res = await fetch(`${DB_URL}/location.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  controllerLocation = payload;
+  renderLocationDisplay();
+  await fetchWeatherFromCoords(lat, lon, true);
+  showMsg(`Controller location saved to DB (${lat}, ${lon}) [${sourceTag}]`);
+  setDiag(`location PATCH OK (${sourceTag}) -> lat=${lat}, lon=${lon}`);
+}
+
+function getPositionWithOptions(opts) {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, opts);
+  });
+}
+
 async function fetchAndSaveControllerLocation() {
   if (!navigator.geolocation) {
     showMsg("Geolocation not supported on this device", true);
@@ -1119,41 +1145,32 @@ async function fetchAndSaveControllerLocation() {
   }
   const btn = document.getElementById("fetchLocBtn");
   if (btn) btn.disabled = true;
-  showMsg("Fetching phone GPS location...");
+  showMsg("Fetching GPS location...");
 
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
-      const lat = Number(pos.coords.latitude.toFixed(6));
-      const lon = Number(pos.coords.longitude.toFixed(6));
-      const acc = Number(pos.coords.accuracy.toFixed(1));
-      const nowTs = Date.now();
-      const payload = { lat, lon, acc, updatedAt: nowTs };
-
-      try {
-        const res = await fetch(`${DB_URL}/location.json`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        controllerLocation = payload;
-        renderLocationDisplay();
-        await fetchWeatherFromCoords(lat, lon, true);
-        showMsg(`Controller location saved to DB (${lat}, ${lon})`);
-        setDiag(`location PATCH OK -> lat=${lat}, lon=${lon}`);
-      } catch (e) {
-        showMsg("DB location save failed: " + e.message, true);
-        setDiag("location PATCH error: " + e.message);
-      } finally {
-        if (btn) btn.disabled = false;
-      }
-    },
-    (err) => {
-      if (btn) btn.disabled = false;
-      showMsg("Location error: " + (err.message || "Permission denied"), true);
-    },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-  );
+  try {
+    let pos = null;
+    try {
+      pos = await getPositionWithOptions({
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000
+      });
+      await saveCoordsToDatabase(pos, "GPS");
+    } catch (gpsErr) {
+      showMsg("GPS slow, trying network location...");
+      pos = await getPositionWithOptions({
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 60000
+      });
+      await saveCoordsToDatabase(pos, "NET");
+    }
+  } catch (err) {
+    showMsg("Location error: " + (err.message || "Unable to fetch"), true);
+    setDiag("Location error: " + (err.message || "Unable to fetch"));
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 function renderEquipmentAnimation() {
