@@ -183,15 +183,9 @@
     line-height:1.65;
     color:#cbd5e1;
   }
-  .info-modal-body p{
-    margin:0 0 9px;
-  }
-  .info-modal-body p:last-child{
-    margin-bottom:0;
-  }
-  .info-modal-body b{
-    color:#fff;
-  }
+  .info-modal-body p{margin:0 0 9px}
+  .info-modal-body p:last-child{margin-bottom:0}
+  .info-modal-body b{color:#fff}
   .confirm-actions{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -399,9 +393,7 @@
     font-weight:800;
     color:var(--sub);
   }
-  .page-lock-label.locked{
-    color:var(--amber);
-  }
+  .page-lock-label.locked{color:var(--amber)}
   .page-lock-btn{
     width:auto;
     padding:6px 11px;
@@ -495,18 +487,8 @@
     justify-content:center;
     box-shadow:inset 0 0 12px rgba(0,229,255,.08);
   }
-  .wx-temp{
-    font-size:22px;
-    font-weight:900;
-    line-height:1.05;
-    color:#fff;
-  }
-  .wx-desc{
-    font-size:11.5px;
-    font-weight:700;
-    color:var(--cyan);
-    margin-top:1px;
-  }
+  .wx-temp{font-size:22px;font-weight:900;line-height:1.05;color:#fff}
+  .wx-desc{font-size:11.5px;font-weight:700;color:var(--cyan);margin-top:1px}
   .wx-loc{
     font-size:11px;
     font-weight:700;
@@ -530,17 +512,8 @@
     padding:5px 7px;
     text-align:center;
   }
-  .wx-pill span{
-    display:block;
-    font-size:9.5px;
-    color:var(--sub);
-    line-height:1.1;
-  }
-  .wx-pill b{
-    font-size:11.5px;
-    color:#fff;
-    line-height:1.25;
-  }
+  .wx-pill span{display:block;font-size:9.5px;color:var(--sub);line-height:1.1}
+  .wx-pill b{font-size:11.5px;color:#fff;line-height:1.25}
   @keyframes wxFloat{
     0%,100%{transform:translateY(0)}
     50%{transform:translateY(-2.5px)}
@@ -552,22 +525,9 @@
   .wx-svg-float{animation:wxFloat 3.4s ease-in-out infinite}
   .wx-sun-rays{transform-origin:32px 32px;animation:wxSpin 18s linear infinite}
 
-  .dt-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-top:6px;
-  }
-  .dt-box{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-  }
-  .dt-box label{
-    font-size:10.5px;
-    font-weight:700;
-    color:var(--sub);
-  }
+  .dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .dt-box{display:flex;flex-direction:column;gap:4px}
+  .dt-box label{font-size:10.5px;font-weight:700;color:var(--sub)}
   .dt-input{
     width:100%;
     background:#090f1b;
@@ -579,27 +539,10 @@
     font-weight:700;
   }
   .dt-input:focus{outline:none;border-color:var(--cyan)}
-  .dt-actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-top:8px;
-  }
-  .mini-btn{
-    width:100%;
-    padding:8px 10px;
-    border-radius:10px;
-    font-size:11.5px;
-    font-weight:800;
-    cursor:pointer;
-  }
+  .dt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .mini-btn{width:100%;padding:8px 10px;border-radius:10px;font-size:11.5px;font-weight:800;cursor:pointer}
 
-  .style-bar{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:6px;
-    margin-top:6px;
-  }
+  .style-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
   .style-btn{
     width:100%;
     padding:8px 6px;
@@ -647,21 +590,8 @@
     align-items:center;
     padding:0 8px;
   }
-  .lp-base{
-    position:relative;
-    width:100%;
-    height:3px;
-    background:#1e2f4b;
-    border-radius:999px;
-  }
-  .lp-line{
-    position:absolute;
-    left:0;
-    top:0;
-    height:3px;
-    border-radius:999px;
-    transition:width .35s ease;
-  }
+  .lp-base{position:relative;width:100%;height:3px;background:#1e2f4b;border-radius:999px}
+  .lp-line{position:absolute;left:0;top:0;height:3px;border-radius:999px;transition:width .35s ease}
   .lp-dot{
     position:absolute;
     top:50%;
@@ -673,17 +603,9 @@
     box-shadow:0 0 8px currentColor;
     transition:left .35s ease;
   }
-  .lp-dot.point-only{
-    width:14px;
-    height:14px;
-  }
+  .lp-dot.point-only{width:14px;height:14px}
 
-  .circle-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(115px,1fr));
-    gap:10px;
-    margin-top:8px;
-  }
+  .circle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;margin-top:8px}
   .ring-card{
     background:#09101d;
     border:1px solid #1b2a44;
@@ -695,25 +617,9 @@
     gap:6px;
     text-align:center;
   }
-  .ring-wrap{
-    position:relative;
-    width:74px;
-    height:74px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .ring-wrap svg{
-    width:74px;
-    height:74px;
-    transform:rotate(-90deg);
-  }
-  .ring-center{
-    position:absolute;
-    font-size:11.5px;
-    font-weight:900;
-    color:#fff;
-  }
+  .ring-wrap{position:relative;width:74px;height:74px;display:flex;align-items:center;justify-content:center}
+  .ring-wrap svg{width:74px;height:74px;transform:rotate(-90deg)}
+  .ring-center{position:absolute;font-size:11.5px;font-weight:900;color:#fff}
   .ring-lbl{font-size:10.5px;color:var(--sub);font-weight:700;line-height:1.2}
 
   .vbar-chart{
@@ -737,20 +643,8 @@
     min-width:0;
     gap:4px;
   }
-  .vbar-pair{
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    gap:3px;
-    width:100%;
-    height:96px;
-  }
-  .vbar{
-    width:10px;
-    border-radius:6px 6px 2px 2px;
-    transition:height .35s ease;
-    min-height:3px;
-  }
+  .vbar-pair{display:flex;align-items:flex-end;justify-content:center;gap:3px;width:100%;height:96px}
+  .vbar{width:10px;border-radius:6px 6px 2px 2px;transition:height .35s ease;min-height:3px}
   .vbar.z1b{background:var(--cyan)}
   .vbar.z2b{background:var(--mag)}
   .vbar-val{
@@ -781,11 +675,7 @@
     padding:8px;
     margin-top:8px;
   }
-  .svg-multi-wrap svg{
-    width:100%;
-    height:150px;
-    display:block;
-  }
+  .svg-multi-wrap svg{width:100%;height:150px;display:block}
 
   .empty-note{
     padding:14px 10px;
@@ -839,14 +729,8 @@
     background:#09101d;
     border:1px solid #1e2f4b;
   }
-  .lock-status{
-    font-size:11px;
-    font-weight:800;
-    color:var(--sub);
-  }
-  .lock-status.locked{
-    color:var(--amber);
-  }
+  .lock-status{font-size:11px;font-weight:800;color:var(--sub)}
+  .lock-status.locked{color:var(--amber)}
   .lock-toggle-btn{
     width:auto;
     padding:7px 12px;
@@ -864,12 +748,7 @@
     border-color:rgba(251,191,36,.45);
   }
 
-  .map-search-row{
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:8px;
-    margin-top:10px;
-  }
+  .map-search-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
   .map-search-btn{
     width:auto;
     padding:8px 14px;
@@ -881,12 +760,7 @@
     cursor:pointer;
     white-space:nowrap;
   }
-  .map-toolbar{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-top:8px;
-  }
+  .map-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
   .map-mode-btn{
     padding:8px 10px;
     border-radius:10px;
@@ -938,10 +812,7 @@
     padding:10px 6px 6px;
     margin-top:auto;
   }
-  .app-footer b{
-    color:#cbd5e1;
-    font-weight:700;
-  }
+  .app-footer b{color:#cbd5e1;font-weight:700}
 
   @media (max-width:520px){
     .wx-main{flex-direction:column;align-items:stretch}
@@ -1296,7 +1167,7 @@
       </div>
       <div class="page-body">
         <div class="card">
-          <div class="sec-title">Daily Irrigation Schedules &amp; Flow</div>
+          <div class="sec-title"><span>Daily Irrigation Schedules &amp; Flow</span><span class="chip" id="schedSyncTag">Cloud Ready</span></div>
           <div class="row">
             <label>Morning Sch 1 (HH:MM)</label>
             <div>
@@ -1318,7 +1189,7 @@
               <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
             </div>
           </div>
-          <button class="b-cyan" onclick="saveSettings()">Save Schedule &amp; Flow Cal</button>
+          <button class="b-cyan" id="btnSaveSched" onclick="saveSettings()">Save Schedule &amp; Flow Cal</button>
         </div>
       </div>
     </section>
@@ -1331,7 +1202,7 @@
       </div>
       <div class="page-body">
         <div class="card">
-          <div class="sec-title">Moisture Band Water Targets (ml)</div>
+          <div class="sec-title"><span>Moisture Band Water Targets (ml)</span><span class="chip" id="targetsSyncTag">Cloud Ready</span></div>
           <table>
             <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
             <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
@@ -1340,7 +1211,7 @@
             <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
             <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
           </table>
-          <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
+          <button class="b-cyan" id="btnSaveTargets" onclick="saveSettings()">Save Moisture Targets</button>
         </div>
       </div>
     </section>
@@ -1406,7 +1277,7 @@
       </div>
       <div class="page-body">
         <div class="card">
-          <div class="sec-title">Router Wi-Fi Setup</div>
+          <div class="sec-title"><span>Router Wi-Fi Setup</span><span class="chip" id="wifiSyncTag">Cloud Ready</span></div>
           <div class="info-list" style="margin-bottom:8px">
             <div>Current SSID: <b id="curSsid">--</b></div>
             <div>Current IP: <b id="curIp">--</b></div>
@@ -1419,7 +1290,7 @@
             <label for="wifiPass">Wi-Fi Password</label>
             <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
           </div>
-          <button class="b-cyan" onclick="saveWifi()">Save Wi-Fi Credentials</button>
+          <button class="b-cyan" id="btnSaveWifi" onclick="saveWifi()">Save Wi-Fi Credentials</button>
         </div>
       </div>
     </section>
@@ -1432,7 +1303,7 @@
       </div>
       <div class="page-body">
         <div class="card">
-          <div class="sec-title">DS3231 Date &amp; Time</div>
+          <div class="sec-title"><span>DS3231 Date &amp; Time</span><span class="chip" id="rtcSyncTag">Cloud Ready</span></div>
           <div class="row">
             <label>Date (YYYY/MM/DD)</label>
             <div>
@@ -1449,8 +1320,8 @@
               <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
             </div>
           </div>
-          <button class="b-cyan" onclick="saveRtc(false)">Set Date &amp; Time</button>
-          <button class="b-ghost" onclick="saveRtc(true)">Sync Phone Current Date &amp; Time</button>
+          <button class="b-cyan" id="btnSaveRtc" onclick="saveRtc(false)">Set Date &amp; Time</button>
+          <button class="b-ghost" id="btnSyncPhoneRtc" onclick="saveRtc(true)">Sync Phone Current Date &amp; Time</button>
         </div>
       </div>
     </section>
@@ -1490,17 +1361,33 @@
 </div>
 
 <script>
+"use strict";
+
+/* =========================================================
+   1. CONFIGURATION & CONSTANTS
+========================================================= */
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const CONTROLLER_COORD_CLOUD_PATH = `${DB_URL}/settings/controllerCoord.json`;
+
 const ESP_STALE_MS = 15000;
+const STATUS_POLL_MS = 2500;
+const SETTINGS_POLL_MS = 6000;
 const WEATHER_REFRESH_MS = 600000;
-const SAVE_HOLD_MS = 2500;
-const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
-const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
-const CONTROLLER_LOCK_KEY = "quantix_coord_locked_v1";
-const PAGE_LOCKS_KEY = "quantix_page_locks_v1";
-const MANUAL_RUN_KEY = "quantix_manual_run_v1";
 const MAX_INSIGHT_LOGS = 500;
+
+const STORAGE_KEYS = {
+  INSIGHT_LOGS: "quantix_insight_logs_v2",
+  COORD: "quantix_controller_coord_v2",
+  COORD_LOCK: "quantix_coord_locked_v2",
+  PAGE_LOCKS: "quantix_page_locks_v2",
+  MANUAL_RUN: "quantix_manual_run_v2"
+};
+
+const SETTINGS_FIELD_IDS = [
+  "s1h", "s1m", "s2h", "s2m", "c1", "c2",
+  "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
+  "z2_0", "z2_1", "z2_2", "z2_3", "z2_4"
+];
 
 const INFO_MODAL_CONTENT = {
   about: {
@@ -1524,30 +1411,133 @@ const INFO_MODAL_CONTENT = {
   }
 };
 
-function setTextSafe(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.innerText = val;
+/* =========================================================
+   2. CENTRAL APPLICATION STATE
+========================================================= */
+const AppState = {
+  status: null,
+  settings: null,
+  lastSettingsUpdatedAt: 0,
+  isSavingSettings: false,
+  dirtyFields: new Set(),
+
+  lastSeenHeartbeatVal: null,
+  lastHeartbeatAt: 0,
+  lastFallbackSig: "",
+
+  weather: null,
+  geo: null,
+  lastWeatherFetchAt: 0,
+
+  graphStyle: "bar",
+  rangeFilter: null,
+
+  coordLocked: localStorage.getItem(STORAGE_KEYS.COORD_LOCK) === "1",
+  pendingCoord: null,
+  map: null,
+  mapMarker: null,
+  mapCircle: null,
+  streetLayer: null,
+  satLayer: null,
+  labelsLayer: null,
+  mapMode: "street",
+
+  pageLocks: {},
+
+  runStartedAt: 0,
+  runMode: "",
+  runGraceUntil: 0,
+  stopCooldownUntil: 0,
+  timerInterval: null,
+  beepInterval: null,
+  audioCtx: null
+};
+
+/* =========================================================
+   3. DOM & NETWORK HELPERS
+========================================================= */
+function $(id) {
+  return document.getElementById(id);
 }
 
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.innerText = value;
+}
+
+function showToast(text, isError = false) {
+  const el = $("msg");
+  if (!el) return;
+  el.style.color = isError ? "#ff8a80" : "#00e676";
+  el.innerText = text;
+  setTimeout(() => {
+    if (el.innerText === text) el.innerText = "";
+  }, 3500);
+}
+
+async function apiRequest(url, options = {}, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, { cache: "no-store", ...options });
+      if (response.ok) {
+        return await response.json();
+      }
+      if (response.status >= 500 && attempt < retries) {
+        await new Promise(r => setTimeout(r, 250 * (attempt + 1)));
+        continue;
+      }
+      throw new Error(`HTTP ${response.status}`);
+    } catch (err) {
+      if (attempt === retries) throw err;
+      await new Promise(r => setTimeout(r, 250 * (attempt + 1)));
+    }
+  }
+}
+
+function isControllerOnline() {
+  if (AppState.lastHeartbeatAt <= 0) return false;
+  return (Date.now() - AppState.lastHeartbeatAt) <= ESP_STALE_MS;
+}
+
+function readNumberInput(id, fallback) {
+  const el = $(id);
+  if (!el) return fallback;
+  const raw = String(el.value ?? "").trim();
+  if (raw === "") return fallback;
+  const num = Number(raw);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function fillInputIfClean(id, value) {
+  if (value === undefined || value === null) return;
+  const el = $(id);
+  if (!el) return;
+  if (document.activeElement === el) return;
+  if (AppState.dirtyFields.has(id)) return;
+  el.value = value;
+}
+
+/* =========================================================
+   4. MODALS & PAGE LOCKS
+========================================================= */
 function openInfoModal(type) {
   const item = INFO_MODAL_CONTENT[type] || INFO_MODAL_CONTENT.about;
-  const backdrop = document.getElementById("infoModalBackdrop");
-  setTextSafe("infoModalTitle", item.title);
-  const bodyEl = document.getElementById("infoModalBody");
-  if (bodyEl) bodyEl.innerHTML = item.html;
-  if (backdrop) backdrop.classList.add("open");
+  setText("infoModalTitle", item.title);
+  const body = $("infoModalBody");
+  if (body) body.innerHTML = item.html;
+  $("infoModalBackdrop")?.classList.add("open");
 }
 
 function closeInfoModal() {
-  document.getElementById("infoModalBackdrop")?.classList.remove("open");
+  $("infoModalBackdrop")?.classList.remove("open");
 }
 
 function openStopModal() {
-  document.getElementById("stopModalBackdrop")?.classList.add("open");
+  $("stopModalBackdrop")?.classList.add("open");
 }
 
 function closeStopModal() {
-  document.getElementById("stopModalBackdrop")?.classList.remove("open");
+  $("stopModalBackdrop")?.classList.remove("open");
 }
 
 function executeConfirmedStop() {
@@ -1555,68 +1545,101 @@ function executeConfirmedStop() {
   sendCmd("stop");
 }
 
-let settingsLoaded = false;
-let lastSeenMillis = null;
-let lastSeenChangeAt = 0;
-let lastPayloadSig = "";
-let latestStatusData = null;
-let latestWeatherMetrics = null;
-let cachedGeo = null;
-let pendingFetchedCoord = null;
-let lastWeatherFetchAt = 0;
-let lastCloudCoordSyncAt = 0;
-let currentGraphStyle = "bar";
-let activeRangeFilter = null;
-let coordMapInstance = null;
-let coordMapMarker = null;
-let coordMapCircle = null;
-let coordStreetLayer = null;
-let coordSatelliteLayer = null;
-let coordLabelsLayer = null;
-let currentMapMode = "street";
-let isCoordLocked = localStorage.getItem(CONTROLLER_LOCK_KEY) === "1";
-let pageLocks = loadPageLocks();
-const dirtyInputs = new Set();
-const recentSavedUntil = new Map();
+function loadPageLocks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.PAGE_LOCKS);
+    const parsed = raw ? JSON.parse(raw) : {};
+    AppState.pageLocks = (parsed && typeof parsed === "object") ? parsed : {};
+  } catch (e) {
+    AppState.pageLocks = {};
+  }
+}
 
-let manualRunStartedAt = 0;
-let manualRunMode = "";
-let manualRunGraceUntil = 0;
-let manualStopCooldownUntil = 0;
-let manualTimerInterval = null;
-let beepLoopInterval = null;
-let audioCtx = null;
+function savePageLocks() {
+  try {
+    localStorage.setItem(STORAGE_KEYS.PAGE_LOCKS, JSON.stringify(AppState.pageLocks));
+  } catch (e) {}
+}
 
-function formatDurationClock(ms) {
+function isPageLocked(tabId) {
+  return Boolean(AppState.pageLocks[tabId]);
+}
+
+function applyPageLockUi(tabId) {
+  const panel = $(tabId);
+  if (!panel) return;
+  const locked = isPageLocked(tabId);
+  const pageName = panel.dataset.pageName || "Page";
+  const lbl = $("pageLockLabel_" + tabId);
+  const btn = $("pageLockBtn_" + tabId);
+
+  panel.classList.toggle("page-locked", locked);
+  if (lbl) {
+    lbl.innerText = locked ? `🔒 ${pageName} Locked` : `🔓 ${pageName} Unlocked`;
+    lbl.classList.toggle("locked", locked);
+  }
+  if (btn) {
+    btn.innerText = locked ? "🔓 Unlock Page" : "🔒 Lock Page";
+    btn.classList.toggle("locked", locked);
+  }
+}
+
+function applyAllPageLocks() {
+  document.querySelectorAll(".tab-panel").forEach(p => {
+    if (p.id) applyPageLockUi(p.id);
+  });
+}
+
+function togglePageLock(tabId) {
+  const panel = $(tabId);
+  const pageName = panel?.dataset?.pageName || "Page";
+  const next = !isPageLocked(tabId);
+  AppState.pageLocks[tabId] = next;
+  savePageLocks();
+  applyPageLockUi(tabId);
+  showToast(next ? `${pageName} page locked` : `${pageName} page unlocked`);
+}
+
+function ensurePageUnlocked(tabId) {
+  if (!tabId) return true;
+  if (isPageLocked(tabId)) {
+    const pageName = $(tabId)?.dataset?.pageName || "Page";
+    showToast(`${pageName} is locked. Unlock page first`, true);
+    return false;
+  }
+  return true;
+}
+
+/* =========================================================
+   5. RUN TIMER & WARNING BEEP ENGINE
+========================================================= */
+function formatClock(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
   const hrs = Math.floor(totalSec / 3600);
   const mins = Math.floor((totalSec % 3600) / 60);
   const secs = totalSec % 60;
-  const p = n => String(n).padStart(2, "0");
-  return hrs > 0 ? `${p(hrs)}:${p(mins)}:${p(secs)}` : `${p(mins)}:${p(secs)}`;
+  const pad = n => String(n).padStart(2, "0");
+  return hrs > 0 ? `${pad(hrs)}:${pad(mins)}:${pad(secs)}` : `${pad(mins)}:${pad(secs)}`;
 }
 
-function unlockAudioContext() {
+function unlockAudio() {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
-    if (!audioCtx) {
-      audioCtx = new Ctx();
+    if (!AppState.audioCtx) AppState.audioCtx = new Ctx();
+    if (AppState.audioCtx.state === "suspended") {
+      AppState.audioCtx.resume().catch(() => {});
     }
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume().catch(() => {});
-    }
-    return audioCtx;
+    return AppState.audioCtx;
   } catch (e) {
     return null;
   }
 }
 
-function playSingleWarningBeep() {
+function playBeepOnce() {
   try {
-    const ctx = unlockAudioContext();
+    const ctx = unlockAudio();
     if (!ctx) return;
-
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -1633,197 +1656,222 @@ function playSingleWarningBeep() {
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     osc.start(now);
     osc.stop(now + 0.31);
-  } catch (e) {
-    console.warn("Beep playback failed:", e);
-  }
+  } catch (e) {}
 }
 
-function startManualWarningBeepLoop() {
-  stopManualWarningBeepLoop();
-  playSingleWarningBeep();
-  beepLoopInterval = setInterval(() => {
-    if (!manualRunStartedAt) {
-      stopManualWarningBeepLoop();
+function startBeepLoop() {
+  stopBeepLoop();
+  playBeepOnce();
+  AppState.beepInterval = setInterval(() => {
+    if (!AppState.runStartedAt) {
+      stopBeepLoop();
       return;
     }
-    playSingleWarningBeep();
+    playBeepOnce();
   }, 1500);
 }
 
-function stopManualWarningBeepLoop() {
-  if (beepLoopInterval) {
-    clearInterval(beepLoopInterval);
-    beepLoopInterval = null;
+function stopBeepLoop() {
+  if (AppState.beepInterval) {
+    clearInterval(AppState.beepInterval);
+    AppState.beepInterval = null;
   }
 }
 
-function saveManualSessionToStorage() {
+function persistRunSession() {
   try {
-    if (manualRunStartedAt > 0 && manualRunMode) {
-      localStorage.setItem(MANUAL_RUN_KEY, JSON.stringify({
-        startedAt: manualRunStartedAt,
-        mode: manualRunMode
+    if (AppState.runStartedAt > 0 && AppState.runMode) {
+      localStorage.setItem(STORAGE_KEYS.MANUAL_RUN, JSON.stringify({
+        startedAt: AppState.runStartedAt,
+        mode: AppState.runMode
       }));
     } else {
-      localStorage.removeItem(MANUAL_RUN_KEY);
+      localStorage.removeItem(STORAGE_KEYS.MANUAL_RUN);
     }
   } catch (e) {}
 }
 
-function requestAlertNotificationPermission() {
-  if ("Notification" in window && Notification.permission === "default") {
-    Notification.requestPermission().catch(() => {});
-  }
-}
+function updateRunTimerDisplay() {
+  const ctrlEl = $("ctrlManualTimer");
+  const liveEl = $("liveManualTimer");
+  const homeEls = document.querySelectorAll(".home-manual-timer-val");
 
-function triggerBackgroundRunNotification(mode) {
-  if (!("Notification" in window) || Notification.permission !== "granted") return;
-  try {
-    new Notification("Quantix Tech Irrigation", {
-      body: `Irrigation run active (${String(mode || "RUN").toUpperCase()}). Tap Stop when done.`,
-      tag: "quantix-manual-run",
-      renotify: true
-    });
-  } catch (e) {}
-}
-
-function updateManualTimerUi() {
-  const ctrlEl = document.getElementById("ctrlManualTimer");
-  const liveEl = document.getElementById("liveManualTimer");
-  const homeTimers = document.querySelectorAll(".home-manual-timer-val");
-
-  if (!manualRunStartedAt) {
+  if (!AppState.runStartedAt) {
     if (ctrlEl) ctrlEl.innerText = "00:00 (Idle)";
     if (liveEl) liveEl.innerText = "00:00";
-    homeTimers.forEach(el => { el.innerText = "00:00 (Idle)"; });
-    updatePumpAndValvesVisual();
+    homeEls.forEach(el => { el.innerText = "00:00 (Idle)"; });
+    updateRigVisuals();
     return;
   }
 
-  const elapsedStr = formatDurationClock(Date.now() - manualRunStartedAt);
-  const modeLabel = manualRunMode ? manualRunMode.toUpperCase() : "RUN";
-  if (ctrlEl) ctrlEl.innerText = `${elapsedStr} (${modeLabel})`;
-  if (liveEl) liveEl.innerText = elapsedStr;
-  homeTimers.forEach(el => { el.innerText = `${elapsedStr} (${modeLabel})`; });
-  updatePumpAndValvesVisual();
+  const elapsed = formatClock(Date.now() - AppState.runStartedAt);
+  const label = (AppState.runMode || "RUN").toUpperCase();
+  if (ctrlEl) ctrlEl.innerText = `${elapsed} (${label})`;
+  if (liveEl) liveEl.innerText = elapsed;
+  homeEls.forEach(el => { el.innerText = `${elapsed} (${label})`; });
+  updateRigVisuals();
 }
 
-function syncTimerWithHardwareRun(isRunningNow, modeHint = "auto") {
-  if (isRunningNow) {
-    if (!manualRunStartedAt && Date.now() < manualStopCooldownUntil) {
-      updateManualTimerUi();
+function startRunSession(mode) {
+  unlockAudio();
+  AppState.runStartedAt = Date.now();
+  AppState.runMode = mode;
+  AppState.runGraceUntil = Date.now() + 8000;
+  AppState.stopCooldownUntil = 0;
+  persistRunSession();
+
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission().catch(() => {});
+  }
+  if (!AppState.timerInterval) {
+    AppState.timerInterval = setInterval(updateRunTimerDisplay, 500);
+  }
+  updateRunTimerDisplay();
+  startBeepLoop();
+}
+
+function stopRunSession(reason = "Stopped") {
+  const wasRunning = AppState.runStartedAt > 0;
+  const duration = wasRunning ? formatClock(Date.now() - AppState.runStartedAt) : "00:00";
+
+  AppState.runStartedAt = 0;
+  AppState.runMode = "";
+  AppState.runGraceUntil = 0;
+  AppState.stopCooldownUntil = Date.now() + 5000;
+  persistRunSession();
+
+  if (AppState.timerInterval) {
+    clearInterval(AppState.timerInterval);
+    AppState.timerInterval = null;
+  }
+  stopBeepLoop();
+  updateRunTimerDisplay();
+
+  if (wasRunning) {
+    showToast(`${reason} · Ran ${duration}`);
+  }
+}
+
+function syncRunTimerWithHardware(isRunning, modeHint = "auto") {
+  if (isRunning) {
+    if (!AppState.runStartedAt && Date.now() < AppState.stopCooldownUntil) {
+      updateRunTimerDisplay();
       return;
     }
-    manualRunGraceUntil = 0;
-    if (!manualRunStartedAt) {
-      manualRunStartedAt = Date.now();
-      manualRunMode = modeHint || "auto";
-      saveManualSessionToStorage();
-      if (!manualTimerInterval) {
-        manualTimerInterval = setInterval(updateManualTimerUi, 500);
+    AppState.runGraceUntil = 0;
+    if (!AppState.runStartedAt) {
+      AppState.runStartedAt = Date.now();
+      AppState.runMode = modeHint || "auto";
+      persistRunSession();
+      if (!AppState.timerInterval) {
+        AppState.timerInterval = setInterval(updateRunTimerDisplay, 500);
       }
-      if (!beepLoopInterval) {
-        startManualWarningBeepLoop();
-      }
-    } else if ((!manualRunMode || manualRunMode === "auto") && modeHint && modeHint !== "auto") {
-      manualRunMode = modeHint;
-      saveManualSessionToStorage();
+      if (!AppState.beepInterval) startBeepLoop();
+    } else if ((!AppState.runMode || AppState.runMode === "auto") && modeHint && modeHint !== "auto") {
+      AppState.runMode = modeHint;
+      persistRunSession();
     }
-    updateManualTimerUi();
+    updateRunTimerDisplay();
   } else {
-    if (manualRunStartedAt > 0 && Date.now() < manualRunGraceUntil) {
-      updateManualTimerUi();
+    if (AppState.runStartedAt > 0 && Date.now() < AppState.runGraceUntil) {
+      updateRunTimerDisplay();
       return;
     }
-    if (manualRunStartedAt > 0) {
-      stopManualSession("Stopped");
+    if (AppState.runStartedAt > 0) {
+      stopRunSession("Stopped");
     }
   }
 }
 
-function getActivePumpAndValvesState() {
-  const alive = isEspAliveNow();
-  const d = latestStatusData || {};
+function restoreRunSession() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.MANUAL_RUN);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    const ts = Number(saved?.startedAt || 0);
+    if (ts > 0 && (Date.now() - ts) < 86400000) {
+      AppState.runStartedAt = ts;
+      AppState.runMode = String(saved?.mode || "start");
+      if (!AppState.timerInterval) {
+        AppState.timerInterval = setInterval(updateRunTimerDisplay, 500);
+      }
+      updateRunTimerDisplay();
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.MANUAL_RUN);
+    }
+  } catch (e) {}
+}
+
+/* =========================================================
+   6. PUMP & VALVES LIVE VISUALS
+========================================================= */
+function computeRigState() {
+  const online = isControllerOnline();
+  const d = AppState.status || {};
   const st = String(d.status || "").toUpperCase();
-  const isDry = alive && (Boolean(d.dryAlert) || st === "DRY!");
-  const isWatering = alive && (Boolean(d.watering) || st === "RUN" || Boolean(manualRunStartedAt));
+  const isDry = online && (Boolean(d.dryAlert) || st === "DRY!");
+  const isWatering = online && (Boolean(d.watering) || st === "RUN" || AppState.runStartedAt > 0);
 
   let pumpOn = false;
-  if (alive) {
-    if (d.pumpOn !== undefined || d.pump !== undefined) {
-      pumpOn = Boolean(d.pumpOn ?? d.pump);
-    } else {
-      pumpOn = isWatering;
-    }
-  }
-
   let v1Open = false;
   let v2Open = false;
 
-  if (alive) {
+  if (online) {
+    pumpOn = (d.pumpOn !== undefined || d.pump !== undefined)
+      ? Boolean(d.pumpOn ?? d.pump)
+      : isWatering;
+
     if (d.v1 !== undefined || d.valve1 !== undefined || d.zone1 !== undefined) {
       v1Open = Boolean(d.v1 ?? d.valve1 ?? d.zone1);
     }
     if (d.v2 !== undefined || d.valve2 !== undefined || d.zone2 !== undefined) {
       v2Open = Boolean(d.v2 ?? d.valve2 ?? d.zone2);
     }
+
     if (!v1Open && !v2Open) {
-      if (manualRunStartedAt > 0) {
-        if (manualRunMode === "z1") v1Open = true;
-        else if (manualRunMode === "z2") v2Open = true;
+      if (AppState.runStartedAt > 0) {
+        if (AppState.runMode === "z1") v1Open = true;
+        else if (AppState.runMode === "z2") v2Open = true;
         else { v1Open = true; v2Open = true; }
       } else if (isWatering) {
-        const actZone = String(d.activeZone || d.zone || "").toLowerCase();
-        if (actZone === "z1" || actZone === "1") v1Open = true;
-        else if (actZone === "z2" || actZone === "2") v2Open = true;
+        const az = String(d.activeZone || d.zone || "").toLowerCase();
+        if (az === "z1" || az === "1") v1Open = true;
+        else if (az === "z2" || az === "2") v2Open = true;
         else { v1Open = true; v2Open = true; }
       }
     }
   }
 
-  return { alive, isDry, pumpOn, v1Open, v2Open };
+  return { online, isDry, pumpOn, v1Open, v2Open };
 }
 
-function applyRigUnitState(unitId, badgeId, impId, waveId, kind, isActive, isDry, activeText, idleText) {
-  const unit = document.getElementById(unitId);
-  const badge = document.getElementById(badgeId);
-  const imp = impId ? document.getElementById(impId) : null;
-  const wave = waveId ? document.getElementById(waveId) : null;
+function setRigUnit(unitId, badgeId, impId, waveId, kind, active, isDry, activeLbl, idleLbl) {
+  const unit = $(unitId);
+  const badge = $(badgeId);
+  const imp = impId ? $(impId) : null;
+  const wave = waveId ? $(waveId) : null;
 
   if (unit) {
     unit.classList.remove("active-pump", "active-v1", "active-v2", "alert-dry");
-    if (isDry && kind === "pump") {
-      unit.classList.add("alert-dry");
-    } else if (isActive) {
+    if (isDry && kind === "pump") unit.classList.add("alert-dry");
+    else if (active) {
       if (kind === "pump") unit.classList.add("active-pump");
       else if (kind === "v1") unit.classList.add("active-v1");
       else if (kind === "v2") unit.classList.add("active-v2");
     }
   }
-
   if (badge) {
-    if (isDry && kind === "pump") {
-      badge.innerText = "DRY ALERT";
-    } else {
-      badge.innerText = isActive ? activeText : idleText;
-    }
+    badge.innerText = (isDry && kind === "pump") ? "DRY ALERT" : (active ? activeLbl : idleLbl);
   }
-
-  if (imp) {
-    imp.classList.toggle("spin", Boolean(isActive && !isDry));
-  }
-  if (wave) {
-    wave.classList.toggle("flowing", Boolean(isActive));
-  }
+  if (imp) imp.classList.toggle("spin", Boolean(active && !isDry));
+  if (wave) wave.classList.toggle("flowing", Boolean(active));
 }
 
-function updatePumpAndValvesVisual() {
-  const { alive, isDry, pumpOn, v1Open, v2Open } = getActivePumpAndValvesState();
-
-  const modeChipText = !alive
+function updateRigVisuals() {
+  const { online, isDry, pumpOn, v1Open, v2Open } = computeRigState();
+  const modeText = !online
     ? "OFFLINE"
     : isDry
       ? "DRY ALERT"
@@ -1831,154 +1879,440 @@ function updatePumpAndValvesVisual() {
         ? (v1Open && v2Open ? "BOTH ACTIVE" : v1Open ? "ZONE 1 RUN" : v2Open ? "ZONE 2 RUN" : "PUMP RUN")
         : "STANDBY";
 
-  setTextSafe("homeRigMode", modeChipText);
-  setTextSafe("ctrlRigMode", modeChipText);
+  setText("homeRigMode", modeText);
+  setText("ctrlRigMode", modeText);
 
-  applyRigUnitState("homePumpUnit", "homePumpBadge", "homePumpImpeller", null, "pump", pumpOn, isDry, "RUNNING", "OFF");
-  applyRigUnitState("homeValve1Unit", "homeValve1Badge", null, "homeValve1Wave", "v1", v1Open, false, "OPEN", "CLOSED");
-  applyRigUnitState("homeValve2Unit", "homeValve2Badge", null, "homeValve2Wave", "v2", v2Open, false, "OPEN", "CLOSED");
+  setRigUnit("homePumpUnit", "homePumpBadge", "homePumpImpeller", null, "pump", pumpOn, isDry, "RUNNING", "OFF");
+  setRigUnit("homeValve1Unit", "homeValve1Badge", null, "homeValve1Wave", "v1", v1Open, false, "OPEN", "CLOSED");
+  setRigUnit("homeValve2Unit", "homeValve2Badge", null, "homeValve2Wave", "v2", v2Open, false, "OPEN", "CLOSED");
 
-  applyRigUnitState("ctrlPumpUnit", "ctrlPumpBadge", "ctrlPumpImpeller", null, "pump", pumpOn, isDry, "RUNNING", "OFF");
-  applyRigUnitState("ctrlValve1Unit", "ctrlValve1Badge", null, "ctrlValve1Wave", "v1", v1Open, false, "OPEN", "CLOSED");
-  applyRigUnitState("ctrlValve2Unit", "ctrlValve2Badge", null, "ctrlValve2Wave", "v2", v2Open, false, "OPEN", "CLOSED");
+  setRigUnit("ctrlPumpUnit", "ctrlPumpBadge", "ctrlPumpImpeller", null, "pump", pumpOn, isDry, "RUNNING", "OFF");
+  setRigUnit("ctrlValve1Unit", "ctrlValve1Badge", null, "ctrlValve1Wave", "v1", v1Open, false, "OPEN", "CLOSED");
+  setRigUnit("ctrlValve2Unit", "ctrlValve2Badge", null, "ctrlValve2Wave", "v2", v2Open, false, "OPEN", "CLOSED");
 }
 
-function ensureAudioRunningForBackground() {
-  if (!manualRunStartedAt) return;
-  unlockAudioContext();
-  if (!beepLoopInterval) {
-    startManualWarningBeepLoop();
-  }
-  if (!manualTimerInterval) {
-    manualTimerInterval = setInterval(updateManualTimerUi, 500);
-  }
-  updateManualTimerUi();
-}
+/* =========================================================
+   7. SETTINGS CLOUD SYNC (SINGLE SOURCE OF TRUTH)
+========================================================= */
+function applySettingsToForm(s) {
+  if (!s || typeof s !== "object") return;
 
-function startManualSession(cmd) {
-  unlockAudioContext();
-  manualRunStartedAt = Date.now();
-  manualRunMode = cmd;
-  manualRunGraceUntil = Date.now() + 8000;
-  manualStopCooldownUntil = 0;
-  saveManualSessionToStorage();
-  requestAlertNotificationPermission();
-  if (!manualTimerInterval) {
-    manualTimerInterval = setInterval(updateManualTimerUi, 500);
-  }
-  updateManualTimerUi();
-  startManualWarningBeepLoop();
-}
-
-function stopManualSession(reasonText = "Manually stopped") {
-  const hadSession = manualRunStartedAt > 0;
-  const finalDur = hadSession ? formatDurationClock(Date.now() - manualRunStartedAt) : "00:00";
-  manualRunStartedAt = 0;
-  manualRunMode = "";
-  manualRunGraceUntil = 0;
-  manualStopCooldownUntil = Date.now() + 5000;
-  saveManualSessionToStorage();
-  if (manualTimerInterval) {
-    clearInterval(manualTimerInterval);
-    manualTimerInterval = null;
-  }
-  stopManualWarningBeepLoop();
-  updateManualTimerUi();
-  if (hadSession) {
-    showMsg(`${reasonText} · Ran ${finalDur}`);
-  }
-}
-
-function restoreManualSessionOnLoad() {
-  try {
-    const raw = localStorage.getItem(MANUAL_RUN_KEY);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    const ts = Number(saved?.startedAt || 0);
-    const mode = saved?.mode ? String(saved.mode) : "start";
-    if (ts > 0 && (Date.now() - ts) < 86400000) {
-      manualRunStartedAt = ts;
-      manualRunMode = mode;
-      ensureAudioRunningForBackground();
-    } else {
-      localStorage.removeItem(MANUAL_RUN_KEY);
+  SETTINGS_FIELD_IDS.forEach(id => {
+    if (s[id] !== undefined && s[id] !== null) {
+      fillInputIfClean(id, s[id]);
     }
-  } catch (e) {}
+  });
+
+  if (s.wifiSsid) {
+    fillInputIfClean("wifiSsid", s.wifiSsid);
+  }
+
+  if (s.controllerCoord && s.controllerCoord.lat !== undefined && s.controllerCoord.lon !== undefined) {
+    const c = s.controllerCoord;
+    const lat = Number(c.lat);
+    const lon = Number(c.lon);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      localStorage.setItem(STORAGE_KEYS.COORD, JSON.stringify({
+        lat,
+        lon,
+        place: c.place ? String(c.place).trim() : "",
+        method: c.method ? String(c.method).trim() : "Cloud Sync",
+        updatedAt: Number(c.updatedAt || Date.now())
+      }));
+      renderSavedCoordSummary();
+    }
+  }
+
+  refreshInsightsGraphs();
 }
 
-function loadPageLocks() {
+async function pullSettingsFromCloud(force = false) {
+  if (AppState.isSavingSettings && !force) return;
   try {
-    const raw = localStorage.getItem(PAGE_LOCKS_KEY);
-    const obj = raw ? JSON.parse(raw) : {};
-    return obj && typeof obj === "object" ? obj : {};
+    const s = await apiRequest(`${DB_URL}/settings.json`, {}, 1);
+    if (!s || typeof s !== "object") return;
+
+    const remoteTs = Number(s.updatedAt || 0);
+    if (!force && remoteTs > 0 && remoteTs === AppState.lastSettingsUpdatedAt) {
+      return;
+    }
+
+    AppState.settings = s;
+    if (remoteTs > 0) AppState.lastSettingsUpdatedAt = remoteTs;
+    applySettingsToForm(s);
+
+    const tagText = "Synced";
+    setText("schedSyncTag", tagText);
+    setText("targetsSyncTag", tagText);
+    setText("wifiSyncTag", tagText);
+    setText("rtcSyncTag", tagText);
   } catch (e) {
-    return {};
+    console.warn("Settings fetch error:", e);
   }
 }
 
-function savePageLocks() {
+async function writeSettingsPatch(fields) {
+  AppState.isSavingSettings = true;
+  const nowTs = Date.now();
+  const payload = { ...fields, updatedAt: nowTs };
+
   try {
-    localStorage.setItem(PAGE_LOCKS_KEY, JSON.stringify(pageLocks));
-  } catch (e) {}
-}
+    const res = await apiRequest(`${DB_URL}/settings.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }, 2);
 
-function isPageLocked(tabId) {
-  return Boolean(pageLocks[tabId]);
-}
-
-function applyPageLockUi(tabId) {
-  const panel = document.getElementById(tabId);
-  if (!panel) return;
-  const locked = isPageLocked(tabId);
-  const pageName = panel.dataset.pageName || "Page";
-  const lbl = document.getElementById("pageLockLabel_" + tabId);
-  const btn = document.getElementById("pageLockBtn_" + tabId);
-
-  panel.classList.toggle("page-locked", locked);
-  if (lbl) {
-    lbl.innerText = locked ? `🔒 ${pageName} Locked` : `🔓 ${pageName} Unlocked`;
-    lbl.classList.toggle("locked", locked);
-  }
-  if (btn) {
-    btn.innerText = locked ? "🔓 Unlock Page" : "🔒 Lock Page";
-    btn.classList.toggle("locked", locked);
+    const merged = { ...(AppState.settings || {}), ...payload, ...(res || {}) };
+    AppState.settings = merged;
+    AppState.lastSettingsUpdatedAt = nowTs;
+    return merged;
+  } finally {
+    AppState.isSavingSettings = false;
   }
 }
 
-function applyAllPageLocksUi() {
-  document.querySelectorAll(".tab-panel").forEach(p => {
-    if (p.id) applyPageLockUi(p.id);
+async function saveSettings() {
+  const activeTab = document.querySelector(".tab-panel.active")?.id;
+  if (!ensurePageUnlocked(activeTab)) return;
+
+  const btn1 = $("btnSaveSched");
+  const btn2 = $("btnSaveTargets");
+  if (btn1) btn1.disabled = true;
+  if (btn2) btn2.disabled = true;
+
+  const payload = {
+    applySettings: true,
+    s1h: readNumberInput("s1h", 6),
+    s1m: readNumberInput("s1m", 0),
+    s2h: readNumberInput("s2h", 17),
+    s2m: readNumberInput("s2m", 0),
+    c1: readNumberInput("c1", 7.5),
+    c2: readNumberInput("c2", 7.5),
+    z1_0: readNumberInput("z1_0", 0),
+    z1_1: readNumberInput("z1_1", 0),
+    z1_2: readNumberInput("z1_2", 0),
+    z1_3: readNumberInput("z1_3", 0),
+    z1_4: readNumberInput("z1_4", 0),
+    z2_0: readNumberInput("z2_0", 0),
+    z2_1: readNumberInput("z2_1", 0),
+    z2_2: readNumberInput("z2_2", 0),
+    z2_3: readNumberInput("z2_3", 0),
+    z2_4: readNumberInput("z2_4", 0)
+  };
+
+  try {
+    const merged = await writeSettingsPatch(payload);
+    SETTINGS_FIELD_IDS.forEach(id => AppState.dirtyFields.delete(id));
+    applySettingsToForm(merged);
+    setText("schedSyncTag", "Saved ✓");
+    setText("targetsSyncTag", "Saved ✓");
+    showToast("Settings saved to cloud!");
+  } catch (e) {
+    showToast("Save failed: " + e.message, true);
+  } finally {
+    if (btn1) btn1.disabled = false;
+    if (btn2) btn2.disabled = false;
+  }
+}
+
+async function saveWifi() {
+  if (!ensurePageUnlocked("tab-wifi")) return;
+  const ssid = ($("wifiSsid")?.value || "").trim();
+  const pass = $("wifiPass")?.value || "";
+  if (!ssid) {
+    showToast("Enter Wi-Fi SSID first", true);
+    return;
+  }
+
+  const btn = $("btnSaveWifi");
+  if (btn) btn.disabled = true;
+
+  try {
+    const merged = await writeSettingsPatch({
+      wifiSsid: ssid,
+      wifiPass: pass,
+      applyWifi: true
+    });
+    AppState.dirtyFields.delete("wifiSsid");
+    AppState.dirtyFields.delete("wifiPass");
+    applySettingsToForm(merged);
+    setText("wifiSyncTag", "Saved ✓");
+    showToast("Wi-Fi credentials saved to cloud!");
+  } catch (e) {
+    showToast("Wi-Fi save failed: " + e.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function saveRtc(usePhoneNow) {
+  if (!ensurePageUnlocked("tab-rtc")) return;
+
+  let y, mo, d, h, mi, s;
+  if (usePhoneNow) {
+    const now = new Date();
+    y = now.getFullYear();
+    mo = now.getMonth() + 1;
+    d = now.getDate();
+    h = now.getHours();
+    mi = now.getMinutes();
+    s = now.getSeconds();
+
+    if ($("rtcY")) $("rtcY").value = y;
+    if ($("rtcMo")) $("rtcMo").value = mo;
+    if ($("rtcD")) $("rtcD").value = d;
+    if ($("rtcH")) $("rtcH").value = h;
+    if ($("rtcMi")) $("rtcMi").value = mi;
+    if ($("rtcS")) $("rtcS").value = s;
+  } else {
+    y = readNumberInput("rtcY", 2026);
+    mo = readNumberInput("rtcMo", 1);
+    d = readNumberInput("rtcD", 1);
+    h = readNumberInput("rtcH", 0);
+    mi = readNumberInput("rtcMi", 0);
+    s = readNumberInput("rtcS", 0);
+  }
+
+  const b1 = $("btnSaveRtc");
+  const b2 = $("btnSyncPhoneRtc");
+  if (b1) b1.disabled = true;
+  if (b2) b2.disabled = true;
+
+  try {
+    await writeSettingsPatch({
+      setRtc: true,
+      rtcY: y,
+      rtcMo: mo,
+      rtcD: d,
+      rtcH: h,
+      rtcMi: mi,
+      rtcS: s
+    });
+    ["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"].forEach(id => AppState.dirtyFields.delete(id));
+    setText("rtcSyncTag", "Saved ✓");
+    showToast("RTC Date & Time sent to cloud!");
+  } catch (e) {
+    showToast("RTC save failed: " + e.message, true);
+  } finally {
+    if (b1) b1.disabled = false;
+    if (b2) b2.disabled = false;
+  }
+}
+
+function initRtcInputs() {
+  const now = new Date();
+  fillInputIfClean("rtcY", now.getFullYear());
+  fillInputIfClean("rtcMo", now.getMonth() + 1);
+  fillInputIfClean("rtcD", now.getDate());
+  fillInputIfClean("rtcH", now.getHours());
+  fillInputIfClean("rtcMi", now.getMinutes());
+  fillInputIfClean("rtcS", now.getSeconds());
+}
+
+/* =========================================================
+   8. CONTROL COMMANDS
+========================================================= */
+function setControlButtonsEnabled(enabled) {
+  document.querySelectorAll(".ctrl-btn").forEach(btn => {
+    btn.disabled = !enabled;
   });
 }
 
-function togglePageLock(tabId) {
-  const panel = document.getElementById(tabId);
-  const pageName = panel?.dataset?.pageName || "Page";
-  const nextState = !isPageLocked(tabId);
-  pageLocks[tabId] = nextState;
-  savePageLocks();
-  applyPageLockUi(tabId);
-  showMsg(nextState ? `${pageName} page locked` : `${pageName} page unlocked`);
-}
-
-function guardUnlockedPage(tabId) {
-  if (!tabId) return true;
-  if (isPageLocked(tabId)) {
-    const pageName = document.getElementById(tabId)?.dataset?.pageName || "Page";
-    showMsg(`${pageName} is locked. Unlock page first`, true);
-    return false;
+function confirmStop() {
+  const activeTab = document.querySelector(".tab-panel.active")?.id;
+  if (!ensurePageUnlocked(activeTab)) return;
+  if (!isControllerOnline()) {
+    showToast("ESP is OFFLINE", true);
+    return;
   }
-  return true;
+  openStopModal();
 }
 
-function getSavedControllerCoord() {
+function confirmReset() {
+  if (!ensurePageUnlocked("tab-ctrl")) return;
+  if (!isControllerOnline()) {
+    showToast("ESP is OFFLINE", true);
+    return;
+  }
+  sendCmd("resetL");
+}
+
+async function sendCmd(cmd) {
+  const activeTab = document.querySelector(".tab-panel.active")?.id;
+  if (!ensurePageUnlocked(activeTab)) return;
+  if (!isControllerOnline()) {
+    showToast("ESP is OFFLINE — command blocked", true);
+    return;
+  }
   try {
-    const raw = localStorage.getItem(CONTROLLER_COORD_KEY);
+    await apiRequest(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cmd)
+    }, 2);
+
+    if (cmd === "start" || cmd === "z1" || cmd === "z2") {
+      startRunSession(cmd);
+    } else if (cmd === "stop") {
+      stopRunSession("Force stopped");
+    } else if (cmd === "resetL") {
+      showToast("Total litres counter reset command sent");
+      return;
+    }
+    showToast("Command sent: " + cmd.toUpperCase());
+  } catch (e) {
+    showToast("Command failed: " + e.message, true);
+  }
+}
+
+/* =========================================================
+   9. TELEMETRY & LIVE STATUS POLLING
+========================================================= */
+function bandLabel(m) {
+  if (m < 20) return "<20%";
+  if (m < 40) return "20-39%";
+  if (m < 60) return "40-59%";
+  if (m < 80) return "60-79%";
+  return "80-100%";
+}
+
+function renderAlertBanner(st, dryAlert, watering, online) {
+  const box = $("alertBanner");
+  if (!box) return;
+  if (!online) {
+    box.style.display = "none";
+    return;
+  }
+  if (dryAlert || st === "DRY!") {
+    box.className = "banner dry";
+    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
+  } else if (watering || st === "RUN" || AppState.runStartedAt > 0) {
+    const dur = AppState.runStartedAt ? formatClock(Date.now() - AppState.runStartedAt) : "00:00";
+    box.className = "banner run";
+    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${dur}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
+  } else {
+    if (AppState.runStartedAt > 0 && Date.now() >= AppState.runGraceUntil) {
+      stopRunSession("Stopped");
+    }
+    box.style.display = "none";
+  }
+}
+
+function updateOnlineState() {
+  const dot = $("netDot");
+  const badge = $("stBadge");
+  const online = isControllerOnline();
+
+  setText("hbAge", AppState.lastHeartbeatAt > 0
+    ? `${Math.max(0, Math.floor((Date.now() - AppState.lastHeartbeatAt) / 1000))}s ago`
+    : "--");
+
+  if (online) {
+    setControlButtonsEnabled(true);
+    if (dot) dot.className = "pulse-dot";
+    setText("syncAgo", "ESP Online");
+
+    const d = AppState.status || {};
+    const st = d.status || "RDY";
+    const stUpper = String(st).toUpperCase();
+
+    if (badge) {
+      badge.className = "status-pill";
+      badge.innerText = st === "RDY" ? "ONLINE" : st;
+      badge.style.color = stUpper === "DRY!" ? "#ff5252" : "#00e676";
+    }
+
+    const isDry = Boolean(d.dryAlert) || stUpper === "DRY!";
+    const isRunning = !isDry && (Boolean(d.watering) || stUpper === "RUN");
+    const modeHint = AppState.runMode
+      ? AppState.runMode
+      : (d.activeZone ? String(d.activeZone).toLowerCase() : "auto");
+
+    syncRunTimerWithHardware(isRunning, modeHint);
+    renderAlertBanner(st, Boolean(d.dryAlert), Boolean(d.watering), true);
+  } else {
+    setControlButtonsEnabled(false);
+    if (dot) dot.className = "pulse-dot off";
+    if (badge) {
+      badge.className = "status-pill offline";
+      badge.innerText = "OFFLINE";
+      badge.style.color = "";
+    }
+    setText("syncAgo", "ESP Offline");
+    AppState.geo = null;
+    syncRunTimerWithHardware(false);
+    renderAlertBanner("OFFLINE", false, false, false);
+    renderWeatherNotFound("📍 Controller offline");
+    refreshInsightsGraphs();
+  }
+
+  updateRigVisuals();
+}
+
+async function pollStatus() {
+  try {
+    const d = await apiRequest(`${DB_URL}/status.json`, {}, 2);
+    if (!d || typeof d !== "object") return;
+    AppState.status = d;
+
+    const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
+    if (rawSeen !== undefined && rawSeen !== null) {
+      const numSeen = Number(rawSeen);
+      if (numSeen !== AppState.lastSeenHeartbeatVal) {
+        AppState.lastSeenHeartbeatVal = numSeen;
+        AppState.lastHeartbeatAt = Date.now();
+      }
+    } else {
+      const sig = `${d.time}|${d.status}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`;
+      if (sig !== AppState.lastFallbackSig) {
+        AppState.lastFallbackSig = sig;
+        AppState.lastHeartbeatAt = Date.now();
+      }
+    }
+
+    const m1 = Math.max(0, Math.min(100, Number(d.m1 ?? 0)));
+    const m2 = Math.max(0, Math.min(100, Number(d.m2 ?? 0)));
+    const l1 = Math.max(0, Number(d.l1 ?? 0));
+    const l2 = Math.max(0, Number(d.l2 ?? 0));
+
+    setText("rtc", "RTC: " + (d.time || "--/--/---- --:--"));
+    setText("m1", m1 + "%");
+    setText("m2", m2 + "%");
+    setText("band1", bandLabel(m1));
+    setText("band2", bandLabel(m2));
+    if ($("b1")) $("b1").style.width = m1 + "%";
+    if ($("b2")) $("b2").style.width = m2 + "%";
+    setText("l1", l1.toFixed(2) + " L");
+    setText("l2", l2.toFixed(2) + " L");
+    setText("wifiState", d.staSsid || "Not set");
+    setText("ipState", d.staIP || "--");
+    setText("curSsid", d.staSsid || "Not set");
+    setText("curIp", d.staIP || "--");
+
+    if (isControllerOnline()) {
+      recordInsightPoint(m1, m2, l1, l2, AppState.weather);
+    }
+
+    refreshInsightsGraphs();
+    updateOnlineState();
+    updateWeather(false);
+  } catch (e) {
+    updateOnlineState();
+  }
+}
+
+/* =========================================================
+   10. COORDINATES & LEAFLET MAP
+========================================================= */
+function getSavedCoord() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.COORD);
     if (!raw) return null;
     const d = JSON.parse(raw);
     const lat = Number(d?.lat);
     const lon = Number(d?.lon);
-    if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
     return {
       lat,
       lon,
@@ -1991,211 +2325,113 @@ function getSavedControllerCoord() {
   }
 }
 
-async function pushControllerCoordToCloud(coordObj) {
-  await fetchJsonSafe(CONTROLLER_COORD_CLOUD_PATH, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(coordObj || null)
-  }, 2);
-}
-
-async function syncControllerCoordFromCloud(forceRefresh = false) {
-  const now = Date.now();
-  if (!forceRefresh && lastCloudCoordSyncAt > 0 && (now - lastCloudCoordSyncAt) < 10000) {
-    return getSavedControllerCoord();
-  }
-  lastCloudCoordSyncAt = now;
-
+function setCoordLock(locked, notify = false) {
+  AppState.coordLocked = Boolean(locked);
   try {
-    const cloudCoord = await fetchJsonSafe(CONTROLLER_COORD_CLOUD_PATH, {}, 1);
-    if (cloudCoord && cloudCoord.lat !== undefined && cloudCoord.lon !== undefined) {
-      const lat = Number(cloudCoord.lat);
-      const lon = Number(cloudCoord.lon);
-      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-        const localSaved = getSavedControllerCoord();
-        const cloudUpdated = Number(cloudCoord.updatedAt || 0);
-        const changed =
-          !localSaved ||
-          Math.abs(localSaved.lat - lat) > 0.000001 ||
-          Math.abs(localSaved.lon - lon) > 0.000001 ||
-          (cloudUpdated > 0 && cloudUpdated !== Number(localSaved.updatedAt || 0));
-
-        const normalized = {
-          lat,
-          lon,
-          place: cloudCoord.place ? String(cloudCoord.place).trim() : "",
-          method: cloudCoord.method ? String(cloudCoord.method).trim() : "Cloud Sync",
-          updatedAt: cloudUpdated || Date.now()
-        };
-
-        localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify(normalized));
-
-        if (changed) {
-          cachedGeo = {
-            source: "controller_coord",
-            lat,
-            lon,
-            place: normalized.place || `${lat.toFixed(4)}, ${lon.toFixed(4)}`
-          };
-          lastWeatherFetchAt = 0;
-          renderSavedCoordSummary();
-          if (isEspAliveNow()) {
-            await updateAreaWeather(true);
-          }
-        }
-        return normalized;
-      }
-    } else if (cloudCoord === null && getSavedControllerCoord()) {
-      localStorage.removeItem(CONTROLLER_COORD_KEY);
-      cachedGeo = null;
-      lastWeatherFetchAt = 0;
-      renderSavedCoordSummary();
-      if (isEspAliveNow()) {
-        await updateAreaWeather(true);
-      }
-    }
-  } catch (e) {
-    console.warn("Cloud coord sync failed:", e);
-  }
-  return getSavedControllerCoord();
-}
-
-function setCoordLockState(locked, showToast = false) {
-  isCoordLocked = Boolean(locked);
-  try {
-    localStorage.setItem(CONTROLLER_LOCK_KEY, isCoordLocked ? "1" : "0");
+    localStorage.setItem(STORAGE_KEYS.COORD_LOCK, AppState.coordLocked ? "1" : "0");
   } catch (e) {}
 
-  const statusEl = document.getElementById("coordLockStatus");
-  const btnEl = document.getElementById("coordLockBtn");
-  const latEl = document.getElementById("manLat");
-  const lonEl = document.getElementById("manLon");
-  const searchInp = document.getElementById("mapSearchInput");
-  const searchBtn = document.getElementById("mapSearchBtn");
-  const addBtn = document.getElementById("addCoordBtn");
-  const clrBtn = document.getElementById("clearCoordBtn");
-  const getBtn = document.getElementById("getCoordBtn");
-
-  if (statusEl) {
-    statusEl.innerText = isCoordLocked ? "🔒 Pin Locked (Protected)" : "🔓 Unlocked (Editable)";
-    statusEl.classList.toggle("locked", isCoordLocked);
+  const st = $("coordLockStatus");
+  const btn = $("coordLockBtn");
+  if (st) {
+    st.innerText = AppState.coordLocked ? "🔒 Pin Locked (Protected)" : "🔓 Unlocked (Editable)";
+    st.classList.toggle("locked", AppState.coordLocked);
   }
-  if (btnEl) {
-    btnEl.innerText = isCoordLocked ? "🔓 Unlock Pin" : "🔒 Lock Pin";
-    btnEl.classList.toggle("is-locked", isCoordLocked);
+  if (btn) {
+    btn.innerText = AppState.coordLocked ? "🔓 Unlock Pin" : "🔒 Lock Pin";
+    btn.classList.toggle("is-locked", AppState.coordLocked);
   }
 
-  if (latEl) latEl.readOnly = isCoordLocked;
-  if (lonEl) lonEl.readOnly = isCoordLocked;
-  if (searchInp) searchInp.disabled = isCoordLocked;
-  if (searchBtn) searchBtn.disabled = isCoordLocked;
-  if (addBtn) addBtn.disabled = isCoordLocked;
-  if (clrBtn) clrBtn.disabled = isCoordLocked;
-  if (getBtn) getBtn.disabled = isCoordLocked;
+  if ($("manLat")) $("manLat").readOnly = AppState.coordLocked;
+  if ($("manLon")) $("manLon").readOnly = AppState.coordLocked;
+  if ($("mapSearchInput")) $("mapSearchInput").disabled = AppState.coordLocked;
+  if ($("mapSearchBtn")) $("mapSearchBtn").disabled = AppState.coordLocked;
+  if ($("addCoordBtn")) $("addCoordBtn").disabled = AppState.coordLocked;
+  if ($("clearCoordBtn")) $("clearCoordBtn").disabled = AppState.coordLocked;
+  if ($("getCoordBtn")) $("getCoordBtn").disabled = AppState.coordLocked;
 
-  if (showToast) {
-    showMsg(isCoordLocked ? "Controller pin locked" : "Controller pin unlocked for editing");
+  if (notify) {
+    showToast(AppState.coordLocked ? "Controller pin locked" : "Controller pin unlocked for editing");
   }
 }
 
 function toggleCoordLock() {
-  if (!guardUnlockedPage("tab-coord")) return;
-  const saved = getSavedControllerCoord();
-  if (!isCoordLocked && !saved) {
-    showMsg("Save a coordinate first before locking", true);
+  if (!ensurePageUnlocked("tab-coord")) return;
+  if (!AppState.coordLocked && !getSavedCoord()) {
+    showToast("Save a coordinate first before locking", true);
     return;
   }
-  setCoordLockState(!isCoordLocked, true);
+  setCoordLock(!AppState.coordLocked, true);
 }
 
 function setControllerMapMode(mode) {
-  if (!guardUnlockedPage("tab-coord")) return;
-  currentMapMode = mode === "satellite" ? "satellite" : "street";
-  document.getElementById("btnMapStreet")?.classList.toggle("active", currentMapMode === "street");
-  document.getElementById("btnMapSat")?.classList.toggle("active", currentMapMode === "satellite");
+  if (!ensurePageUnlocked("tab-coord")) return;
+  AppState.mapMode = mode === "satellite" ? "satellite" : "street";
+  $("btnMapStreet")?.classList.toggle("active", AppState.mapMode === "street");
+  $("btnMapSat")?.classList.toggle("active", AppState.mapMode === "satellite");
 
-  if (!coordMapInstance || !coordStreetLayer || !coordSatelliteLayer || !coordLabelsLayer) return;
+  if (!AppState.map || !AppState.streetLayer || !AppState.satLayer || !AppState.labelsLayer) return;
 
-  if (currentMapMode === "satellite") {
-    if (coordMapInstance.hasLayer(coordStreetLayer)) coordMapInstance.removeLayer(coordStreetLayer);
-    if (!coordMapInstance.hasLayer(coordSatelliteLayer)) coordSatelliteLayer.addTo(coordMapInstance);
-    if (!coordMapInstance.hasLayer(coordLabelsLayer)) coordLabelsLayer.addTo(coordMapInstance);
+  if (AppState.mapMode === "satellite") {
+    if (AppState.map.hasLayer(AppState.streetLayer)) AppState.map.removeLayer(AppState.streetLayer);
+    if (!AppState.map.hasLayer(AppState.satLayer)) AppState.satLayer.addTo(AppState.map);
+    if (!AppState.map.hasLayer(AppState.labelsLayer)) AppState.labelsLayer.addTo(AppState.map);
   } else {
-    if (coordMapInstance.hasLayer(coordSatelliteLayer)) coordMapInstance.removeLayer(coordSatelliteLayer);
-    if (coordMapInstance.hasLayer(coordLabelsLayer)) coordMapInstance.removeLayer(coordLabelsLayer);
-    if (!coordMapInstance.hasLayer(coordStreetLayer)) coordStreetLayer.addTo(coordMapInstance);
+    if (AppState.map.hasLayer(AppState.satLayer)) AppState.map.removeLayer(AppState.satLayer);
+    if (AppState.map.hasLayer(AppState.labelsLayer)) AppState.map.removeLayer(AppState.labelsLayer);
+    if (!AppState.map.hasLayer(AppState.streetLayer)) AppState.streetLayer.addTo(AppState.map);
   }
 }
 
 function initControllerMap() {
-  const mapEl = document.getElementById("coordMap");
-  const statusEl = document.getElementById("mapTileStatus");
+  const mapEl = $("coordMap");
   if (!mapEl) return;
-
   if (typeof L === "undefined") {
-    if (statusEl) statusEl.innerText = "Map library offline";
+    setText("mapTileStatus", "Map library offline");
     return;
   }
 
-  if (!coordMapInstance) {
-    const saved = getSavedControllerCoord();
+  if (!AppState.map) {
+    const saved = getSavedCoord();
     const startLat = saved ? saved.lat : 26.51667;
     const startLon = saved ? saved.lon : 88.73333;
-    const startZoom = saved ? 16 : 14;
 
-    coordMapInstance = L.map("coordMap", {
+    AppState.map = L.map("coordMap", {
       center: [startLat, startLon],
-      zoom: startZoom,
+      zoom: saved ? 16 : 14,
       zoomControl: true,
       attributionControl: false
     });
 
-    coordStreetLayer = L.tileLayer(
+    AppState.streetLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19 }
     );
-
-    coordSatelliteLayer = L.tileLayer(
+    AppState.satLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19 }
     );
-
-    coordLabelsLayer = L.tileLayer(
+    AppState.labelsLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19 }
     );
 
-    const attachTileEvents = layer => {
-      layer.on("tileerror", () => {
-        if (statusEl) statusEl.innerText = "Tile load issue";
-      });
-      layer.on("load", () => {
-        if (statusEl) statusEl.innerText = "Tap map or save pin";
-      });
-    };
-
-    attachTileEvents(coordStreetLayer);
-    attachTileEvents(coordSatelliteLayer);
-    attachTileEvents(coordLabelsLayer);
-
-    if (currentMapMode === "satellite") {
-      coordSatelliteLayer.addTo(coordMapInstance);
-      coordLabelsLayer.addTo(coordMapInstance);
+    if (AppState.mapMode === "satellite") {
+      AppState.satLayer.addTo(AppState.map);
+      AppState.labelsLayer.addTo(AppState.map);
     } else {
-      coordStreetLayer.addTo(coordMapInstance);
+      AppState.streetLayer.addTo(AppState.map);
     }
 
-    coordMapInstance.on("click", e => {
-      if (!guardUnlockedPage("tab-coord")) return;
-      if (isCoordLocked) {
-        showMsg("Pin is locked. Unlock first to move pin", true);
+    AppState.map.on("click", e => {
+      if (!ensurePageUnlocked("tab-coord")) return;
+      if (AppState.coordLocked) {
+        showToast("Pin is locked. Unlock first to move pin", true);
         return;
       }
-      const clickedLat = Number(e.latlng.lat);
-      const clickedLon = Number(e.latlng.lng);
-      applyFetchedCoordToUi(
-        clickedLat,
-        clickedLon,
+      applyPendingCoord(
+        Number(e.latlng.lat),
+        Number(e.latlng.lng),
         "Map Pin Selection",
         "Map point selected. Tap 'Add Controller Coordinate' to save"
       );
@@ -2203,391 +2439,467 @@ function initControllerMap() {
   }
 
   setTimeout(() => {
-    if (coordMapInstance) coordMapInstance.invalidateSize();
+    if (AppState.map) AppState.map.invalidateSize();
   }, 120);
 
-  syncControllerMapPin();
+  syncMapMarker();
 }
 
-async function searchMapArea() {
-  if (!guardUnlockedPage("tab-coord")) return;
-  if (isCoordLocked) {
-    showMsg("Pin is locked. Unlock first to search & change area", true);
-    return;
-  }
-
-  const inputEl = document.getElementById("mapSearchInput");
-  const btnEl = document.getElementById("mapSearchBtn");
-  const statusEl = document.getElementById("mapTileStatus");
-  const query = inputEl ? inputEl.value.trim() : "";
-
-  if (!query) {
-    showMsg("Enter an area or place name to search", true);
-    return;
-  }
-
-  if (btnEl) btnEl.disabled = true;
-  if (statusEl) statusEl.innerText = "Searching area...";
-  showMsg("Searching for " + query + "...");
-
-  try {
-    let lat = NaN;
-    let lon = NaN;
-    let shortName = query;
-
-    try {
-      const arcUrl = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&SingleLine=${encodeURIComponent(query)}`;
-      const arcRes = await fetchJsonSafe(arcUrl, {}, 1);
-      const cand = arcRes && Array.isArray(arcRes.candidates) && arcRes.candidates.length > 0
-        ? arcRes.candidates[0]
-        : null;
-
-      if (cand && cand.location) {
-        lat = Number(cand.location.y);
-        lon = Number(cand.location.x);
-        if (cand.address) {
-          shortName = String(cand.address).split(",").slice(0, 2).join(", ").trim() || query;
-        }
-      }
-    } catch (e) {
-      console.warn("ArcGIS search fallback to Nominatim:", e);
-    }
-
-    if (Number.isNaN(lat) || Number.isNaN(lon)) {
-      const nomUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
-      const results = await fetchJsonSafe(nomUrl, {}, 1);
-      const best = Array.isArray(results) && results.length > 0 ? results[0] : null;
-      if (best && best.lat !== undefined && best.lon !== undefined) {
-        lat = Number(best.lat);
-        lon = Number(best.lon);
-        if (best.display_name) {
-          shortName = String(best.display_name).split(",").slice(0, 2).join(", ").trim() || query;
-        }
-      }
-    }
-
-    if (Number.isNaN(lat) || Number.isNaN(lon)) {
-      if (statusEl) statusEl.innerText = "Place not found";
-      showMsg("Area not found. Try another name", true);
-      return;
-    }
-
-    if (!coordMapInstance) {
-      initControllerMap();
-    }
-
-    applyFetchedCoordToUi(
-      lat,
-      lon,
-      "Area Search",
-      `Found: ${shortName}. Tap 'Add Controller Coordinate' to save`
-    );
-
-    if (coordMapInstance) {
-      coordMapInstance.setView([lat, lon], 15, { animate: true });
-      syncControllerMapPin(lat, lon, shortName);
-    }
-
-    if (statusEl) statusEl.innerText = shortName;
-  } catch (e) {
-    console.warn("searchMapArea failed:", e);
-    if (statusEl) statusEl.innerText = "Search error";
-    showMsg("Area search failed. Check internet and try again", true);
-  } finally {
-    if (btnEl) btnEl.disabled = false;
-  }
-}
-
-function syncControllerMapPin(overrideLat = null, overrideLon = null, overrideTitle = null) {
-  const labelEl = document.getElementById("mapCoordLabel");
-  const saved = getSavedControllerCoord();
-
-  const lat = overrideLat !== null && !Number.isNaN(Number(overrideLat))
+function syncMapMarker(overrideLat = null, overrideLon = null, overrideTitle = null) {
+  const saved = getSavedCoord();
+  const lat = overrideLat !== null && Number.isFinite(Number(overrideLat))
     ? Number(overrideLat)
     : (saved ? saved.lat : null);
-  const lon = overrideLon !== null && !Number.isNaN(Number(overrideLon))
+  const lon = overrideLon !== null && Number.isFinite(Number(overrideLon))
     ? Number(overrideLon)
     : (saved ? saved.lon : null);
 
   if (lat === null || lon === null || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-    if (labelEl) labelEl.innerText = "Not set";
-    if (coordMapInstance && coordMapMarker) {
-      coordMapInstance.removeLayer(coordMapMarker);
-      coordMapMarker = null;
+    setText("mapCoordLabel", "Not set");
+    if (AppState.map && AppState.mapMarker) {
+      AppState.map.removeLayer(AppState.mapMarker);
+      AppState.mapMarker = null;
     }
-    if (coordMapInstance && coordMapCircle) {
-      coordMapInstance.removeLayer(coordMapCircle);
-      coordMapCircle = null;
+    if (AppState.map && AppState.mapCircle) {
+      AppState.map.removeLayer(AppState.mapCircle);
+      AppState.mapCircle = null;
     }
     return;
   }
 
-  const titleText = overrideTitle || (saved && saved.place) || "Controller Location";
-  if (labelEl) labelEl.innerText = `${titleText} (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+  const title = overrideTitle || (saved && saved.place) || "Controller Location";
+  setText("mapCoordLabel", `${title} (${lat.toFixed(5)}, ${lon.toFixed(5)})`);
 
-  if (!coordMapInstance || typeof L === "undefined") return;
+  if (!AppState.map || typeof L === "undefined") return;
 
-  if (!coordMapMarker) {
-    coordMapMarker = L.circleMarker([lat, lon], {
+  if (!AppState.mapMarker) {
+    AppState.mapMarker = L.circleMarker([lat, lon], {
       radius: 8,
       color: "#060a12",
       weight: 2.5,
       fillColor: "#00e5ff",
       fillOpacity: 1
-    }).addTo(coordMapInstance);
+    }).addTo(AppState.map);
   } else {
-    coordMapMarker.setLatLng([lat, lon]);
+    AppState.mapMarker.setLatLng([lat, lon]);
   }
 
-  if (!coordMapCircle) {
-    coordMapCircle = L.circle([lat, lon], {
+  if (!AppState.mapCircle) {
+    AppState.mapCircle = L.circle([lat, lon], {
       radius: 80,
       color: "#00e5ff",
       weight: 1.2,
       fillColor: "#00e5ff",
       fillOpacity: 0.14
-    }).addTo(coordMapInstance);
+    }).addTo(AppState.map);
   } else {
-    coordMapCircle.setLatLng([lat, lon]);
+    AppState.mapCircle.setLatLng([lat, lon]);
   }
 
-  coordMapMarker.bindPopup(`<b>${titleText}</b><br>${lat.toFixed(6)}, ${lon.toFixed(6)}`);
-  coordMapInstance.setView([lat, lon], 15, { animate: true });
+  AppState.mapMarker.bindPopup(`<b>${title}</b><br>${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+  AppState.map.setView([lat, lon], 15, { animate: true });
 }
 
 function renderSavedCoordSummary() {
-  const saved = getSavedControllerCoord();
-  const chip = document.getElementById("coordStatusChip");
-  const txt = document.getElementById("savedCoordText");
-  const pl = document.getElementById("savedCoordPlace");
-  const src = document.getElementById("coordSourceText");
-  if (!chip || !txt || !pl || !src) return;
-
+  const saved = getSavedCoord();
+  const chip = $("coordStatusChip");
   if (saved) {
-    chip.innerText = "Active";
-    chip.style.color = "#00e676";
-    txt.innerText = `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`;
-    pl.innerText = saved.place || "Resolving...";
-    src.innerText = saved.method || "Cloud Sync";
+    if (chip) {
+      chip.innerText = "Active";
+      chip.style.color = "#00e676";
+    }
+    setText("savedCoordText", `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`);
+    setText("savedCoordPlace", saved.place || "Resolving...");
+    setText("coordSourceText", saved.method || "Cloud Sync");
   } else {
-    chip.innerText = "Not Set";
-    chip.style.color = "#94a3b8";
-    txt.innerText = "--";
-    pl.innerText = "--";
-    src.innerText = "--";
-  }
-  syncControllerMapPin();
-}
-
-async function fetchFallbackIpCoord() {
-  try {
-    const g = await fetchJsonSafe("https://ipwho.is", {}, 1);
-    if (g && g.success !== false && g.latitude !== undefined && g.longitude !== undefined) {
-      const lat = Number(g.latitude);
-      const lon = Number(g.longitude);
-      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-        return { lat, lon, place: g.city || g.region || "", method: "App Network Location" };
-      }
+    if (chip) {
+      chip.innerText = "Not Set";
+      chip.style.color = "#94a3b8";
     }
-  } catch (e) {}
-
-  try {
-    const g2 = await fetchJsonSafe("https://ipapi.co/json/", {}, 1);
-    if (g2 && g2.latitude !== undefined && g2.longitude !== undefined) {
-      const lat = Number(g2.latitude);
-      const lon = Number(g2.longitude);
-      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-        return { lat, lon, place: g2.city || g2.region || "", method: "App Network Location" };
-      }
-    }
-  } catch (e) {}
-
-  return null;
+    setText("savedCoordText", "--");
+    setText("savedCoordPlace", "--");
+    setText("coordSourceText", "--");
+  }
+  syncMapMarker();
 }
 
-function applyFetchedCoordToUi(lat, lon, methodName, noteText) {
-  const nLat = Number(lat);
-  const nLon = Number(lon);
-  pendingFetchedCoord = { lat: nLat, lon: nLon, method: methodName || "App Location" };
-
-  const latEl = document.getElementById("manLat");
-  const lonEl = document.getElementById("manLon");
-  const addBtn = document.getElementById("addCoordBtn");
-
-  if (latEl) {
-    latEl.value = nLat.toFixed(6);
-    dirtyInputs.add("manLat");
+function applyPendingCoord(lat, lon, method, toastMsg) {
+  AppState.pendingCoord = { lat, lon, method: method || "App Location" };
+  if ($("manLat")) {
+    $("manLat").value = lat.toFixed(6);
+    AppState.dirtyFields.add("manLat");
   }
-  if (lonEl) {
-    lonEl.value = nLon.toFixed(6);
-    dirtyInputs.add("manLon");
+  if ($("manLon")) {
+    $("manLon").value = lon.toFixed(6);
+    AppState.dirtyFields.add("manLon");
   }
-  if (addBtn && !isCoordLocked) addBtn.disabled = false;
-
-  syncControllerMapPin(nLat, nLon, "Fetched Coordinate");
-  showMsg(noteText || "Coordinates ready. Tap 'Add Controller Coordinate'");
+  syncMapMarker(lat, lon, "Selected Coordinate");
+  showToast(toastMsg || "Coordinates ready. Tap 'Add Controller Coordinate'");
 }
 
-function getDeviceCoordinates() {
-  if (!guardUnlockedPage("tab-coord")) return;
-  if (isCoordLocked) {
-    showMsg("Pin is locked. Unlock first to fetch new coordinates", true);
+async function searchMapArea() {
+  if (!ensurePageUnlocked("tab-coord")) return;
+  if (AppState.coordLocked) {
+    showToast("Pin is locked. Unlock first to search area", true);
     return;
   }
 
-  showMsg("Fetching coordinates from app...");
+  const query = ($("mapSearchInput")?.value || "").trim();
+  if (!query) {
+    showToast("Enter an area or place name to search", true);
+    return;
+  }
 
-  const tryIpFallback = async () => {
-    const ipGeo = await fetchFallbackIpCoord();
-    if (ipGeo) {
-      applyFetchedCoordToUi(
-        ipGeo.lat,
-        ipGeo.lon,
-        ipGeo.method,
-        "App network coordinates ready. Tap 'Add Controller Coordinate'"
-      );
+  const btn = $("mapSearchBtn");
+  if (btn) btn.disabled = true;
+  setText("mapTileStatus", "Searching...");
+
+  try {
+    let lat = NaN;
+    let lon = NaN;
+    let placeName = query;
+
+    try {
+      const arcUrl = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&SingleLine=${encodeURIComponent(query)}`;
+      const arc = await apiRequest(arcUrl, {}, 1);
+      const cand = arc?.candidates?.[0];
+      if (cand?.location) {
+        lat = Number(cand.location.y);
+        lon = Number(cand.location.x);
+        if (cand.address) placeName = String(cand.address).split(",").slice(0, 2).join(", ").trim() || query;
+      }
+    } catch (e) {}
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      const nomUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
+      const res = await apiRequest(nomUrl, {}, 1);
+      const best = Array.isArray(res) ? res[0] : null;
+      if (best) {
+        lat = Number(best.lat);
+        lon = Number(best.lon);
+        if (best.display_name) placeName = String(best.display_name).split(",").slice(0, 2).join(", ").trim() || query;
+      }
+    }
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      setText("mapTileStatus", "Place not found");
+      showToast("Area not found. Try another name", true);
       return;
     }
-    showMsg("Auto coordinates unavailable. Type Lat/Lon manually", true);
+
+    if (!AppState.map) initControllerMap();
+    applyPendingCoord(lat, lon, "Area Search", `Found: ${placeName}. Tap 'Add Controller Coordinate'`);
+    syncMapMarker(lat, lon, placeName);
+    setText("mapTileStatus", placeName);
+  } catch (e) {
+    setText("mapTileStatus", "Search error");
+    showToast("Area search failed", true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function getDeviceCoordinates() {
+  if (!ensurePageUnlocked("tab-coord")) return;
+  if (AppState.coordLocked) {
+    showToast("Pin is locked. Unlock first to fetch coordinates", true);
+    return;
+  }
+
+  showToast("Fetching coordinates...");
+
+  const fallbackIp = async () => {
+    try {
+      const g = await apiRequest("https://ipwho.is", {}, 1);
+      if (g && g.success !== false && Number.isFinite(Number(g.latitude)) && Number.isFinite(Number(g.longitude))) {
+        applyPendingCoord(Number(g.latitude), Number(g.longitude), "App Network Location", "Network coordinates ready");
+        return;
+      }
+    } catch (e) {}
+    showToast("Auto coordinates unavailable. Type Lat/Lon manually", true);
   };
 
   if (!navigator.geolocation) {
-    tryIpFallback();
+    fallbackIp();
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      applyFetchedCoordToUi(
-        pos.coords.latitude,
-        pos.coords.longitude,
-        "App GPS",
-        "App GPS coordinates fetched. Tap 'Add Controller Coordinate'"
-      );
-    },
-    () => {
-      navigator.geolocation.getCurrentPosition(
-        pos2 => {
-          applyFetchedCoordToUi(
-            pos2.coords.latitude,
-            pos2.coords.longitude,
-            "App Device Location",
-            "App coordinates fetched. Tap 'Add Controller Coordinate'"
-          );
-        },
-        () => {
-          tryIpFallback();
-        },
-        { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 }
-      );
-    },
+    pos => applyPendingCoord(pos.coords.latitude, pos.coords.longitude, "App GPS", "GPS coordinates fetched"),
+    () => fallbackIp(),
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
 }
 
+async function reverseGeocodePlace(lat, lon) {
+  try {
+    const r = await apiRequest(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=12`,
+      {},
+      0
+    );
+    const addr = r?.address || {};
+    const name = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || addr.state;
+    return name ? String(name).trim() : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function addControllerCoordinate() {
-  if (!guardUnlockedPage("tab-coord")) return;
-  if (isCoordLocked) {
-    showMsg("Pin is locked. Unlock first to update coordinate", true);
+  if (!ensurePageUnlocked("tab-coord")) return;
+  if (AppState.coordLocked) {
+    showToast("Pin is locked. Unlock first to update coordinate", true);
     return;
   }
 
-  const rawLat = document.getElementById("manLat")?.value?.trim();
-  const rawLon = document.getElementById("manLon")?.value?.trim();
+  const latVal = readNumberInput("manLat", AppState.pendingCoord?.lat ?? NaN);
+  const lonVal = readNumberInput("manLon", AppState.pendingCoord?.lon ?? NaN);
 
-  const latVal = rawLat ? Number(rawLat) : Number(pendingFetchedCoord?.lat);
-  const lonVal = rawLon ? Number(rawLon) : Number(pendingFetchedCoord?.lon);
-
-  if (
-    Number.isNaN(latVal) ||
-    Number.isNaN(lonVal) ||
-    latVal < -90 ||
-    latVal > 90 ||
-    lonVal < -180 ||
-    lonVal > 180
-  ) {
-    showMsg("Enter valid Latitude and Longitude first", true);
+  if (!Number.isFinite(latVal) || !Number.isFinite(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
+    showToast("Enter valid Latitude and Longitude first", true);
     return;
   }
 
-  const resolvedPlace =
-    (await reverseGeocodePlace(latVal, lonVal)) ||
-    `${latVal.toFixed(4)}, ${lonVal.toFixed(4)}`;
-
-  const methodUsed = pendingFetchedCoord?.method || "Manual App Coordinate";
-  const coordPayload = {
+  const place = (await reverseGeocodePlace(latVal, lonVal)) || `${latVal.toFixed(4)}, ${lonVal.toFixed(4)}`;
+  const payload = {
     lat: latVal,
     lon: lonVal,
-    place: resolvedPlace,
-    method: methodUsed,
+    place,
+    method: AppState.pendingCoord?.method || "Manual App Coordinate",
     updatedAt: Date.now()
   };
 
-  localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify(coordPayload));
+  localStorage.setItem(STORAGE_KEYS.COORD, JSON.stringify(payload));
+  AppState.dirtyFields.delete("manLat");
+  AppState.dirtyFields.delete("manLon");
 
-  let cloudSynced = false;
+  let cloudOk = false;
   try {
-    await pushControllerCoordToCloud(coordPayload);
-    cloudSynced = true;
-  } catch (e) {
-    console.warn("Failed to save coord to Firebase:", e);
-  }
+    await writeSettingsPatch({ controllerCoord: payload });
+    cloudOk = true;
+  } catch (e) {}
 
-  cachedGeo = {
-    source: "controller_coord",
-    lat: latVal,
-    lon: lonVal,
-    place: resolvedPlace
-  };
-  lastWeatherFetchAt = 0;
-
+  AppState.geo = { source: "controller_coord", lat: latVal, lon: lonVal, place };
+  AppState.lastWeatherFetchAt = 0;
   renderSavedCoordSummary();
-  setCoordLockState(true, false);
-  await updateAreaWeather(true);
-  showMsg(
-    cloudSynced
-      ? "Saved to cloud & locked: " + resolvedPlace
-      : "Saved locally (cloud offline): " + resolvedPlace
-  );
+  setCoordLock(true, false);
+  await updateWeather(true);
+
+  showToast(cloudOk ? `Saved & locked: ${place}` : `Saved locally: ${place}`);
 }
 
 async function clearControllerCoordinate() {
-  if (!guardUnlockedPage("tab-coord")) return;
-  if (isCoordLocked) {
-    showMsg("Pin is locked. Unlock first to clear coordinate", true);
+  if (!ensurePageUnlocked("tab-coord")) return;
+  if (AppState.coordLocked) {
+    showToast("Pin is locked. Unlock first to clear coordinate", true);
     return;
   }
 
-  localStorage.removeItem(CONTROLLER_COORD_KEY);
-  pendingFetchedCoord = null;
-  const latEl = document.getElementById("manLat");
-  const lonEl = document.getElementById("manLon");
-  if (latEl) {
-    latEl.value = "";
-    dirtyInputs.delete("manLat");
-  }
-  if (lonEl) {
-    lonEl.value = "";
-    dirtyInputs.delete("manLon");
-  }
+  localStorage.removeItem(STORAGE_KEYS.COORD);
+  AppState.pendingCoord = null;
+  if ($("manLat")) $("manLat").value = "";
+  if ($("manLon")) $("manLon").value = "";
+  AppState.dirtyFields.delete("manLat");
+  AppState.dirtyFields.delete("manLon");
 
   try {
-    await pushControllerCoordToCloud(null);
-  } catch (e) {
-    console.warn("Failed to clear cloud coord:", e);
-  }
+    await writeSettingsPatch({ controllerCoord: null });
+  } catch (e) {}
 
-  cachedGeo = null;
-  lastWeatherFetchAt = 0;
+  AppState.geo = null;
+  AppState.lastWeatherFetchAt = 0;
   renderSavedCoordSummary();
-  setCoordLockState(false, false);
-  updateAreaWeather(true);
-  showMsg("Controller coordinate cleared from cloud");
+  setCoordLock(false, false);
+  updateWeather(true);
+  showToast("Controller coordinate cleared");
 }
 
+/* =========================================================
+   11. AREA WEATHER ENGINE
+========================================================= */
+function getWeatherVisual(code, isDay = 1) {
+  const sunSvg = `<svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+    <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
+    <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
+      <line x1="32" y1="7" x2="32" y2="13"/><line x1="32" y1="51" x2="32" y2="57"/>
+      <line x1="7" y1="32" x2="13" y2="32"/><line x1="51" y1="32" x2="57" y2="32"/>
+      <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/><line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
+      <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/><line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
+    </g></svg>`;
+
+  const moonSvg = `<svg class="wx-svg-float" width="36" height="36" viewBox="0 0 64 64" fill="none">
+    <path d="M40 14a18 18 0 1 0 10 33 15 15 0 0 1-10-33z" fill="#fde68a"/>
+    <circle cx="46" cy="18" r="2" fill="#00e5ff"/><circle cx="51" cy="26" r="1.5" fill="#fff"/>
+  </svg>`;
+
+  const partlyCloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <circle cx="24" cy="24" r="10" fill="${isDay ? "#fbbf24" : "#fde68a"}"/>
+    <path d="M22 46h24a10 10 0 0 0 1.4-19.9A13 13 0 0 0 22.3 29 8.5 8.5 0 0 0 22 46z" fill="#e2e8f0"/>
+  </svg>`;
+
+  const cloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <path d="M18 45h28a11 11 0 0 0 1.5-21.9A14.5 14.5 0 0 0 19.5 26 9.5 9.5 0 0 0 18 45z" fill="#94a3b8"/>
+    <path d="M23 48h24a8 8 0 0 0 1-15.9A10.5 10.5 0 0 0 27.5 34 7 7 0 0 0 23 48z" fill="#cbd5e1"/>
+  </svg>`;
+
+  const rainSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <path d="M18 39h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 21 9 9 0 0 0 18 39z" fill="#cbd5e1"/>
+    <g stroke="#00e5ff" stroke-width="3" stroke-linecap="round">
+      <line x1="23" y1="44" x2="20" y2="52"/>
+      <line x1="33" y1="44" x2="30" y2="52"/>
+      <line x1="43" y1="44" x2="40" y2="52"/>
+    </g>
+  </svg>`;
+
+  const stormSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+    <path d="M18 38h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 20 9 9 0 0 0 18 38z" fill="#94a3b8"/>
+    <polygon points="33,38 25,49 32,49 29,58 41,45 34,45" fill="#fbbf24"/>
+  </svg>`;
+
+  if (code === 0) return { label: isDay ? "Clear Sky" : "Clear Night", svg: isDay ? sunSvg : moonSvg, rainRisk: false };
+  if (code <= 2) return { label: "Partly Cloudy", svg: partlyCloudSvg, rainRisk: false };
+  if (code === 3) return { label: "Overcast", svg: cloudSvg, rainRisk: false };
+  if (code === 45 || code === 48) return { label: "Fog / Mist", svg: cloudSvg, rainRisk: false };
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { label: "Rain / Showers", svg: rainSvg, rainRisk: true };
+  if (code >= 95) return { label: "Thunderstorm", svg: stormSvg, rainRisk: true };
+  return { label: "Cloudy", svg: cloudSvg, rainRisk: false };
+}
+
+function renderWeatherNotFound(locText = "📍 Controller offline") {
+  AppState.weather = null;
+  setText("wxTemp", "--°C");
+  setText("wxCond", "Weather info not found");
+  setText("wxLoc", locText);
+  setText("wxHum", "--%");
+  setText("wxWind", "-- km/h");
+  setText("wxRain", "-- mm");
+
+  const adv = $("wxAdvice");
+  if (adv) {
+    adv.innerText = isControllerOnline() ? "Not Found" : "Offline";
+    adv.style.color = "#94a3b8";
+  }
+}
+
+async function resolveGeo() {
+  if (!isControllerOnline() || !AppState.status) return null;
+  const d = AppState.status;
+
+  if (d.lat !== undefined && d.lat !== null && d.lon !== undefined && d.lon !== null) {
+    const lat = Number(d.lat);
+    const lon = Number(d.lon);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      const explicit = d.city || d.area || d.locationName || d.place;
+      const place = explicit
+        ? String(explicit).trim()
+        : ((await reverseGeocodePlace(lat, lon)) || `${lat.toFixed(4)}, ${lon.toFixed(4)}`);
+      AppState.geo = { lat, lon, place };
+      return AppState.geo;
+    }
+  }
+
+  const saved = getSavedCoord();
+  if (saved) {
+    const place = saved.place || (await reverseGeocodePlace(saved.lat, saved.lon)) || `${saved.lat.toFixed(4)}, ${saved.lon.toFixed(4)}`;
+    AppState.geo = { lat: saved.lat, lon: saved.lon, place };
+    return AppState.geo;
+  }
+
+  const ctrlIp = String(d.pubIP || d.publicIp || d.wanIp || "").trim();
+  if (ctrlIp) {
+    if (AppState.geo && AppState.geo.ip === ctrlIp) return AppState.geo;
+    try {
+      const g = await apiRequest(`https://ipwho.is/${encodeURIComponent(ctrlIp)}`, {}, 0);
+      if (g && g.success !== false && Number.isFinite(Number(g.latitude)) && Number.isFinite(Number(g.longitude))) {
+        AppState.geo = {
+          ip: ctrlIp,
+          lat: Number(g.latitude),
+          lon: Number(g.longitude),
+          place: String(g.city || g.region || g.country || ctrlIp).trim()
+        };
+        return AppState.geo;
+      }
+    } catch (e) {}
+  }
+
+  return null;
+}
+
+async function updateWeather(force = false) {
+  if (!isControllerOnline()) {
+    AppState.geo = null;
+    renderWeatherNotFound("📍 Controller offline");
+    refreshInsightsGraphs();
+    return;
+  }
+
+  const now = Date.now();
+  if (!force && AppState.lastWeatherFetchAt > 0 && (now - AppState.lastWeatherFetchAt) < WEATHER_REFRESH_MS && AppState.weather) {
+    return;
+  }
+
+  try {
+    const geo = await resolveGeo();
+    if (!geo || !geo.place) {
+      renderWeatherNotFound("📍 Location unavailable");
+      refreshInsightsGraphs();
+      return;
+    }
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,is_day&timezone=auto`;
+    const w = await apiRequest(url, {}, 1);
+    if (!w || !w.current) {
+      renderWeatherNotFound(`📍 ${geo.place}`);
+      refreshInsightsGraphs();
+      return;
+    }
+
+    AppState.lastWeatherFetchAt = now;
+    const cur = w.current;
+    const temp = Math.round(Number(cur.temperature_2m ?? 0));
+    const hum = Math.round(Number(cur.relative_humidity_2m ?? 0));
+    const wind = Math.round(Number(cur.wind_speed_10m ?? 0));
+    const precip = Number(cur.precipitation ?? 0);
+    const vis = getWeatherVisual(Number(cur.weather_code ?? 0), Number(cur.is_day ?? 1));
+
+    AppState.weather = { temp, hum, wind, precip, label: vis.label, place: geo.place };
+
+    if ($("wxIcon")) $("wxIcon").innerHTML = vis.svg;
+    setText("wxTemp", `${temp}°C`);
+    setText("wxCond", vis.label);
+    setText("wxLoc", `📍 ${geo.place}`);
+    setText("wxHum", `${hum}%`);
+    setText("wxWind", `${wind} km/h`);
+    setText("wxRain", `${precip.toFixed(1)} mm`);
+
+    const adv = $("wxAdvice");
+    if (adv) {
+      if (vis.rainRisk || precip > 0.2) {
+        adv.innerText = "🌧 Rain Alert";
+        adv.style.color = "#00e5ff";
+      } else if (temp >= 34) {
+        adv.innerText = "☀ High Heat";
+        adv.style.color = "#fbbf24";
+      } else {
+        adv.innerText = "✓ Good for Irrigation";
+        adv.style.color = "#00e676";
+      }
+    }
+
+    refreshInsightsGraphs();
+  } catch (e) {
+    renderWeatherNotFound("📍 Location unavailable");
+    refreshInsightsGraphs();
+  }
+}
+
+/* =========================================================
+   12. INSIGHTS & GRAPHS
+========================================================= */
 function loadInsightLogs() {
   try {
-    const raw = localStorage.getItem(INSIGHT_LOG_KEY);
+    const raw = localStorage.getItem(STORAGE_KEYS.INSIGHT_LOGS);
     const arr = raw ? JSON.parse(raw) : [];
     return Array.isArray(arr) ? arr : [];
   } catch (e) {
@@ -2595,14 +2907,8 @@ function loadInsightLogs() {
   }
 }
 
-function saveInsightLogs(logs) {
-  try {
-    localStorage.setItem(INSIGHT_LOG_KEY, JSON.stringify(logs.slice(-MAX_INSIGHT_LOGS)));
-  } catch (e) {}
-}
-
-function recordInsightSnapshot(m1, m2, l1, l2, wx) {
-  if (!isEspAliveNow()) return;
+function recordInsightPoint(m1, m2, l1, l2, wx) {
+  if (!isControllerOnline()) return;
   const logs = loadInsightLogs();
   const now = Date.now();
   const last = logs[logs.length - 1];
@@ -2624,7 +2930,9 @@ function recordInsightSnapshot(m1, m2, l1, l2, wx) {
     l2: Number(l2),
     wx: wx ? { ...wx } : null
   });
-  saveInsightLogs(logs);
+  try {
+    localStorage.setItem(STORAGE_KEYS.INSIGHT_LOGS, JSON.stringify(logs.slice(-MAX_INSIGHT_LOGS)));
+  } catch (e) {}
 }
 
 function toDatetimeLocalValue(ms) {
@@ -2634,133 +2942,45 @@ function toDatetimeLocalValue(ms) {
 }
 
 function initDefaultDateRangeInputs() {
-  const fromEl = document.getElementById("insFromDt");
-  const toEl = document.getElementById("insToDt");
   const now = Date.now();
-  if (fromEl && !fromEl.value) fromEl.value = toDatetimeLocalValue(now - 24 * 3600 * 1000);
-  if (toEl && !toEl.value) toEl.value = toDatetimeLocalValue(now);
+  if ($("insFromDt") && !$("insFromDt").value) $("insFromDt").value = toDatetimeLocalValue(now - 24 * 3600 * 1000);
+  if ($("insToDt") && !$("insToDt").value) $("insToDt").value = toDatetimeLocalValue(now);
 }
 
 function applyDateRangeFilter() {
-  if (!guardUnlockedPage("tab-insights")) return;
-  const fromVal = document.getElementById("insFromDt")?.value;
-  const toVal = document.getElementById("insToDt")?.value;
+  if (!ensurePageUnlocked("tab-insights")) return;
+  const fromVal = $("insFromDt")?.value;
+  const toVal = $("insToDt")?.value;
   if (!fromVal || !toVal) {
-    showMsg("Select both From and To date-time", true);
+    showToast("Select both From and To date-time", true);
     return;
   }
   const fromMs = new Date(fromVal).getTime();
   const toMs = new Date(toVal).getTime() + 59999;
-  if (Number.isNaN(fromMs) || Number.isNaN(toMs) || fromMs > toMs) {
-    showMsg("Invalid date-time range", true);
+  if (!Number.isFinite(fromMs) || !Number.isFinite(toMs) || fromMs > toMs) {
+    showToast("Invalid date-time range", true);
     return;
   }
-  activeRangeFilter = { fromMs, toMs };
+  AppState.rangeFilter = { fromMs, toMs };
   refreshInsightsGraphs();
-  showMsg("Insights filtered by selected date-time");
+  showToast("Insights filtered by selected date-time");
 }
 
 function resetDateRangeFilter() {
-  if (!guardUnlockedPage("tab-insights")) return;
-  activeRangeFilter = null;
+  if (!ensurePageUnlocked("tab-insights")) return;
+  AppState.rangeFilter = null;
   refreshInsightsGraphs();
-  showMsg("Showing latest / all logged insights");
-}
-
-function bindInputEditGuards() {
-  document.querySelectorAll("input").forEach(inp => {
-    inp.addEventListener("input", () => {
-      if (inp.id) {
-        dirtyInputs.add(inp.id);
-        recentSavedUntil.delete(inp.id);
-      }
-      if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
-        refreshInsightsGraphs();
-      }
-      if (!isCoordLocked && (inp.id === "manLat" || inp.id === "manLon")) {
-        const vLat = Number(document.getElementById("manLat")?.value);
-        const vLon = Number(document.getElementById("manLon")?.value);
-        if (!Number.isNaN(vLat) && !Number.isNaN(vLon)) {
-          syncControllerMapPin(vLat, vLon, "Preview Coordinate");
-        }
-      }
-    });
-  });
-}
-
-function markRecentSavedGroup(ids, holdMs = SAVE_HOLD_MS) {
-  const until = Date.now() + holdMs;
-  ids.forEach(id => {
-    dirtyInputs.delete(id);
-    recentSavedUntil.set(id, until);
-  });
-}
-
-function canAutoFill(inputId) {
-  const el = document.getElementById(inputId);
-  if (!el) return false;
-  if (document.activeElement === el) return false;
-  if (dirtyInputs.has(inputId)) return false;
-
-  const holdUntil = recentSavedUntil.get(inputId) || 0;
-  if (Date.now() < holdUntil) {
-    return false;
-  }
-  recentSavedUntil.delete(inputId);
-  return true;
-}
-
-function setInputIfAllowed(inputId, val) {
-  if (val === undefined || val === null) return;
-  if (!canAutoFill(inputId)) return;
-  const el = document.getElementById(inputId);
-  if (el) el.value = val;
-}
-
-function setControlsEnabled(enabled) {
-  document.querySelectorAll(".ctrl-btn").forEach(btn => {
-    btn.disabled = !enabled;
-  });
-}
-
-function switchTab(btn) {
-  if (!btn || !btn.dataset.tab) return;
-  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-  btn.classList.add("active");
-  const targetPanel = document.getElementById(btn.dataset.tab);
-  if (targetPanel) targetPanel.classList.add("active");
-  applyAllPageLocksUi();
-  updateManualTimerUi();
-  if (btn.dataset.tab === "tab-insights") {
-    initDefaultDateRangeInputs();
-    refreshInsightsGraphs();
-  } else if (btn.dataset.tab === "tab-coord") {
-    syncControllerCoordFromCloud(true);
-    renderSavedCoordSummary();
-    setCoordLockState(isCoordLocked, false);
-    initControllerMap();
-  } else if (btn.dataset.tab === "tab-sched" || btn.dataset.tab === "tab-cfg" || btn.dataset.tab === "tab-wifi" || btn.dataset.tab === "tab-rtc") {
-    forceSyncAllFromCloud();
-  }
+  showToast("Showing latest / all logged insights");
 }
 
 function setGraphStyle(style) {
-  if (!guardUnlockedPage("tab-insights")) return;
-  currentGraphStyle = style;
+  if (!ensurePageUnlocked("tab-insights")) return;
+  AppState.graphStyle = style;
   document.querySelectorAll(".style-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.gstyle === style);
   });
-  setTextSafe("activeStyleChip", style.toUpperCase());
+  setText("activeStyleChip", style.toUpperCase());
   refreshInsightsGraphs();
-}
-
-function bandLabel(m) {
-  if (m < 20) return "<20%";
-  if (m < 40) return "20-39%";
-  if (m < 60) return "40-59%";
-  if (m < 80) return "60-79%";
-  return "80-100%";
 }
 
 function fmtCompactMl(val) {
@@ -2768,7 +2988,7 @@ function fmtCompactMl(val) {
   return String(val);
 }
 
-function colorHex(theme) {
+function themeHex(theme) {
   if (theme === "mag") return "#e879f9";
   if (theme === "green") return "#00e676";
   if (theme === "amber") return "#fbbf24";
@@ -2776,12 +2996,12 @@ function colorHex(theme) {
 }
 
 function renderEmptyBox(containerId, text) {
-  const box = document.getElementById(containerId);
+  const box = $(containerId);
   if (box) box.innerHTML = `<div class="empty-note">${text}</div>`;
 }
 
 function renderMetricSeries(containerId, items, style) {
-  const box = document.getElementById(containerId);
+  const box = $(containerId);
   if (!box) return;
 
   if (style === "circle") {
@@ -2790,7 +3010,7 @@ function renderMetricSeries(containerId, items, style) {
     box.innerHTML = `<div class="circle-grid">${items.map(it => {
       const pct = Math.max(0, Math.min(100, it.pct));
       const dash = (pct / 100) * circ;
-      const stroke = colorHex(it.theme);
+      const stroke = themeHex(it.theme);
       return `
         <div class="ring-card">
           <div class="ring-wrap">
@@ -2810,7 +3030,7 @@ function renderMetricSeries(containerId, items, style) {
 
   box.innerHTML = `<div class="viz-list">${items.map(it => {
     const pct = Math.max(0, Math.min(100, it.pct));
-    const stroke = colorHex(it.theme);
+    const stroke = themeHex(it.theme);
     if (style === "bar") {
       return `
         <div class="viz-row">
@@ -2820,9 +3040,7 @@ function renderMetricSeries(containerId, items, style) {
       `;
     }
     const pointClass = style === "point" ? "lp-dot point-only" : "lp-dot";
-    const lineHtml = style === "line"
-      ? `<div class="lp-line" style="width:${pct}%;background:${stroke}"></div>`
-      : "";
+    const lineHtml = style === "line" ? `<div class="lp-line" style="width:${pct}%;background:${stroke}"></div>` : "";
     return `
       <div class="viz-row">
         <div class="viz-meta"><span>${it.label}</span><b>${it.valText}</b></div>
@@ -2838,14 +3056,14 @@ function renderMetricSeries(containerId, items, style) {
 }
 
 function renderTargetSeries(style) {
-  const box = document.getElementById("insTargetViz");
+  const box = $("insTargetViz");
   if (!box) return;
   const labels = ["<20%", "20-39%", "40-59%", "60-79%", "80-100%"];
   const z1Vals = [];
   const z2Vals = [];
   for (let i = 0; i < 5; i++) {
-    z1Vals.push(Math.max(0, Number(document.getElementById("z1_" + i)?.value || 0)));
-    z2Vals.push(Math.max(0, Number(document.getElementById("z2_" + i)?.value || 0)));
+    z1Vals.push(Math.max(0, Number($("z1_" + i)?.value || 0)));
+    z2Vals.push(Math.max(0, Number($("z2_" + i)?.value || 0)));
   }
   const maxVal = Math.max(1000, ...z1Vals, ...z2Vals);
 
@@ -2897,16 +3115,8 @@ function renderTargetSeries(style) {
   const plotW = w - padX * 2;
   const plotH = h - padTop - padBot;
 
-  const pts1 = z1Vals.map((v, i) => {
-    const x = padX + (i / 4) * plotW;
-    const y = padTop + plotH - (v / maxVal) * plotH;
-    return { x, y, v };
-  });
-  const pts2 = z2Vals.map((v, i) => {
-    const x = padX + (i / 4) * plotW;
-    const y = padTop + plotH - (v / maxVal) * plotH;
-    return { x, y, v };
-  });
+  const pts1 = z1Vals.map((v, i) => ({ x: padX + (i / 4) * plotW, y: padTop + plotH - (v / maxVal) * plotH }));
+  const pts2 = z2Vals.map((v, i) => ({ x: padX + (i / 4) * plotW, y: padTop + plotH - (v / maxVal) * plotH }));
 
   const poly1 = pts1.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
   const poly2 = pts2.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
@@ -2934,25 +3144,22 @@ function renderTargetSeries(style) {
   box.innerHTML = `<div class="svg-multi-wrap"><svg viewBox="0 0 ${w} ${h}">${gridSvg}${lineSvg}${dotsSvg}${xLabelsSvg}</svg></div>`;
 }
 
-function getInsightDatasetForRange() {
-  if (!activeRangeFilter) {
-    setTextSafe("insRangeInfo", "All / Live");
+function getInsightDataset() {
+  if (!AppState.rangeFilter) {
+    setText("insRangeInfo", "All / Live");
     return {
       empty: false,
-      m1: Math.max(0, Math.min(100, Number(latestStatusData?.m1 ?? 0))),
-      m2: Math.max(0, Math.min(100, Number(latestStatusData?.m2 ?? 0))),
-      l1: Math.max(0, Number(latestStatusData?.l1 ?? 0)),
-      l2: Math.max(0, Number(latestStatusData?.l2 ?? 0)),
-      wx: (latestWeatherMetrics && isEspAliveNow()) ? latestWeatherMetrics : null
+      m1: Math.max(0, Math.min(100, Number(AppState.status?.m1 ?? 0))),
+      m2: Math.max(0, Math.min(100, Number(AppState.status?.m2 ?? 0))),
+      l1: Math.max(0, Number(AppState.status?.l1 ?? 0)),
+      l2: Math.max(0, Number(AppState.status?.l2 ?? 0)),
+      wx: (AppState.weather && isControllerOnline()) ? AppState.weather : null
     };
   }
 
-  const logs = loadInsightLogs().filter(item => item.ts >= activeRangeFilter.fromMs && item.ts <= activeRangeFilter.toMs);
-  setTextSafe("insRangeInfo", `${logs.length} pts`);
-
-  if (!logs.length) {
-    return { empty: true };
-  }
+  const logs = loadInsightLogs().filter(item => item.ts >= AppState.rangeFilter.fromMs && item.ts <= AppState.rangeFilter.toMs);
+  setText("insRangeInfo", `${logs.length} pts`);
+  if (!logs.length) return { empty: true };
 
   const avgM1 = logs.reduce((acc, r) => acc + Number(r.m1 || 0), 0) / logs.length;
   const avgM2 = logs.reduce((acc, r) => acc + Number(r.m2 || 0), 0) / logs.length;
@@ -2960,39 +3167,34 @@ function getInsightDatasetForRange() {
   const lastL1 = Number(logs[logs.length - 1].l1 || 0);
   const firstL2 = Number(logs[0].l2 || 0);
   const lastL2 = Number(logs[logs.length - 1].l2 || 0);
-  const deltaL1 = Math.max(0, lastL1 >= firstL1 ? lastL1 - firstL1 : lastL1);
-  const deltaL2 = Math.max(0, lastL2 >= firstL2 ? lastL2 - firstL2 : lastL2);
 
   const wxLogs = logs.map(r => r.wx).filter(Boolean);
-  let wxAgg = null;
-  if (wxLogs.length) {
-    wxAgg = {
-      temp: Math.round(wxLogs.reduce((a, w) => a + Number(w.temp || 0), 0) / wxLogs.length),
-      hum: Math.round(wxLogs.reduce((a, w) => a + Number(w.hum || 0), 0) / wxLogs.length),
-      wind: Math.round(wxLogs.reduce((a, w) => a + Number(w.wind || 0), 0) / wxLogs.length),
-      precip: Number((wxLogs.reduce((a, w) => a + Number(w.precip || 0), 0) / wxLogs.length).toFixed(1)),
-      label: wxLogs[wxLogs.length - 1].label || "Range Avg"
-    };
-  }
+  const wxAgg = wxLogs.length ? {
+    temp: Math.round(wxLogs.reduce((a, w) => a + Number(w.temp || 0), 0) / wxLogs.length),
+    hum: Math.round(wxLogs.reduce((a, w) => a + Number(w.hum || 0), 0) / wxLogs.length),
+    wind: Math.round(wxLogs.reduce((a, w) => a + Number(w.wind || 0), 0) / wxLogs.length),
+    precip: Number((wxLogs.reduce((a, w) => a + Number(w.precip || 0), 0) / wxLogs.length).toFixed(1)),
+    label: wxLogs[wxLogs.length - 1].label || "Range Avg"
+  } : null;
 
   return {
     empty: false,
     m1: Math.max(0, Math.min(100, Math.round(avgM1))),
     m2: Math.max(0, Math.min(100, Math.round(avgM2))),
-    l1: deltaL1,
-    l2: deltaL2,
+    l1: Math.max(0, lastL1 >= firstL1 ? lastL1 - firstL1 : lastL1),
+    l2: Math.max(0, lastL2 >= firstL2 ? lastL2 - firstL2 : lastL2),
     wx: wxAgg
   };
 }
 
 function refreshInsightsGraphs() {
-  renderTargetSeries(currentGraphStyle);
+  renderTargetSeries(AppState.graphStyle);
 
-  const ds = getInsightDatasetForRange();
+  const ds = getInsightDataset();
   if (ds.empty) {
-    setTextSafe("insMoistAvg", "Avg: --%");
-    setTextSafe("insTotalLitres", "Total: -- L");
-    setTextSafe("insWxTag", "No data");
+    setText("insMoistAvg", "Avg: --%");
+    setText("insTotalLitres", "Total: -- L");
+    setText("insWxTag", "No data");
     renderEmptyBox("insMoistViz", "No moisture records found in selected date-time range.");
     renderEmptyBox("insWaterViz", "No water usage records found in selected date-time range.");
     renderEmptyBox("insWeatherViz", "No weather records found in selected date-time range.");
@@ -3003,690 +3205,86 @@ function refreshInsightsGraphs() {
   const lComb = l1 + l2;
   const maxL = Math.max(10, l1, l2, lComb);
 
-  const avgM = Math.round((m1 + m2) / 2);
-  setTextSafe("insMoistAvg", `Avg: ${avgM}%`);
+  setText("insMoistAvg", `Avg: ${Math.round((m1 + m2) / 2)}%`);
   renderMetricSeries("insMoistViz", [
-    { label: activeRangeFilter ? "Zone 1 Avg Moisture" : "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
-    { label: activeRangeFilter ? "Zone 2 Avg Moisture" : "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
-  ], currentGraphStyle);
+    { label: AppState.rangeFilter ? "Zone 1 Avg Moisture" : "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
+    { label: AppState.rangeFilter ? "Zone 2 Avg Moisture" : "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
+  ], AppState.graphStyle);
 
-  setTextSafe("insTotalLitres", `Total: ${lComb.toFixed(2)} L`);
+  setText("insTotalLitres", `Total: ${lComb.toFixed(2)} L`);
   renderMetricSeries("insWaterViz", [
-    { label: activeRangeFilter ? "Zone 1 Range Used" : "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
-    { label: activeRangeFilter ? "Zone 2 Range Used" : "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
+    { label: AppState.rangeFilter ? "Zone 1 Range Used" : "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
+    { label: AppState.rangeFilter ? "Zone 2 Range Used" : "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
     { label: "Combined Flow", valText: `${lComb.toFixed(2)} L`, pct: (lComb / maxL) * 100, theme: "green" }
-  ], currentGraphStyle);
+  ], AppState.graphStyle);
 
   if (wx) {
-    const { temp, hum, wind, precip, label } = wx;
-    setTextSafe("insWxTag", label);
+    setText("insWxTag", wx.label);
     renderMetricSeries("insWeatherViz", [
-      { label: "Temperature (0–50°C)", valText: `${temp}°C`, pct: (temp / 50) * 100, theme: "amber" },
-      { label: "Humidity (0–100%)", valText: `${hum}%`, pct: hum, theme: "cyan" },
-      { label: "Wind Speed (0–60 km/h)", valText: `${wind} km/h`, pct: (wind / 60) * 100, theme: "green" },
-      { label: "Rainfall (0–25 mm)", valText: `${precip.toFixed(1)} mm`, pct: (precip / 25) * 100, theme: "mag" }
-    ], currentGraphStyle);
+      { label: "Temperature (0–50°C)", valText: `${wx.temp}°C`, pct: (wx.temp / 50) * 100, theme: "amber" },
+      { label: "Humidity (0–100%)", valText: `${wx.hum}%`, pct: wx.hum, theme: "cyan" },
+      { label: "Wind Speed (0–60 km/h)", valText: `${wx.wind} km/h`, pct: (wx.wind / 60) * 100, theme: "green" },
+      { label: "Rainfall (0–25 mm)", valText: `${wx.precip.toFixed(1)} mm`, pct: (wx.precip / 25) * 100, theme: "mag" }
+    ], AppState.graphStyle);
   } else {
-    setTextSafe("insWxTag", "Weather info not found");
+    setText("insWxTag", "Weather info not found");
     renderMetricSeries("insWeatherViz", [
       { label: "Temperature (0–50°C)", valText: "--°C", pct: 0, theme: "amber" },
       { label: "Humidity (0–100%)", valText: "--%", pct: 0, theme: "cyan" },
       { label: "Wind Speed (0–60 km/h)", valText: "-- km/h", pct: 0, theme: "green" },
       { label: "Rainfall (0–25 mm)", valText: "-- mm", pct: 0, theme: "mag" }
-    ], currentGraphStyle);
+    ], AppState.graphStyle);
   }
 }
 
-function getWeatherVisual(code, isDay = 1) {
-  const sunSvg = `<svg width="36" height="36" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
-    <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
-      <line x1="32" y1="7" x2="32" y2="13"/><line x1="32" y1="51" x2="32" y2="57"/>
-      <line x1="7" y1="32" x2="13" y2="32"/><line x1="51" y1="32" x2="57" y2="32"/>
-      <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/><line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
-      <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/><line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
-    </g></svg>`;
+/* =========================================================
+   13. NAVIGATION & EVENT BINDINGS
+========================================================= */
+function switchTab(btn) {
+  if (!btn || !btn.dataset.tab) return;
+  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  $(btn.dataset.tab)?.classList.add("active");
 
-  const moonSvg = `<svg class="wx-svg-float" width="36" height="36" viewBox="0 0 64 64" fill="none">
-    <path d="M40 14a18 18 0 1 0 10 33 15 15 0 0 1-10-33z" fill="#fde68a"/>
-    <circle cx="46" cy="18" r="2" fill="#00e5ff"/><circle cx="51" cy="26" r="1.5" fill="#fff"/>
-  </svg>`;
+  applyAllPageLocks();
+  updateRunTimerDisplay();
 
-  const partlyCloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
-    <circle cx="24" cy="24" r="10" fill="${isDay ? "#fbbf24" : "#fde68a"}"/>
-    <path d="M22 46h24a10 10 0 0 0 1.4-19.9A13 13 0 0 0 22.3 29 8.5 8.5 0 0 0 22 46z" fill="#e2e8f0"/>
-  </svg>`;
-
-  const cloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
-    <path d="M18 45h28a11 11 0 0 0 1.5-21.9A14.5 14.5 0 0 0 19.5 26 9.5 9.5 0 0 0 18 45z" fill="#94a3b8"/>
-    <path d="M23 48h24a8 8 0 0 0 1-15.9A10.5 10.5 0 0 0 27.5 34 7 7 0 0 0 23 48z" fill="#cbd5e1"/>
-  </svg>`;
-
-  const rainSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
-    <path d="M18 39h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 21 9 9 0 0 0 18 39z" fill="#cbd5e1"/>
-    <g stroke="#00e5ff" stroke-width="3" stroke-linecap="round">
-      <line x1="23" y1="44" x2="20" y2="52"/>
-      <line x1="33" y1="44" x2="30" y2="52"/>
-      <line x1="43" y1="44" x2="40" y2="52"/>
-    </g>
-  </svg>`;
-
-  const stormSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
-    <path d="M18 38h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 20 9 9 0 0 0 18 38z" fill="#94a3b8"/>
-    <polygon points="33,38 25,49 32,49 29,58 41,45 34,45" fill="#fbbf24"/>
-  </svg>`;
-
-  if (code === 0) return { label: isDay ? "Clear Sky" : "Clear Night", svg: isDay ? sunSvg : moonSvg, rainRisk: false };
-  if (code <= 2) return { label: "Partly Cloudy", svg: partlyCloudSvg, rainRisk: false };
-  if (code === 3) return { label: "Overcast", svg: cloudSvg, rainRisk: false };
-  if (code === 45 || code === 48) return { label: "Fog / Mist", svg: cloudSvg, rainRisk: false };
-  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { label: "Rain / Showers", svg: rainSvg, rainRisk: true };
-  if (code >= 95) return { label: "Thunderstorm", svg: stormSvg, rainRisk: true };
-  return { label: "Cloudy", svg: cloudSvg, rainRisk: false };
-}
-
-function renderWeatherNotFound(locText = "📍 Controller offline") {
-  latestWeatherMetrics = null;
-  setTextSafe("wxTemp", "--°C");
-  setTextSafe("wxCond", "Weather info not found");
-  setTextSafe("wxLoc", locText);
-  setTextSafe("wxHum", "--%");
-  setTextSafe("wxWind", "-- km/h");
-  setTextSafe("wxRain", "-- mm");
-
-  const adv = document.getElementById("wxAdvice");
-  if (adv) {
-    adv.innerText = isEspAliveNow() ? "Not Found" : "Offline";
-    adv.style.color = "#94a3b8";
-  }
-}
-
-async function reverseGeocodePlace(lat, lon) {
-  try {
-    const r = await fetchJsonSafe(
-      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=12`,
-      {},
-      0
-    );
-    const addr = r && r.address ? r.address : {};
-    const name = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || addr.state_district || addr.state;
-    if (name) return String(name).trim();
-  } catch (e) {
-    console.warn("Reverse geocode failed:", e);
-  }
-  return null;
-}
-
-async function lookupGeoFromIp(ipStr = "") {
-  const cleanIp = String(ipStr || "").trim();
-  const suffix = cleanIp ? `/${encodeURIComponent(cleanIp)}` : "";
-
-  try {
-    const g = await fetchJsonSafe(`https://ipwho.is${suffix}`, {}, 0);
-    if (g && g.success !== false && g.latitude !== undefined && g.longitude !== undefined) {
-      const lat = Number(g.latitude);
-      const lon = Number(g.longitude);
-      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-        const placeName = g.city || g.region || g.country;
-        if (placeName) {
-          return { ip: cleanIp || g.ip || "", lat, lon, place: String(placeName).trim() };
-        }
-      }
-    }
-  } catch (e) {}
-
-  try {
-    const g2 = await fetchJsonSafe(`https://ipapi.co${suffix || ""}/json/`, {}, 0);
-    if (g2 && g2.latitude !== undefined && g2.longitude !== undefined) {
-      const lat = Number(g2.latitude);
-      const lon = Number(g2.longitude);
-      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-        const placeName = g2.city || g2.region || g2.country_name;
-        if (placeName) {
-          return { ip: cleanIp || g2.ip || "", lat, lon, place: String(placeName).trim() };
-        }
-      }
-    }
-  } catch (e) {}
-
-  return null;
-}
-
-async function resolveControllerGeo() {
-  if (!isEspAliveNow() || !latestStatusData) return null;
-
-  const explicitPlace =
-    latestStatusData.city ||
-    latestStatusData.area ||
-    latestStatusData.locationName ||
-    latestStatusData.place;
-
-  const hasCoords =
-    latestStatusData.lat !== undefined &&
-    latestStatusData.lat !== null &&
-    latestStatusData.lon !== undefined &&
-    latestStatusData.lon !== null;
-
-  if (hasCoords) {
-    const lat = Number(latestStatusData.lat);
-    const lon = Number(latestStatusData.lon);
-    if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-      let placeName = explicitPlace ? String(explicitPlace).trim() : null;
-      if (!placeName) {
-        if (cachedGeo && cachedGeo.lat === lat && cachedGeo.lon === lon && cachedGeo.place) {
-          placeName = cachedGeo.place;
-        } else {
-          placeName = (await reverseGeocodePlace(lat, lon)) || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-        }
-      }
-      cachedGeo = { lat, lon, place: placeName };
-      return cachedGeo;
-    }
-  }
-
-  let savedCoord = getSavedControllerCoord();
-  if (!savedCoord) {
-    savedCoord = await syncControllerCoordFromCloud(true);
-  }
-
-  if (savedCoord) {
-    let placeName = savedCoord.place || (explicitPlace ? String(explicitPlace).trim() : "");
-    if (!placeName) {
-      placeName =
-        (await reverseGeocodePlace(savedCoord.lat, savedCoord.lon)) ||
-        `${savedCoord.lat.toFixed(4)}, ${savedCoord.lon.toFixed(4)}`;
-    }
-    cachedGeo = {
-      source: "controller_coord",
-      lat: savedCoord.lat,
-      lon: savedCoord.lon,
-      place: placeName
-    };
+  const tab = btn.dataset.tab;
+  if (tab === "tab-insights") {
+    initDefaultDateRangeInputs();
+    refreshInsightsGraphs();
+  } else if (tab === "tab-coord") {
+    pullSettingsFromCloud(true);
     renderSavedCoordSummary();
-    return cachedGeo;
+    setCoordLock(AppState.coordLocked, false);
+    initControllerMap();
+  } else if (tab === "tab-sched" || tab === "tab-cfg" || tab === "tab-wifi" || tab === "tab-rtc") {
+    pullSettingsFromCloud(true);
   }
-
-  const ctrlIp = latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp || "";
-  if (ctrlIp) {
-    const cleanIp = String(ctrlIp).trim();
-    if (cachedGeo && cachedGeo.ip === cleanIp && cachedGeo.place) {
-      return cachedGeo;
-    }
-    const geoFromCtrlIp = await lookupGeoFromIp(cleanIp);
-    if (geoFromCtrlIp) {
-      cachedGeo = geoFromCtrlIp;
-      return cachedGeo;
-    }
-  }
-
-  return null;
 }
 
-async function updateAreaWeather(force = false) {
-  if (!isEspAliveNow()) {
-    cachedGeo = null;
-    renderWeatherNotFound("📍 Controller offline");
-    refreshInsightsGraphs();
-    return;
-  }
-
-  const now = Date.now();
-  if (!force && lastWeatherFetchAt > 0 && (now - lastWeatherFetchAt) < WEATHER_REFRESH_MS && latestWeatherMetrics) {
-    return;
-  }
-
-  try {
-    const geo = await resolveControllerGeo();
-    if (!geo || !geo.place) {
-      renderWeatherNotFound("📍 Location unavailable");
-      refreshInsightsGraphs();
-      return;
-    }
-
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,is_day&timezone=auto`;
-    const w = await fetchJsonSafe(url, {}, 1);
-    if (!w || !w.current) {
-      renderWeatherNotFound(`📍 ${geo.place}`);
-      refreshInsightsGraphs();
-      return;
-    }
-
-    lastWeatherFetchAt = now;
-    const cur = w.current;
-    const temp = Math.round(Number(cur.temperature_2m ?? 0));
-    const hum = Math.round(Number(cur.relative_humidity_2m ?? 0));
-    const wind = Math.round(Number(cur.wind_speed_10m ?? 0));
-    const precip = Number(cur.precipitation ?? 0);
-    const vis = getWeatherVisual(Number(cur.weather_code ?? 0), Number(cur.is_day ?? 1));
-
-    latestWeatherMetrics = { temp, hum, wind, precip, label: vis.label, place: geo.place };
-
-    const iconEl = document.getElementById("wxIcon");
-    if (iconEl) iconEl.innerHTML = vis.svg;
-    setTextSafe("wxTemp", `${temp}°C`);
-    setTextSafe("wxCond", vis.label);
-    setTextSafe("wxLoc", `📍 ${geo.place}`);
-    setTextSafe("wxHum", `${hum}%`);
-    setTextSafe("wxWind", `${wind} km/h`);
-    setTextSafe("wxRain", `${precip.toFixed(1)} mm`);
-
-    const adv = document.getElementById("wxAdvice");
-    if (adv) {
-      if (vis.rainRisk || precip > 0.2) {
-        adv.innerText = "🌧 Rain Alert";
-        adv.style.color = "#00e5ff";
-      } else if (temp >= 34) {
-        adv.innerText = "☀ High Heat";
-        adv.style.color = "#fbbf24";
-      } else {
-        adv.innerText = "✓ Good for Irrigation";
-        adv.style.color = "#00e676";
+function bindInputTracking() {
+  document.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      if (inp.id) AppState.dirtyFields.add(inp.id);
+      if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
+        refreshInsightsGraphs();
       }
-    }
-
-    if (latestStatusData) {
-      recordInsightSnapshot(
-        Number(latestStatusData.m1 ?? 0),
-        Number(latestStatusData.m2 ?? 0),
-        Number(latestStatusData.l1 ?? 0),
-        Number(latestStatusData.l2 ?? 0),
-        latestWeatherMetrics
-      );
-    }
-
-    refreshInsightsGraphs();
-  } catch (e) {
-    console.warn("updateAreaWeather failed:", e);
-    renderWeatherNotFound("📍 Location unavailable");
-    refreshInsightsGraphs();
-  }
-}
-
-function showMsg(t, isErr = false) {
-  const m = document.getElementById("msg");
-  if (!m) return;
-  m.style.color = isErr ? "#ff8a80" : "#00e676";
-  m.innerText = t;
-  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
-}
-
-function confirmStop() {
-  const activeTab = document.querySelector(".tab-panel.active")?.id;
-  if (!guardUnlockedPage(activeTab)) return;
-  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
-  openStopModal();
-}
-
-function confirmReset() {
-  if (!guardUnlockedPage("tab-ctrl")) return;
-  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
-  sendCmd("resetL");
-}
-
-async function fetchJsonSafe(url, options = {}, retries = 2) {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      const res = await fetch(url, { cache: "no-store", ...options });
-      if (res.ok) return await res.json();
-      if (res.status >= 500 && i < retries) {
-        await new Promise(r => setTimeout(r, 250 * (i + 1)));
-        continue;
+      if (!AppState.coordLocked && (inp.id === "manLat" || inp.id === "manLon")) {
+        const lat = Number($("manLat")?.value);
+        const lon = Number($("manLon")?.value);
+        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+          syncMapMarker(lat, lon, "Preview Coordinate");
+        }
       }
-      throw new Error("HTTP " + res.status);
-    } catch (err) {
-      if (i === retries) throw err;
-      await new Promise(r => setTimeout(r, 250 * (i + 1)));
-    }
-  }
-}
-
-async function patchSettings(fields) {
-  const payload = { ...fields, updatedAt: Date.now() };
-  return await fetchJsonSafe(`${DB_URL}/settings.json`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  }, 2);
-}
-
-async function sendCmd(cmd) {
-  const activeTab = document.querySelector(".tab-panel.active")?.id;
-  if (!guardUnlockedPage(activeTab)) return;
-  if (!isEspAliveNow()) {
-    showMsg("ESP is OFFLINE — command blocked", true);
-    return;
-  }
-  try {
-    await fetchJsonSafe(`${DB_URL}/control/cmd.json`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cmd)
-    }, 2);
-    if (cmd === "start" || cmd === "z1" || cmd === "z2") {
-      startManualSession(cmd);
-    } else if (cmd === "stop") {
-      stopManualSession("Force stopped");
-    } else if (cmd === "resetL") {
-      showMsg("Total litres counter reset command sent");
-      return;
-    }
-    showMsg("Command sent: " + cmd.toUpperCase());
-  } catch (e) {
-    showMsg("Cmd failed: " + e.message, true);
-  }
-}
-
-function readNumOrUndefined(id, fallbackVal = undefined) {
-  const raw = document.getElementById(id)?.value;
-  if (raw === undefined || raw === null || String(raw).trim() === "") return fallbackVal;
-  const n = Number(raw);
-  return Number.isNaN(n) ? fallbackVal : n;
-}
-
-async function saveSettings() {
-  const activeTab = document.querySelector(".tab-panel.active")?.id;
-  if (!guardUnlockedPage(activeTab)) return;
-
-  const payload = { applySettings: true };
-  const mapNum = [
-    ["s1h", 0], ["s1m", 0], ["s2h", 0], ["s2m", 0],
-    ["c1", 7.5], ["c2", 7.5],
-    ["z1_0", 0], ["z1_1", 0], ["z1_2", 0], ["z1_3", 0], ["z1_4", 0],
-    ["z2_0", 0], ["z2_1", 0], ["z2_2", 0], ["z2_3", 0], ["z2_4", 0]
-  ];
-  for (const [key, defVal] of mapNum) {
-    const val = readNumOrUndefined(key, defVal);
-    if (val !== undefined) payload[key] = val;
-  }
-
-  try {
-    const saved = await patchSettings(payload);
-    markRecentSavedGroup([
-      "s1h","s1m","s2h","s2m","c1","c2",
-      "z1_0","z1_1","z1_2","z1_3","z1_4",
-      "z2_0","z2_1","z2_2","z2_3","z2_4"
-    ]);
-    populateInputsFromSettings(saved || payload);
-    settingsLoaded = true;
-    refreshInsightsGraphs();
-    showMsg(isEspAliveNow() ? "Settings synced to cloud!" : "Saved to cloud (ESP offline — will apply on next poll)");
-  } catch (e) {
-    showMsg("Save failed: " + e.message, true);
-  }
-}
-
-async function saveWifi() {
-  if (!guardUnlockedPage("tab-wifi")) return;
-  const ssid = (document.getElementById("wifiSsid")?.value || "").trim();
-  const pass = document.getElementById("wifiPass")?.value || "";
-  if (!ssid) {
-    showMsg("Enter Wi-Fi SSID first", true);
-    return;
-  }
-  try {
-    const saved = await patchSettings({ wifiSsid: ssid, wifiPass: pass, applyWifi: true });
-    markRecentSavedGroup(["wifiSsid", "wifiPass"]);
-    populateInputsFromSettings(saved || { wifiSsid: ssid });
-    settingsLoaded = true;
-    showMsg(isEspAliveNow() ? "Wi-Fi synced to cloud!" : "Wi-Fi saved to cloud (ESP offline — will apply on next poll)");
-  } catch (e) {
-    showMsg("Wi-Fi save failed: " + e.message, true);
-  }
-}
-
-async function saveRtc(usePhoneNow) {
-  if (!guardUnlockedPage("tab-rtc")) return;
-  let y, mo, d, h, mi, s;
-  if (usePhoneNow) {
-    const now = new Date();
-    y = now.getFullYear();
-    mo = now.getMonth() + 1;
-    d = now.getDate();
-    h = now.getHours();
-    mi = now.getMinutes();
-    s = now.getSeconds();
-    if (canAutoFill("rtcY")) document.getElementById("rtcY").value = y;
-    if (canAutoFill("rtcMo")) document.getElementById("rtcMo").value = mo;
-    if (canAutoFill("rtcD")) document.getElementById("rtcD").value = d;
-    if (canAutoFill("rtcH")) document.getElementById("rtcH").value = h;
-    if (canAutoFill("rtcMi")) document.getElementById("rtcMi").value = mi;
-    if (canAutoFill("rtcS")) document.getElementById("rtcS").value = s;
-  } else {
-    y = readNumOrUndefined("rtcY", 2026);
-    mo = readNumOrUndefined("rtcMo", 1);
-    d = readNumOrUndefined("rtcD", 1);
-    h = readNumOrUndefined("rtcH", 0);
-    mi = readNumOrUndefined("rtcMi", 0);
-    s = readNumOrUndefined("rtcS", 0);
-  }
-  const rtcPayload = {
-    setRtc: true,
-    rtcY: y,
-    rtcMo: mo,
-    rtcD: d,
-    rtcH: h,
-    rtcMi: mi,
-    rtcS: s
-  };
-  try {
-    await patchSettings(rtcPayload);
-    markRecentSavedGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
-    settingsLoaded = true;
-    showMsg(isEspAliveNow() ? "RTC synced to cloud!" : "RTC saved to cloud (ESP offline — will apply on next poll)");
-  } catch (e) {
-    showMsg("RTC save failed: " + e.message, true);
-  }
-}
-
-function initRtcInputs() {
-  const now = new Date();
-  setInputIfAllowed("rtcY", now.getFullYear());
-  setInputIfAllowed("rtcMo", now.getMonth() + 1);
-  setInputIfAllowed("rtcD", now.getDate());
-  setInputIfAllowed("rtcH", now.getHours());
-  setInputIfAllowed("rtcMi", now.getMinutes());
-  setInputIfAllowed("rtcS", now.getSeconds());
-}
-
-function populateInputsFromSettings(s) {
-  if (!s || typeof s !== "object") return;
-  setInputIfAllowed("s1h", s.s1h);
-  setInputIfAllowed("s1m", s.s1m);
-  setInputIfAllowed("s2h", s.s2h);
-  setInputIfAllowed("s2m", s.s2m);
-  setInputIfAllowed("c1", s.c1);
-  setInputIfAllowed("c2", s.c2);
-  if (s.wifiSsid) setInputIfAllowed("wifiSsid", s.wifiSsid);
-  for (let i = 0; i < 5; i++) {
-    setInputIfAllowed("z1_" + i, s["z1_" + i]);
-    setInputIfAllowed("z2_" + i, s["z2_" + i]);
-  }
-  if (s.controllerCoord && s.controllerCoord.lat !== undefined && s.controllerCoord.lon !== undefined) {
-    const c = s.controllerCoord;
-    const lat = Number(c.lat);
-    const lon = Number(c.lon);
-    if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-      localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify({
-        lat,
-        lon,
-        place: c.place ? String(c.place).trim() : "",
-        method: c.method ? String(c.method).trim() : "Cloud Sync",
-        updatedAt: Number(c.updatedAt || Date.now())
-      }));
-      renderSavedCoordSummary();
-    }
-  }
-  refreshInsightsGraphs();
-}
-
-function populateInputsFromStatus(d) {
-  if (!d || typeof d !== "object") return;
-
-  setInputIfAllowed("s1h", d.s1h);
-  setInputIfAllowed("s1m", d.s1m);
-  setInputIfAllowed("s2h", d.s2h);
-  setInputIfAllowed("s2m", d.s2m);
-  setInputIfAllowed("c1", d.c1);
-  setInputIfAllowed("c2", d.c2);
-  if (d.staSsid) setInputIfAllowed("wifiSsid", d.staSsid);
-
-  for (let i = 0; i < 5; i++) {
-    const v1 = Array.isArray(d.z1) ? d.z1[i] : d["z1_" + i];
-    const v2 = Array.isArray(d.z2) ? d.z2[i] : d["z2_" + i];
-    setInputIfAllowed("z1_" + i, v1);
-    setInputIfAllowed("z2_" + i, v2);
-  }
-}
-
-async function fetchSettingsOnce(force = false) {
-  if (!force && settingsLoaded) return;
-  try {
-    const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
-    if (s) {
-      populateInputsFromSettings(s);
-      settingsLoaded = true;
-    }
-  } catch (e) {}
-}
-
-async function forceSyncAllFromCloud() {
-  await fetchSettingsOnce(true);
-  await syncControllerCoordFromCloud(true);
-  await fetchStatus();
-}
-
-function renderBanner(st, dryAlert, watering, espAlive) {
-  const box = document.getElementById("alertBanner");
-  if (!box) return;
-  if (!espAlive) { box.style.display = "none"; return; }
-  if (dryAlert || st === "DRY!") {
-    box.className = "banner dry";
-    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
-  } else if (watering || st === "RUN" || manualRunStartedAt > 0) {
-    const curRunText = manualRunStartedAt ? formatDurationClock(Date.now() - manualRunStartedAt) : "00:00";
-    box.className = "banner run";
-    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${curRunText}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
-  } else {
-    if (manualRunStartedAt > 0 && Date.now() >= manualRunGraceUntil) {
-      stopManualSession("Stopped");
-    }
-    box.style.display = "none";
-  }
-}
-
-function isEspAliveNow() {
-  if (lastSeenChangeAt <= 0) return false;
-  return (Date.now() - lastSeenChangeAt) <= ESP_STALE_MS;
-}
-
-function updateEspLinkState() {
-  const dot = document.getElementById("netDot");
-  const badge = document.getElementById("stBadge");
-  const alive = isEspAliveNow();
-
-  setTextSafe("hbAge", lastSeenChangeAt > 0 ? Math.max(0, Math.floor((Date.now() - lastSeenChangeAt) / 1000)) + "s ago" : "--");
-
-  if (alive) {
-    setControlsEnabled(true);
-    if (dot) dot.className = "pulse-dot";
-    setTextSafe("syncAgo", "ESP Online");
-    const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
-    if (badge) {
-      badge.className = "status-pill";
-      badge.innerText = st === "RDY" ? "ONLINE" : st;
-      badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
-    }
-    const stUpper = String(st).toUpperCase();
-    const isDryNow = Boolean(latestStatusData && latestStatusData.dryAlert) || stUpper === "DRY!";
-    const isRunningNow = !isDryNow && (Boolean(latestStatusData && latestStatusData.watering) || stUpper === "RUN");
-    const detectedMode = manualRunMode
-      ? manualRunMode
-      : ((latestStatusData && latestStatusData.activeZone)
-          ? String(latestStatusData.activeZone).toLowerCase()
-          : "auto");
-    syncTimerWithHardwareRun(isRunningNow, detectedMode);
-    renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
-  } else {
-    setControlsEnabled(false);
-    if (dot) dot.className = "pulse-dot off";
-    if (badge) {
-      badge.className = "status-pill offline";
-      badge.innerText = "OFFLINE";
-      badge.style.color = "";
-    }
-    setTextSafe("syncAgo", "ESP Offline");
-    cachedGeo = null;
-    syncTimerWithHardwareRun(false);
-    renderBanner("OFFLINE", false, false, false);
-    renderWeatherNotFound("📍 Controller offline");
-    refreshInsightsGraphs();
-  }
-  updatePumpAndValvesVisual();
-}
-
-async function fetchStatus() {
-  try {
-    const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
-    if (!d) return;
-    latestStatusData = d;
-
-    await syncControllerCoordFromCloud(false);
-
-    const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
-    if (rawSeen !== undefined && rawSeen !== null) {
-      const incomingSeen = Number(rawSeen);
-      if (incomingSeen !== lastSeenMillis) {
-        lastSeenMillis = incomingSeen;
-        lastSeenChangeAt = Date.now();
-      }
-    } else {
-      const fallbackSig = `${d.time}|${d.status}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`;
-      if (fallbackSig !== lastPayloadSig) {
-        lastPayloadSig = fallbackSig;
-        lastSeenChangeAt = Date.now();
-      }
-    }
-
-    const m1 = Math.max(0, Math.min(100, Number(d.m1 ?? 0)));
-    const m2 = Math.max(0, Math.min(100, Number(d.m2 ?? 0)));
-    const l1 = Math.max(0, Number(d.l1 ?? 0));
-    const l2 = Math.max(0, Number(d.l2 ?? 0));
-
-    setTextSafe("rtc", "RTC: " + (d.time || "--/--/---- --:--"));
-    setTextSafe("m1", m1 + "%");
-    setTextSafe("m2", m2 + "%");
-    setTextSafe("band1", bandLabel(m1));
-    setTextSafe("band2", bandLabel(m2));
-    const b1 = document.getElementById("b1");
-    const b2 = document.getElementById("b2");
-    if (b1) b1.style.width = m1 + "%";
-    if (b2) b2.style.width = m2 + "%";
-    setTextSafe("l1", l1.toFixed(2) + " L");
-    setTextSafe("l2", l2.toFixed(2) + " L");
-    setTextSafe("wifiState", d.staSsid || "Not set");
-    setTextSafe("ipState", d.staIP || "--");
-    setTextSafe("curSsid", d.staSsid || "Not set");
-    setTextSafe("curIp", d.staIP || "--");
-
-    if (isEspAliveNow()) {
-      recordInsightSnapshot(m1, m2, l1, l2, latestWeatherMetrics);
-    }
-
-    populateInputsFromStatus(d);
-    refreshInsightsGraphs();
-    updateEspLinkState();
-    updateAreaWeather(false);
-  } catch (e) {
-    console.warn("fetchStatus failed:", e);
-    updateEspLinkState();
-  }
+    });
+  });
 }
 
 document.addEventListener("pointerdown", () => {
-  unlockAudioContext();
-  if (manualRunStartedAt && !beepLoopInterval) {
-    startManualWarningBeepLoop();
-  }
+  unlockAudio();
+  if (AppState.runStartedAt && !AppState.beepInterval) startBeepLoop();
 }, { passive: true });
 
 document.addEventListener("keydown", e => {
@@ -3698,57 +3296,49 @@ document.addEventListener("keydown", e => {
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    if (manualRunStartedAt > 0) {
-      ensureAudioRunningForBackground();
-      triggerBackgroundRunNotification(manualRunMode);
+    if (AppState.runStartedAt > 0) {
+      unlockAudio();
+      if (!AppState.beepInterval) startBeepLoop();
     }
     return;
   }
-  ensureAudioRunningForBackground();
-  fetchSettingsOnce(true);
-  syncControllerCoordFromCloud(true);
-  fetchStatus();
-  updateEspLinkState();
-  updateAreaWeather(false);
-  if (document.getElementById("tab-coord")?.classList.contains("active") && coordMapInstance) {
-    setTimeout(() => coordMapInstance.invalidateSize(), 150);
+  pullSettingsFromCloud(true);
+  pollStatus();
+  updateOnlineState();
+  if ($("tab-coord")?.classList.contains("active") && AppState.map) {
+    setTimeout(() => AppState.map.invalidateSize(), 150);
   }
 });
 
-window.addEventListener("focus", () => {
-  ensureAudioRunningForBackground();
-  fetchSettingsOnce(true);
-  syncControllerCoordFromCloud(true);
-  fetchStatus();
-  updateEspLinkState();
-  updateAreaWeather(false);
-});
-
 window.addEventListener("online", () => {
-  showMsg("Internet reconnected — syncing...");
-  fetchSettingsOnce(true);
-  syncControllerCoordFromCloud(true);
-  fetchStatus();
-  updateEspLinkState();
-  updateAreaWeather(true);
+  showToast("Internet reconnected — syncing...");
+  pullSettingsFromCloud(true);
+  pollStatus();
+  updateWeather(true);
 });
 
-bindInputEditGuards();
+/* =========================================================
+   14. BOOTSTRAP
+========================================================= */
+loadPageLocks();
+bindInputTracking();
 initRtcInputs();
 initDefaultDateRangeInputs();
-applyAllPageLocksUi();
+applyAllPageLocks();
 renderSavedCoordSummary();
-setCoordLockState(isCoordLocked, false);
-restoreManualSessionOnLoad();
+setCoordLock(AppState.coordLocked, false);
+restoreRunSession();
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
-fetchSettingsOnce(true);
-syncControllerCoordFromCloud(true);
-setControlsEnabled(false);
-updatePumpAndValvesVisual();
-setInterval(updateEspLinkState, 1000);
-setInterval(fetchStatus, 2500);
-fetchStatus();
+setControlButtonsEnabled(false);
+updateRigVisuals();
+
+pullSettingsFromCloud(true);
+pollStatus();
+
+setInterval(updateOnlineState, 1000);
+setInterval(pollStatus, STATUS_POLL_MS);
+setInterval(() => pullSettingsFromCloud(false), SETTINGS_POLL_MS);
 </script>
 </body>
 </html>
