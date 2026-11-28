@@ -1087,13 +1087,14 @@
     </section>
 
     <footer class="app-footer">
-      App Developer : <b>Abishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
+      app development by <b>Abishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
     </footer>
   </div>
 </div>
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
+const CONTROLLER_COORD_CLOUD_PATH = `${DB_URL}/settings/controllerCoord.json`;
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
@@ -1111,6 +1112,7 @@ let latestWeatherMetrics = null;
 let cachedGeo = null;
 let pendingFetchedCoord = null;
 let lastWeatherFetchAt = 0;
+let lastCloudCoordSyncAt = 0;
 let currentGraphStyle = "bar";
 let activeRangeFilter = null;
 let coordMapInstance = null;
@@ -1201,11 +1203,81 @@ function getSavedControllerCoord() {
       lat,
       lon,
       place: d.place ? String(d.place).trim() : "",
-      method: d.method ? String(d.method).trim() : "App Location"
+      method: d.method ? String(d.method).trim() : "App Location",
+      updatedAt: Number(d.updatedAt || 0)
     };
   } catch (e) {
     return null;
   }
+}
+
+async function pushControllerCoordToCloud(coordObj) {
+  await fetchJsonSafe(CONTROLLER_COORD_CLOUD_PATH, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(coordObj || null)
+  }, 2);
+}
+
+async function syncControllerCoordFromCloud(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && lastCloudCoordSyncAt > 0 && (now - lastCloudCoordSyncAt) < 10000) {
+    return getSavedControllerCoord();
+  }
+  lastCloudCoordSyncAt = now;
+
+  try {
+    const cloudCoord = await fetchJsonSafe(CONTROLLER_COORD_CLOUD_PATH, {}, 1);
+    if (cloudCoord && cloudCoord.lat !== undefined && cloudCoord.lon !== undefined) {
+      const lat = Number(cloudCoord.lat);
+      const lon = Number(cloudCoord.lon);
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        const localSaved = getSavedControllerCoord();
+        const cloudUpdated = Number(cloudCoord.updatedAt || 0);
+        const changed =
+          !localSaved ||
+          Math.abs(localSaved.lat - lat) > 0.000001 ||
+          Math.abs(localSaved.lon - lon) > 0.000001 ||
+          (cloudUpdated > 0 && cloudUpdated !== Number(localSaved.updatedAt || 0));
+
+        const normalized = {
+          lat,
+          lon,
+          place: cloudCoord.place ? String(cloudCoord.place).trim() : "",
+          method: cloudCoord.method ? String(cloudCoord.method).trim() : "Cloud Sync",
+          updatedAt: cloudUpdated || Date.now()
+        };
+
+        localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify(normalized));
+
+        if (changed) {
+          cachedGeo = {
+            source: "controller_coord",
+            lat,
+            lon,
+            place: normalized.place || `${lat.toFixed(4)}, ${lon.toFixed(4)}`
+          };
+          lastWeatherFetchAt = 0;
+          renderSavedCoordSummary();
+          if (isEspAliveNow()) {
+            await updateAreaWeather(true);
+          }
+        }
+        return normalized;
+      }
+    } else if (cloudCoord === null && getSavedControllerCoord()) {
+      localStorage.removeItem(CONTROLLER_COORD_KEY);
+      cachedGeo = null;
+      lastWeatherFetchAt = 0;
+      renderSavedCoordSummary();
+      if (isEspAliveNow()) {
+        await updateAreaWeather(true);
+      }
+    }
+  } catch (e) {
+    console.warn("Cloud coord sync failed:", e);
+  }
+  return getSavedControllerCoord();
 }
 
 function setCoordLockState(locked, showToast = false) {
@@ -1518,7 +1590,7 @@ function renderSavedCoordSummary() {
     chip.style.color = "#00e676";
     txt.innerText = `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`;
     pl.innerText = saved.place || "Resolving...";
-    src.innerText = saved.method || "App Location";
+    src.innerText = saved.method || "Cloud Sync";
   } else {
     chip.innerText = "Not Set";
     chip.style.color = "#94a3b8";
@@ -1665,13 +1737,23 @@ async function addControllerCoordinate() {
     `${latVal.toFixed(4)}, ${lonVal.toFixed(4)}`;
 
   const methodUsed = pendingFetchedCoord?.method || "Manual App Coordinate";
-
-  localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify({
+  const coordPayload = {
     lat: latVal,
     lon: lonVal,
     place: resolvedPlace,
-    method: methodUsed
-  }));
+    method: methodUsed,
+    updatedAt: Date.now()
+  };
+
+  localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify(coordPayload));
+
+  let cloudSynced = false;
+  try {
+    await pushControllerCoordToCloud(coordPayload);
+    cloudSynced = true;
+  } catch (e) {
+    console.warn("Failed to save coord to Firebase:", e);
+  }
 
   cachedGeo = {
     source: "controller_coord",
@@ -1684,10 +1766,14 @@ async function addControllerCoordinate() {
   renderSavedCoordSummary();
   setCoordLockState(true, false);
   await updateAreaWeather(true);
-  showMsg("Controller coordinate added & locked: " + resolvedPlace);
+  showMsg(
+    cloudSynced
+      ? "Saved to cloud & locked: " + resolvedPlace
+      : "Saved locally (cloud offline): " + resolvedPlace
+  );
 }
 
-function clearControllerCoordinate() {
+async function clearControllerCoordinate() {
   if (!guardUnlockedPage("tab-coord")) return;
   if (isCoordLocked) {
     showMsg("Pin is locked. Unlock first to clear coordinate", true);
@@ -1707,12 +1793,18 @@ function clearControllerCoordinate() {
     dirtyInputs.delete("manLon");
   }
 
+  try {
+    await pushControllerCoordToCloud(null);
+  } catch (e) {
+    console.warn("Failed to clear cloud coord:", e);
+  }
+
   cachedGeo = null;
   lastWeatherFetchAt = 0;
   renderSavedCoordSummary();
   setCoordLockState(false, false);
   updateAreaWeather(true);
-  showMsg("Controller coordinate cleared");
+  showMsg("Controller coordinate cleared from cloud");
 }
 
 function loadInsightLogs() {
@@ -1843,6 +1935,7 @@ function switchTab(btn) {
     initDefaultDateRangeInputs();
     refreshInsightsGraphs();
   } else if (btn.dataset.tab === "tab-coord") {
+    syncControllerCoordFromCloud(true);
     renderSavedCoordSummary();
     setCoordLockState(isCoordLocked, false);
     initControllerMap();
@@ -2292,7 +2385,11 @@ async function resolveControllerGeo() {
     }
   }
 
-  const savedCoord = getSavedControllerCoord();
+  let savedCoord = getSavedControllerCoord();
+  if (!savedCoord) {
+    savedCoord = await syncControllerCoordFromCloud(true);
+  }
+
   if (savedCoord) {
     let placeName = savedCoord.place || (explicitPlace ? String(explicitPlace).trim() : "");
     if (!placeName) {
@@ -2591,6 +2688,21 @@ function populateInputsFromSettings(s) {
     if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i)) document.getElementById("z1_" + i).value = s["z1_" + i];
     if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i)) document.getElementById("z2_" + i).value = s["z2_" + i];
   }
+  if (s.controllerCoord && s.controllerCoord.lat !== undefined && s.controllerCoord.lon !== undefined) {
+    const c = s.controllerCoord;
+    const lat = Number(c.lat);
+    const lon = Number(c.lon);
+    if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+      localStorage.setItem(CONTROLLER_COORD_KEY, JSON.stringify({
+        lat,
+        lon,
+        place: c.place ? String(c.place).trim() : "",
+        method: c.method ? String(c.method).trim() : "Cloud Sync",
+        updatedAt: Number(c.updatedAt || Date.now())
+      }));
+      renderSavedCoordSummary();
+    }
+  }
   refreshInsightsGraphs();
 }
 
@@ -2681,6 +2793,8 @@ async function fetchStatus() {
     if (!d) return;
     latestStatusData = d;
 
+    await syncControllerCoordFromCloud(false);
+
     const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
     if (rawSeen !== undefined && rawSeen !== null) {
       const incomingSeen = Number(rawSeen);
@@ -2732,6 +2846,7 @@ async function fetchStatus() {
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
     fetchSettingsOnce();
+    syncControllerCoordFromCloud(true);
     fetchStatus();
     updateEspLinkState();
     updateAreaWeather(false);
@@ -2743,6 +2858,7 @@ document.addEventListener("visibilitychange", () => {
 
 window.addEventListener("focus", () => {
   fetchSettingsOnce();
+  syncControllerCoordFromCloud(true);
   fetchStatus();
   updateEspLinkState();
   updateAreaWeather(false);
@@ -2751,6 +2867,7 @@ window.addEventListener("focus", () => {
 window.addEventListener("online", () => {
   showMsg("Internet reconnected — syncing...");
   fetchSettingsOnce();
+  syncControllerCoordFromCloud(true);
   fetchStatus();
   updateEspLinkState();
   updateAreaWeather(true);
@@ -2765,6 +2882,7 @@ setCoordLockState(isCoordLocked, false);
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
 fetchSettingsOnce();
+syncControllerCoordFromCloud(true);
 setControlsEnabled(false);
 setInterval(updateEspLinkState, 1000);
 setInterval(fetchStatus, 2500);
