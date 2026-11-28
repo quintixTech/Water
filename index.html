@@ -172,6 +172,7 @@
   }
   .z1{border-top:3px solid var(--cyan)}
   .z2{border-top:3px solid var(--mag)}
+  .weather-card{border-top:3px solid var(--blue)}
   .card.dry-alert.z1,.card.dry-alert.z2{border-top:3px solid var(--red)}
   .z-head{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:11px;font-weight:800}
   .z1 .z-head{color:var(--cyan)}
@@ -224,6 +225,32 @@
     font-size:11.5px;color:var(--sub);background:#09101d;
     border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
   }
+
+  /* Weather Card on Home */
+  .weather-main{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    margin-bottom:8px;
+  }
+  .weather-temp{
+    font-size:28px;font-weight:900;color:#fff;line-height:1.1;
+  }
+  .weather-cond{
+    font-size:12px;font-weight:800;color:var(--blue);margin-top:2px;
+  }
+  .weather-meta{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  }
+  .w-box{
+    background:#09101d;border:1px solid #1b2a44;border-radius:9px;
+    padding:6px 7px;text-align:center;
+  }
+  .w-box span{display:block;font-size:9px;color:var(--sub);font-weight:700}
+  .w-box b{display:block;font-size:11.5px;color:#fff;font-weight:900;margin-top:2px}
+  .coord-box{
+    background:#09101d;border:1px solid #1b2a44;border-radius:10px;
+    padding:9px 10px;font-size:11.5px;color:var(--sub);line-height:1.5;
+  }
+  .coord-box b{color:#fff}
 
   /* Control Graphical Animation Stage */
   .anim-stage{
@@ -477,6 +504,14 @@
     <span>WIFI</span>
   </button>
 
+  <button type="button" class="rail-btn" style="--ico-col:#34d399" data-page="pageLocation" onclick="openPage('pageLocation', this)" title="Controller Location Page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21Z" fill="rgba(52,211,153,.18)"/>
+      <circle cx="12" cy="9.5" r="2.4"/>
+    </svg>
+    <span>LOC</span>
+  </button>
+
   <button type="button" class="rail-btn" style="--ico-col:#a78bfa" data-page="pageInsight" onclick="openPage('pageInsight', this)" title="Insight Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M3 17l6-6 4 4 8-8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -524,6 +559,37 @@
         <div class="val" id="m2Val">--%</div>
         <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
         <div class="stat"><span>Used</span><b id="l2Val">0.00 L</b></div>
+      </div>
+    </div>
+
+    <div class="card weather-card" id="homeWeatherCard">
+      <div class="title">
+        <span style="color:var(--blue)">CONTROLLER WEATHER</span>
+        <span class="chip" id="weatherLocChip">NO LON/LAT</span>
+      </div>
+      <div class="weather-main">
+        <div>
+          <div class="weather-temp" id="wTempVal">--°C</div>
+          <div class="weather-cond" id="wCondText">Set controller location in LOC menu</div>
+        </div>
+        <div style="text-align:right;font-size:10.5px;color:var(--sub)">
+          <div>Lat: <b id="wLatDisp" style="color:#fff">--</b></div>
+          <div>Lon: <b id="wLonDisp" style="color:#fff">--</b></div>
+        </div>
+      </div>
+      <div class="weather-meta">
+        <div class="w-box">
+          <span>HUMIDITY</span>
+          <b id="wHumVal">--%</b>
+        </div>
+        <div class="w-box">
+          <span>WIND</span>
+          <b id="wWindVal">-- km/h</b>
+        </div>
+        <div class="w-box">
+          <span>RAIN</span>
+          <b id="wRainVal">-- mm</b>
+        </div>
       </div>
     </div>
   </section>
@@ -750,7 +816,28 @@
     </div>
   </section>
 
-  <!-- PAGE 7: INSIGHT (CUSTOM DATE + MANUAL/AUTO TIME + BAR / LINE / POINT GRAPH) -->
+  <!-- PAGE 7: CONTROLLER LOCATION (DB ONLY, NO LOCAL STORAGE) -->
+  <section class="page-view" id="pageLocation">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#34d399">CONTROLLER LOCATION</span>
+      <span class="chip" id="locDbChip">DB ONLY</span>
+    </div>
+    <div class="card" style="border-top:3px solid #34d399">
+      <div class="title"><span>Controller GPS Coordinates (Database)</span></div>
+      <div class="coord-box" id="locDbDisplay">
+        Controller Lon / Lat: <b>Not set in DB</b><br>
+        Accuracy: <b>--</b> · Updated: <b>--</b>
+      </div>
+      <button type="button" class="b-green" id="fetchLocBtn" onclick="fetchAndSaveControllerLocation()" style="margin-top:10px">
+        Fetch Location
+      </button>
+      <div style="font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.45">
+        Phone-er GPS theke lon, lat niye sorasori database-e save hoy (locally save hoy na). Phone ar controller ek jaygay rakhle controller-er location save hobe.
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 8: INSIGHT (CUSTOM DATE + MANUAL/AUTO TIME + BAR / LINE / POINT GRAPH) -->
   <section class="page-view" id="pageInsight">
     <div class="page-head">
       <span class="page-head-title" style="color:#a78bfa">INSIGHT ANALYTICS</span>
@@ -830,7 +917,7 @@
     </div>
   </section>
 
-  <!-- PAGE 8: DIAGNOSTICS LOG -->
+  <!-- PAGE 9: DIAGNOSTICS LOG -->
   <section class="page-view" id="pageLog">
     <div class="page-head">
       <span class="page-head-title" style="color:#fb7185">DIAGNOSTICS LOG</span>
@@ -888,6 +975,9 @@ let prevL2 = null;
 
 let equipState = { pump: false, z1: false, z2: false, dry: false };
 
+let controllerLocation = { lat: null, lon: null, acc: null, updatedAt: null };
+let lastWeatherCoordsKey = "";
+
 let insightGraphType = "bar";
 let insightMetric = "runtime";
 let selectedInsightIdx = -1;
@@ -905,6 +995,166 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function weatherCodeToLabel(code) {
+  const c = Number(code);
+  if (c === 0) return "Clear Sky";
+  if (c === 1 || c === 2) return "Partly Cloudy";
+  if (c === 3) return "Overcast";
+  if (c === 45 || c === 48) return "Foggy";
+  if (c >= 51 && c <= 57) return "Drizzle";
+  if (c >= 61 && c <= 67) return "Rain";
+  if (c >= 71 && c <= 77) return "Snow";
+  if (c >= 80 && c <= 82) return "Rain Showers";
+  if (c >= 95) return "Thunderstorm";
+  return "Weather Info";
+}
+
+function renderLocationDisplay() {
+  const hasLoc = Number.isFinite(controllerLocation.lat) && Number.isFinite(controllerLocation.lon);
+  const locChip = document.getElementById("locDbChip");
+  const locDisp = document.getElementById("locDbDisplay");
+  const wLat = document.getElementById("wLatDisp");
+  const wLon = document.getElementById("wLonDisp");
+  const wChip = document.getElementById("weatherLocChip");
+
+  if (hasLoc) {
+    const latStr = Number(controllerLocation.lat).toFixed(6);
+    const lonStr = Number(controllerLocation.lon).toFixed(6);
+    const accStr = controllerLocation.acc != null ? `±${Math.round(controllerLocation.acc)}m` : "--";
+    const updStr = controllerLocation.updatedAt ? new Date(controllerLocation.updatedAt).toLocaleTimeString() : "--";
+    if (locChip) {
+      locChip.textContent = "DB SYNCED";
+      locChip.className = "chip run";
+    }
+    if (locDisp) {
+      locDisp.innerHTML = `Controller Lon / Lat: <b>${lonStr}, ${latStr}</b><br>Accuracy: <b>${accStr}</b> · Updated: <b>${updStr}</b>`;
+    }
+    if (wLat) wLat.textContent = latStr;
+    if (wLon) wLon.textContent = lonStr;
+    if (wChip) {
+      wChip.textContent = "DB LOC";
+      wChip.className = "chip man";
+    }
+  } else {
+    if (locChip) {
+      locChip.textContent = "NO DB LOC";
+      locChip.className = "chip";
+    }
+    if (locDisp) {
+      locDisp.innerHTML = `Controller Lon / Lat: <b>Not set in DB</b><br>Accuracy: <b>--</b> · Updated: <b>--</b>`;
+    }
+    if (wLat) wLat.textContent = "--";
+    if (wLon) wLon.textContent = "--";
+    if (wChip) {
+      wChip.textContent = "NO LON/LAT";
+      wChip.className = "chip";
+    }
+  }
+}
+
+async function fetchWeatherFromCoords(lat, lon, force = false) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  const key = `${Number(lat).toFixed(4)},${Number(lon).toFixed(4)}`;
+  if (!force && key === lastWeatherCoordsKey) return;
+  lastWeatherCoordsKey = key;
+
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,relative_humidity_2m,rain,weather_code,wind_speed_10m&timezone=auto`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    const cur = data?.current;
+    if (!cur) return;
+
+    const tempEl = document.getElementById("wTempVal");
+    const condEl = document.getElementById("wCondText");
+    const humEl = document.getElementById("wHumVal");
+    const windEl = document.getElementById("wWindVal");
+    const rainEl = document.getElementById("wRainVal");
+
+    if (tempEl && cur.temperature_2m !== undefined) tempEl.textContent = `${Number(cur.temperature_2m).toFixed(1)}°C`;
+    if (condEl) condEl.textContent = weatherCodeToLabel(cur.weather_code);
+    if (humEl && cur.relative_humidity_2m !== undefined) humEl.textContent = `${Math.round(cur.relative_humidity_2m)}%`;
+    if (windEl && cur.wind_speed_10m !== undefined) windEl.textContent = `${Number(cur.wind_speed_10m).toFixed(1)} km/h`;
+    if (rainEl && cur.rain !== undefined) rainEl.textContent = `${Number(cur.rain).toFixed(1)} mm`;
+  } catch (e) {}
+}
+
+async function fetchControllerLocationFromDb() {
+  try {
+    const res = await fetch(`${DB_URL}/location.json`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const d = await res.json();
+    if (!d || typeof d !== "object") {
+      controllerLocation = { lat: null, lon: null, acc: null, updatedAt: null };
+      renderLocationDisplay();
+      return null;
+    }
+    const lat = Number(d.lat);
+    const lon = Number(d.lon);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      controllerLocation = {
+        lat,
+        lon,
+        acc: d.acc !== undefined ? Number(d.acc) : null,
+        updatedAt: d.updatedAt || null
+      };
+      renderLocationDisplay();
+      await fetchWeatherFromCoords(lat, lon, false);
+    } else {
+      controllerLocation = { lat: null, lon: null, acc: null, updatedAt: null };
+      renderLocationDisplay();
+    }
+    return controllerLocation;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function fetchAndSaveControllerLocation() {
+  if (!navigator.geolocation) {
+    showMsg("Geolocation not supported on this device", true);
+    return;
+  }
+  const btn = document.getElementById("fetchLocBtn");
+  if (btn) btn.disabled = true;
+  showMsg("Fetching phone GPS location...");
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const lat = Number(pos.coords.latitude.toFixed(6));
+      const lon = Number(pos.coords.longitude.toFixed(6));
+      const acc = Number(pos.coords.accuracy.toFixed(1));
+      const nowTs = Date.now();
+      const payload = { lat, lon, acc, updatedAt: nowTs };
+
+      try {
+        const res = await fetch(`${DB_URL}/location.json`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        controllerLocation = payload;
+        renderLocationDisplay();
+        await fetchWeatherFromCoords(lat, lon, true);
+        showMsg(`Controller location saved to DB (${lat}, ${lon})`);
+        setDiag(`location PATCH OK -> lat=${lat}, lon=${lon}`);
+      } catch (e) {
+        showMsg("DB location save failed: " + e.message, true);
+        setDiag("location PATCH error: " + e.message);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    },
+    (err) => {
+      if (btn) btn.disabled = false;
+      showMsg("Location error: " + (err.message || "Permission denied"), true);
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+}
 
 function renderEquipmentAnimation() {
   const { pump, z1, z2, dry } = equipState;
@@ -1804,6 +2054,12 @@ function openPage(pageId, btn) {
   if (pageId === "pageControl") {
     renderEquipmentAnimation();
   }
+  if (pageId === "pageLocation") {
+    fetchControllerLocationFromDb();
+  }
+  if (pageId === "pageZones") {
+    fetchControllerLocationFromDb();
+  }
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
@@ -2272,6 +2528,7 @@ async function saveWifiCreds() {
 }
 
 if (!rtcDefaultsFilled) fillRtcInputsFromPhone();
+renderLocationDisplay();
 renderEquipmentAnimation();
 updateManualUiBanner();
 initInsightDates();
@@ -2282,8 +2539,10 @@ applyPageLockState("wifi");
 setInterval(updatePill, 1000);
 setInterval(fetchStatus, 2000);
 setInterval(() => fetchSettings(false), 3000);
+setInterval(fetchControllerLocationFromDb, 5000);
 fetchStatus();
 fetchSettings(true);
+fetchControllerLocationFromDb();
 </script>
 </body>
 </html>
