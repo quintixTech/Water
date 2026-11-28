@@ -50,10 +50,26 @@
   .z-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800}
   .z1 .z-head{color:var(--cyan)}
   .z2 .z-head{color:var(--mag)}
-  .val{font-size:28px;font-weight:900;margin:8px 0}
+  .chip{
+    font-size:10.5px;padding:2px 8px;border-radius:999px;
+    background:var(--card2);color:var(--sub);border:1px solid var(--line);
+  }
+  .val{font-size:28px;font-weight:900;margin:8px 0 6px}
+  .meter{
+    height:9px;background:#09101d;border-radius:999px;overflow:hidden;
+    margin:4px 0 8px;border:1px solid #1b2a44;
+  }
+  .meter-fill{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,#00c853,#00e676);
+    transition:width .3s ease;
+  }
   .stat{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub)}
   .stat b{color:#fff}
-  .title{font-size:13px;font-weight:800;color:var(--cyan);margin-bottom:10px}
+  .title{
+    font-size:13px;font-weight:800;color:var(--cyan);margin-bottom:10px;
+    display:flex;justify-content:space-between;align-items:center;gap:6px;
+  }
   .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
   label{font-size:12.5px;color:var(--sub)}
   input{
@@ -62,11 +78,22 @@
     width:80px;text-align:center;
   }
   button{
-    width:100%;padding:11px;border:none;border-radius:12px;
-    font-weight:800;font-size:13px;cursor:pointer;margin-top:8px;
-    background:var(--cyan);color:#04151c;
+    width:100%;padding:11px 12px;border:none;border-radius:12px;
+    font-weight:800;font-size:12.5px;cursor:pointer;
+    transition:transform .08s ease,opacity .2s ease;
   }
+  button:active:not(:disabled){transform:scale(.97)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .b-green{background:var(--green);color:#03140b}
+  .b-red{background:var(--red);color:#fff}
+  .b-z1{background:#0284c7;color:#fff}
+  .b-z2{background:#a21caf;color:#fff}
+  .b-cyan{background:var(--cyan);color:#04151c;margin-top:8px}
   .msg{text-align:center;font-size:12px;font-weight:700;min-height:18px;color:var(--green);margin-bottom:8px}
+  .dbg{
+    font-size:11px;color:var(--sub);background:#09101d;border:1px solid #1b2a44;
+    border-radius:12px;padding:10px;line-height:1.5;word-break:break-word;
+  }
 </style>
 </head>
 <body>
@@ -83,19 +110,33 @@
 
   <div class="grid2">
     <div class="card z1" style="margin:0">
-      <div class="z-head"><span>ZONE 1 MOISTURE</span></div>
+      <div class="z-head"><span>ZONE 1 MOISTURE</span><span class="chip" id="band1">--</span></div>
       <div class="val" id="m1Val">--%</div>
+      <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
       <div class="stat"><span>Total Used</span><b id="l1Val">0.00 L</b></div>
     </div>
     <div class="card z2" style="margin:0">
-      <div class="z-head"><span>ZONE 2 MOISTURE</span></div>
+      <div class="z-head"><span>ZONE 2 MOISTURE</span><span class="chip" id="band2">--</span></div>
       <div class="val" id="m2Val">--%</div>
+      <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
       <div class="stat"><span>Total Used</span><b id="l2Val">0.00 L</b></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="title">Schedule &amp; Flow Calibration (Single Source: /settings)</div>
+    <div class="title"><span>Quick Control</span><span class="chip" id="modeChip">IDLE</span></div>
+    <div class="grid2" style="margin:0">
+      <button class="b-green cmd-btn" onclick="sendCmd('start')">START BOTH</button>
+      <button class="b-red cmd-btn" onclick="sendCmd('stop')">STOP ALL</button>
+    </div>
+    <div class="grid2" style="margin-top:8px;margin-bottom:0">
+      <button class="b-z1 cmd-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
+      <button class="b-z2 cmd-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="title"><span>Schedule &amp; Flow Calibration</span><span>/settings</span></div>
     <div class="row">
       <label>Schedule 1 (HH:MM)</label>
       <div>
@@ -110,14 +151,16 @@
         <input id="c2" type="number" step="0.1" style="width:68px">
       </div>
     </div>
-    <button onclick="saveSettings()">Save Settings</button>
+    <button class="b-cyan" id="saveBtn" onclick="saveSettings()">Save Settings</button>
   </div>
+
+  <div class="dbg" id="dbgBox">Diag: ready</div>
 </div>
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const STALE_MS = 15000;
-const WRITE_GUARD_MS = 8000;
+const STALE_MS = 30000;
+const WRITE_GUARD_MS = 5000;
 
 let lastSeenKey = null;
 let lastSeenAt = 0;
@@ -133,7 +176,18 @@ function showMsg(txt, err = false) {
   const b = document.getElementById("msgBox");
   b.style.color = err ? "#ff8a80" : "#00e676";
   b.innerText = txt;
-  setTimeout(() => { if (b.innerText === txt) b.innerText = ""; }, 3000);
+}
+
+function setDiag(txt) {
+  document.getElementById("dbgBox").innerText = "Diag: " + txt;
+}
+
+function bandLabel(m) {
+  if (m < 20) return "<20%";
+  if (m < 40) return "20-39%";
+  if (m < 60) return "40-59%";
+  if (m < 80) return "60-79%";
+  return "80-100%";
 }
 
 function isOnline() {
@@ -145,14 +199,44 @@ function updatePill() {
   const online = isOnline();
   pill.className = online ? "pill on" : "pill";
   pill.innerText = online ? "ONLINE" : "OFFLINE";
+  document.querySelectorAll(".cmd-btn").forEach(btn => { btn.disabled = !online; });
+}
+
+async function sendCmd(cmd) {
+  if (!isOnline()) {
+    showMsg("ESP is OFFLINE", true);
+    return;
+  }
+  try {
+    const res = await fetch(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cmd)
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    document.getElementById("modeChip").innerText = cmd === "stop" ? "STOPPED" : ("CMD: " + cmd.toUpperCase());
+    showMsg("Command sent: " + cmd.toUpperCase());
+    setDiag(`cmd=${cmd} OK`);
+  } catch (e) {
+    showMsg("Cmd failed: " + e.message, true);
+    setDiag(`cmd=${cmd} error: ${e.message}`);
+  }
 }
 
 async function fetchStatus() {
   try {
     const res = await fetch(`${DB_URL}/status.json`, { cache: "no-store" });
-    if (!res.ok) return;
+    if (!res.ok) {
+      setDiag(`status HTTP ${res.status}`);
+      updatePill();
+      return;
+    }
     const d = await res.json();
-    if (!d) return;
+    if (!d) {
+      setDiag("status is null");
+      updatePill();
+      return;
+    }
 
     const key = (d.uptimeMs ?? d.lastSeen ?? `${d.time}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`);
     if (String(key) !== String(lastSeenKey)) {
@@ -160,13 +244,24 @@ async function fetchStatus() {
       lastSeenAt = Date.now();
     }
 
+    const m1 = Math.max(0, Math.min(100, Number(d.m1 ?? 0)));
+    const m2 = Math.max(0, Math.min(100, Number(d.m2 ?? 0)));
+
     document.getElementById("rtcText").innerText = "RTC: " + (d.time || "--/--/---- --:--");
-    document.getElementById("m1Val").innerText = Number(d.m1 ?? 0) + "%";
-    document.getElementById("m2Val").innerText = Number(d.m2 ?? 0) + "%";
+    document.getElementById("m1Val").innerText = m1 + "%";
+    document.getElementById("m2Val").innerText = m2 + "%";
+    document.getElementById("band1").innerText = bandLabel(m1);
+    document.getElementById("band2").innerText = bandLabel(m2);
+    document.getElementById("b1Fill").style.width = m1 + "%";
+    document.getElementById("b2Fill").style.width = m2 + "%";
     document.getElementById("l1Val").innerText = Number(d.l1 ?? 0).toFixed(2) + " L";
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
+    if (d.status) document.getElementById("modeChip").innerText = String(d.status);
+
+    setDiag(`status OK | key=${key}`);
     updatePill();
   } catch (e) {
+    setDiag(`status fetch error: ${e.message}`);
     updatePill();
   }
 }
@@ -193,6 +288,10 @@ async function fetchSettings() {
 }
 
 async function saveSettings() {
+  const btn = document.getElementById("saveBtn");
+  btn.disabled = true;
+  showMsg("Saving...");
+
   const payload = {
     s1h: Number(document.getElementById("s1h").value || 0),
     s1m: Number(document.getElementById("s1m").value || 0),
@@ -200,6 +299,7 @@ async function saveSettings() {
     c2: Number(document.getElementById("c2").value || 7.5),
     updatedAt: Date.now()
   };
+
   try {
     lastWriteAt = Date.now();
     const res = await fetch(`${DB_URL}/settings.json`, {
@@ -207,13 +307,22 @@ async function saveSettings() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    if (!res.ok) {
+      showMsg(`Failed HTTP ${res.status}`, true);
+      setDiag(`PATCH failed (${res.status}): ${text}`);
+      return;
+    }
     ["s1h", "s1m", "c1", "c2"].forEach(id => editing.delete(id));
     lastSettingsSig = "";
-    showMsg("Saved to /settings");
-    fetchSettings();
+    showMsg("Saved to /settings!");
+    setDiag(`PATCH OK at ${new Date().toLocaleTimeString()}`);
+    await fetchSettings();
   } catch (e) {
-    showMsg("Save failed: " + e.message, true);
+    showMsg(`Error: ${e.message}`, true);
+    setDiag(`PATCH exception: ${e.message}`);
+  } finally {
+    btn.disabled = false;
   }
 }
 
