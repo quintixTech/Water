@@ -1318,7 +1318,7 @@
               <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
             </div>
           </div>
-          <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Schedule &amp; Flow Cal</button>
+          <button class="b-cyan" onclick="saveSettings()">Save Schedule &amp; Flow Cal</button>
         </div>
       </div>
     </section>
@@ -1340,7 +1340,7 @@
             <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
             <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
           </table>
-          <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Moisture Targets</button>
+          <button class="b-cyan" onclick="saveSettings()">Save Moisture Targets</button>
         </div>
       </div>
     </section>
@@ -1419,7 +1419,7 @@
             <label for="wifiPass">Wi-Fi Password</label>
             <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
           </div>
-          <button class="b-cyan ctrl-btn" onclick="saveWifi()">Save Wi-Fi Credentials</button>
+          <button class="b-cyan" onclick="saveWifi()">Save Wi-Fi Credentials</button>
         </div>
       </div>
     </section>
@@ -1449,8 +1449,8 @@
               <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
             </div>
           </div>
-          <button class="b-cyan ctrl-btn" onclick="saveRtc(false)">Set Date &amp; Time</button>
-          <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date &amp; Time</button>
+          <button class="b-cyan" onclick="saveRtc(false)">Set Date &amp; Time</button>
+          <button class="b-ghost" onclick="saveRtc(true)">Sync Phone Current Date &amp; Time</button>
         </div>
       </div>
     </section>
@@ -3366,31 +3366,29 @@ async function sendCmd(cmd) {
   }
 }
 
+function readNumOrUndefined(id, fallbackVal = undefined) {
+  const raw = document.getElementById(id)?.value;
+  if (raw === undefined || raw === null || String(raw).trim() === "") return fallbackVal;
+  const n = Number(raw);
+  return Number.isNaN(n) ? fallbackVal : n;
+}
+
 async function saveSettings() {
   const activeTab = document.querySelector(".tab-panel.active")?.id;
   if (!guardUnlockedPage(activeTab)) return;
-  if (!isEspAliveNow()) {
-    showMsg("ESP is OFFLINE — cannot apply settings", true);
-    return;
+
+  const payload = {};
+  const mapNum = [
+    ["s1h", 0], ["s1m", 0], ["s2h", 0], ["s2m", 0],
+    ["c1", 7.5], ["c2", 7.5],
+    ["z1_0", 0], ["z1_1", 0], ["z1_2", 0], ["z1_3", 0], ["z1_4", 0],
+    ["z2_0", 0], ["z2_1", 0], ["z2_2", 0], ["z2_3", 0], ["z2_4", 0]
+  ];
+  for (const [key, defVal] of mapNum) {
+    const val = readNumOrUndefined(key, defVal);
+    if (val !== undefined) payload[key] = val;
   }
-  const payload = {
-    s1h: Number(document.getElementById("s1h").value || 0),
-    s1m: Number(document.getElementById("s1m").value || 0),
-    s2h: Number(document.getElementById("s2h").value || 0),
-    s2m: Number(document.getElementById("s2m").value || 0),
-    c1: Number(document.getElementById("c1").value || 7.5),
-    c2: Number(document.getElementById("c2").value || 7.5),
-    z1_0: Number(document.getElementById("z1_0").value || 0),
-    z1_1: Number(document.getElementById("z1_1").value || 0),
-    z1_2: Number(document.getElementById("z1_2").value || 0),
-    z1_3: Number(document.getElementById("z1_3").value || 0),
-    z1_4: Number(document.getElementById("z1_4").value || 0),
-    z2_0: Number(document.getElementById("z2_0").value || 0),
-    z2_1: Number(document.getElementById("z2_1").value || 0),
-    z2_2: Number(document.getElementById("z2_2").value || 0),
-    z2_3: Number(document.getElementById("z2_3").value || 0),
-    z2_4: Number(document.getElementById("z2_4").value || 0)
-  };
+
   try {
     await patchSettings(payload);
     markRecentSavedGroup([
@@ -3399,7 +3397,7 @@ async function saveSettings() {
       "z2_0","z2_1","z2_2","z2_3","z2_4"
     ]);
     refreshInsightsGraphs();
-    showMsg("Settings saved to cloud!");
+    showMsg(isEspAliveNow() ? "Settings saved to cloud!" : "Settings saved to cloud (ESP offline — will apply on next poll)");
   } catch (e) {
     showMsg("Save failed: " + e.message, true);
   }
@@ -3407,10 +3405,6 @@ async function saveSettings() {
 
 async function saveWifi() {
   if (!guardUnlockedPage("tab-wifi")) return;
-  if (!isEspAliveNow()) {
-    showMsg("ESP is OFFLINE — cannot save Wi-Fi", true);
-    return;
-  }
   const ssid = document.getElementById("wifiSsid").value.trim();
   const pass = document.getElementById("wifiPass").value;
   if (!ssid) {
@@ -3420,7 +3414,7 @@ async function saveWifi() {
   try {
     await patchSettings({ wifiSsid: ssid, wifiPass: pass });
     markRecentSavedGroup(["wifiSsid", "wifiPass"]);
-    showMsg("Wi-Fi saved to cloud!");
+    showMsg(isEspAliveNow() ? "Wi-Fi saved to cloud!" : "Wi-Fi saved to cloud (ESP offline — will apply on next poll)");
   } catch (e) {
     showMsg("Wi-Fi save failed: " + e.message, true);
   }
@@ -3428,10 +3422,6 @@ async function saveWifi() {
 
 async function saveRtc(usePhoneNow) {
   if (!guardUnlockedPage("tab-rtc")) return;
-  if (!isEspAliveNow()) {
-    showMsg("ESP is OFFLINE — cannot sync RTC", true);
-    return;
-  }
   let y, mo, d, h, mi, s;
   if (usePhoneNow) {
     const now = new Date();
@@ -3448,12 +3438,12 @@ async function saveRtc(usePhoneNow) {
     document.getElementById("rtcMi").value = mi;
     document.getElementById("rtcS").value = s;
   } else {
-    y = Number(document.getElementById("rtcY").value || 2026);
-    mo = Number(document.getElementById("rtcMo").value || 1);
-    d = Number(document.getElementById("rtcD").value || 1);
-    h = Number(document.getElementById("rtcH").value || 0);
-    mi = Number(document.getElementById("rtcMi").value || 0);
-    s = Number(document.getElementById("rtcS").value || 0);
+    y = readNumOrUndefined("rtcY", 2026);
+    mo = readNumOrUndefined("rtcMo", 1);
+    d = readNumOrUndefined("rtcD", 1);
+    h = readNumOrUndefined("rtcH", 0);
+    mi = readNumOrUndefined("rtcMi", 0);
+    s = readNumOrUndefined("rtcS", 0);
   }
   try {
     await patchSettings({
@@ -3466,7 +3456,7 @@ async function saveRtc(usePhoneNow) {
       rtcS: s
     });
     markRecentSavedGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
-    showMsg("RTC time saved to cloud!");
+    showMsg(isEspAliveNow() ? "RTC time saved to cloud!" : "RTC time saved to cloud (ESP offline — will apply on next poll)");
   } catch (e) {
     showMsg("RTC save failed: " + e.message, true);
   }
