@@ -14,10 +14,20 @@
     --cyan:#00e5ff;
     --mag:#e879f9;
     --green:#00e676;
+    --amber:#ffab00;
+    --blue:#38bdf8;
+    --teal:#2dd4bf;
+    --coral:#fb7185;
     --red:#ff5252;
     --text:#f8fafc;
     --sub:#94a3b8;
     --rail-w:66px;
+  }
+  body.rail-expanded{
+    --rail-w:146px;
+  }
+  body.rail-collapsed{
+    --rail-w:38px;
   }
   *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
   html{scroll-behavior:smooth}
@@ -26,42 +36,116 @@
     background:radial-gradient(circle at 60% -10%,#11223d 0%,var(--bg) 58%);
     color:var(--text);
     min-height:100vh;
-    padding:12px 12px 12px calc(var(--rail-w) + 12px);
+    padding:12px 12px 24px calc(var(--rail-w) + 12px);
+    transition:padding-left .22s ease;
   }
   .side-rail{
     position:fixed;top:0;left:0;bottom:0;width:var(--rail-w);
-    background:rgba(12,19,33,.95);border-right:1px solid var(--line);
+    background:rgba(12,19,33,.97);border-right:1px solid var(--line);
     z-index:80;padding:10px 6px;display:flex;flex-direction:column;
     align-items:center;gap:6px;backdrop-filter:blur(8px);
+    transition:width .22s ease,padding .22s ease;
+    overflow:hidden;
+  }
+  body.rail-collapsed .side-rail{
+    padding:10px 3px;
+  }
+  .rail-top{
+    width:100%;display:flex;align-items:center;justify-content:center;
+    gap:6px;margin-bottom:2px;flex-shrink:0;
+  }
+  body.rail-expanded .rail-top{
+    justify-content:space-between;padding:0 4px;
   }
   .rail-logo{
     width:44px;height:44px;border-radius:13px;
-    background:linear-gradient(145deg,#122640,#0b1322);
+    background:linear-gradient(145deg,#132947,#0b1322);
     border:1px solid rgba(0,229,255,.35);
     display:flex;align-items:center;justify-content:center;
-    margin-bottom:4px;flex-shrink:0;
+    flex-shrink:0;
+  }
+  body.rail-collapsed .rail-logo{
+    width:30px;height:30px;border-radius:9px;
+  }
+  body.rail-collapsed .rail-logo svg{
+    width:17px;height:17px;
+  }
+  .rail-brand-txt{
+    display:none;font-size:11.5px;font-weight:900;letter-spacing:.4px;
+    color:#fff;white-space:nowrap;
+  }
+  .rail-brand-txt span{color:var(--cyan)}
+  body.rail-expanded .rail-brand-txt{
+    display:inline;
+  }
+  .rail-toggle{
+    width:100%;max-width:52px;height:28px;border-radius:9px;
+    background:var(--card2);border:1px solid var(--line);
+    color:var(--cyan);display:flex;align-items:center;justify-content:center;
+    gap:4px;cursor:pointer;padding:0;flex-shrink:0;
+    transition:all .16s ease;
+  }
+  body.rail-expanded .rail-toggle{
+    width:auto;max-width:none;padding:0 8px;
+  }
+  body.rail-collapsed .rail-toggle{
+    width:30px;height:26px;border-radius:8px;
+  }
+  .rail-toggle:hover{
+    border-color:var(--cyan);background:#1b2c49;
+  }
+  .rail-toggle span{
+    display:none;font-size:9.5px;font-weight:800;color:var(--sub);
+  }
+  body.rail-expanded .rail-toggle span{
+    display:inline;
   }
   .rail-btn{
-    width:52px;min-height:48px;padding:5px 2px;border-radius:12px;
+    width:100%;max-width:52px;min-height:46px;padding:5px 2px;border-radius:12px;
     background:transparent;border:1px solid transparent;
     color:var(--sub);display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:3px;
-    cursor:pointer;transition:all .16s ease;
+    cursor:pointer;transition:all .16s ease;flex-shrink:0;
   }
-  .rail-btn svg{width:19px;height:19px;flex-shrink:0}
-  .rail-btn span{font-size:9px;font-weight:800;letter-spacing:.2px;line-height:1}
-  .rail-btn:hover{background:var(--card2);color:var(--text);border-color:var(--line)}
+  body.rail-expanded .rail-btn{
+    max-width:none;flex-direction:row;justify-content:flex-start;
+    min-height:40px;padding:6px 10px;gap:9px;
+  }
+  body.rail-collapsed .rail-btn{
+    width:30px;min-height:38px;padding:4px 0;border-radius:9px;
+  }
+  .rail-btn svg{
+    width:19px;height:19px;flex-shrink:0;
+    color:var(--ico-col, var(--cyan));
+    filter:drop-shadow(0 0 4px rgba(0,0,0,.35));
+  }
+  body.rail-collapsed .rail-btn svg{
+    width:16px;height:16px;
+  }
+  .rail-btn span{
+    font-size:9px;font-weight:800;letter-spacing:.2px;line-height:1;
+    white-space:nowrap;
+  }
+  body.rail-expanded .rail-btn span{
+    font-size:11px;letter-spacing:.3px;
+  }
+  body.rail-collapsed .rail-btn span{
+    display:none;
+  }
+  .rail-btn:hover{
+    background:var(--card2);color:var(--text);border-color:var(--line);
+  }
   .rail-btn.active{
-    background:rgba(0,229,255,.12);
-    color:var(--cyan);
-    border-color:rgba(0,229,255,.45);
-    box-shadow:inset 0 0 12px rgba(0,229,255,.08);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    border-color:var(--ico-col, var(--cyan));
+    box-shadow:inset 0 0 12px rgba(255,255,255,.05);
   }
   .wrap{max-width:720px;margin:0 auto}
   .appbar{
     display:flex;justify-content:space-between;align-items:center;gap:8px;
     padding:12px 14px;background:var(--card);border-radius:16px;
-    border:1px solid var(--line);margin-bottom:12px;
+    border:1px solid var(--line);margin-bottom:10px;
   }
   .brand{font-weight:900;font-size:16px;letter-spacing:.4px}
   .brand span{color:var(--cyan)}
@@ -69,6 +153,7 @@
   .pill{
     padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;
     background:#2a0d12;color:var(--red);border:1px solid rgba(255,82,82,.4);
+    white-space:nowrap;
   }
   .pill.on{background:#092533;color:var(--green);border-color:rgba(0,230,118,.35)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -84,7 +169,10 @@
   .chip{
     font-size:10.5px;padding:2px 8px;border-radius:999px;
     background:var(--card2);color:var(--sub);border:1px solid var(--line);
+    white-space:nowrap;
   }
+  .chip.run{color:var(--green);border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.08)}
+  .chip.dry{color:var(--red);border-color:rgba(255,82,82,.4);background:rgba(255,82,82,.1)}
   .val{font-size:28px;font-weight:900;margin:8px 0 6px}
   .meter{
     height:9px;background:#09101d;border-radius:999px;overflow:hidden;
@@ -101,13 +189,14 @@
     font-size:13px;font-weight:800;color:var(--cyan);margin-bottom:10px;
     display:flex;justify-content:space-between;align-items:center;gap:6px;
   }
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap}
   label{font-size:12.5px;color:var(--sub)}
   input{
     background:#090f1b;border:1px solid #293954;color:#fff;
     padding:7px 9px;border-radius:10px;font-size:13px;font-weight:700;
     width:80px;text-align:center;
   }
+  input:focus{outline:none;border-color:var(--cyan)}
   .input-wide{width:100%;text-align:left;padding:9px 11px}
   .wifi-status{
     font-size:11.5px;color:var(--sub);background:#09101d;
@@ -131,7 +220,10 @@
   .b-z2{background:#a21caf;color:#fff}
   .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
   .b-ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);margin-top:8px}
-  .msg{text-align:center;font-size:12px;font-weight:700;min-height:18px;color:var(--green);margin-bottom:8px}
+  .msg{
+    text-align:center;font-size:12px;font-weight:700;min-height:20px;
+    color:var(--green);margin-bottom:8px;padding:2px 6px;
+  }
   .dbg{
     font-size:11px;color:var(--sub);background:#09101d;border:1px solid #1b2a44;
     border-radius:12px;padding:10px;line-height:1.5;word-break:break-word;
@@ -139,62 +231,72 @@
 </style>
 </head>
 <body>
-<nav class="side-rail" aria-label="Quick Section Rail">
-  <div class="rail-logo" title="QUANTIX TECH">
-    <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
-      <circle cx="14" cy="14" r="9.5" stroke="#00e5ff" stroke-width="2.2"/>
-      <circle cx="14" cy="14" r="4" stroke="#f8fafc" stroke-width="1.8"/>
-      <path d="M17.5 17.5L23.5 23.5" stroke="#00e5ff" stroke-width="2.2" stroke-linecap="round"/>
-    </svg>
+<nav class="side-rail" id="sideRail" aria-label="Quick Section Rail">
+  <div class="rail-top">
+    <div class="rail-logo" title="QUANTIX TECH">
+      <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
+        <circle cx="14" cy="14" r="9.5" stroke="#00e5ff" stroke-width="2.2"/>
+        <circle cx="14" cy="14" r="4" stroke="#00e676" stroke-width="1.8"/>
+        <path d="M17.5 17.5L23.5 23.5" stroke="#ffab00" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="rail-brand-txt">QUAN<span>TIX</span></span>
   </div>
 
-  <button type="button" class="rail-btn active" data-target="topBar" onclick="goSection('topBar', this)" title="Zones">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 2.8C12 2.8 5.5 10.1 5.5 14.6a6.5 6.5 0 0 0 13 0C18.5 10.1 12 2.8 12 2.8Z"/>
+  <button type="button" class="rail-toggle" id="railToggleBtn" onclick="cycleRailMode()" title="Collapse / Expand Menu">
+    <svg id="railToggleIcon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+    <span id="railToggleLabel">Collapse</span>
+  </button>
+
+  <button type="button" class="rail-btn active" style="--ico-col:#00e5ff" data-target="topBar" onclick="goSection('topBar', this)" title="Zones">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <path d="M12 2.8C12 2.8 5.5 10.1 5.5 14.6a6.5 6.5 0 0 0 13 0C18.5 10.1 12 2.8 12 2.8Z" fill="rgba(0,229,255,.16)"/>
     </svg>
     <span>ZONES</span>
   </button>
 
-  <button type="button" class="rail-btn" data-target="secControl" onclick="goSection('secControl', this)" title="Control">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polygon points="6 4 20 12 6 20 6 4"/>
+  <button type="button" class="rail-btn" style="--ico-col:#00e676" data-target="secControl" onclick="goSection('secControl', this)" title="Control">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <polygon points="6 4 20 12 6 20 6 4" fill="rgba(0,230,118,.18)"/>
     </svg>
     <span>CTRL</span>
   </button>
 
-  <button type="button" class="rail-btn" data-target="secSchedule" onclick="goSection('secSchedule', this)" title="Schedule">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="8.5"/>
+  <button type="button" class="rail-btn" style="--ico-col:#ffab00" data-target="secSchedule" onclick="goSection('secSchedule', this)" title="Schedule">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <circle cx="12" cy="12" r="8.5" fill="rgba(255,171,0,.14)"/>
       <path d="M12 7.5V12l3 2" stroke-linecap="round"/>
     </svg>
     <span>SCH</span>
   </button>
 
-  <button type="button" class="rail-btn" data-target="secBands" onclick="goSection('secBands', this)" title="Moisture ML">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <button type="button" class="rail-btn" style="--ico-col:#e879f9" data-target="secBands" onclick="goSection('secBands', this)" title="Moisture ML">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M4 18V11M10 18V7M16 18V13M22 18V4" stroke-linecap="round"/>
     </svg>
     <span>ML</span>
   </button>
 
-  <button type="button" class="rail-btn" data-target="secRtc" onclick="goSection('secRtc', this)" title="RTC Clock">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/>
+  <button type="button" class="rail-btn" style="--ico-col:#2dd4bf" data-target="secRtc" onclick="goSection('secRtc', this)" title="RTC Clock">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="rgba(45,212,191,.15)"/>
       <path d="M3.5 9.5H20.5M8 3v4M16 3v4" stroke-linecap="round"/>
     </svg>
     <span>RTC</span>
   </button>
 
-  <button type="button" class="rail-btn" data-target="secWifi" onclick="goSection('secWifi', this)" title="Router Wi-Fi">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <button type="button" class="rail-btn" style="--ico-col:#38bdf8" data-target="secWifi" onclick="goSection('secWifi', this)" title="Router Wi-Fi">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
       <path d="M3.5 9.5a12.5 12.5 0 0 1 17 0M7 13a7.5 7.5 0 0 1 10 0M10.5 16.5a2.5 2.5 0 0 1 3 0" stroke-linecap="round"/>
-      <circle cx="12" cy="19.5" r="1.2" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="19.5" r="1.4" fill="currentColor" stroke="none"/>
     </svg>
     <span>WIFI</span>
   </button>
 
-  <button type="button" class="rail-btn" data-target="dbgBox" onclick="goSection('dbgBox', this)" title="Diagnostics">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <button type="button" class="rail-btn" style="--ico-col:#fb7185" data-target="dbgBox" onclick="goSection('dbgBox', this)" title="Diagnostics">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M3 12h4l2.5-6 5 12 2.5-6H21" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <span>LOG</span>
@@ -337,6 +439,8 @@ let lastSeenAt = 0;
 let justSavedUntil = 0;
 let lastSettingsSig = "";
 let rtcDefaultsFilled = false;
+let msgTimer = null;
+let railMode = "compact"; // "compact" -> "expanded" -> "collapsed"
 let latestSettings = {
   s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
   z1_0: 1000, z1_1: 500, z1_2: 0, z1_3: 0, z1_4: 0,
@@ -344,6 +448,31 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function applyRailMode(mode) {
+  railMode = mode;
+  document.body.classList.remove("rail-expanded", "rail-collapsed");
+  const icon = document.getElementById("railToggleIcon");
+  const lbl = document.getElementById("railToggleLabel");
+  if (mode === "expanded") {
+    document.body.classList.add("rail-expanded");
+    icon.innerHTML = '<path d="M15 18l-6-6 6-6"/>';
+    lbl.innerText = "Mini";
+  } else if (mode === "collapsed") {
+    document.body.classList.add("rail-collapsed");
+    icon.innerHTML = '<path d="M9 18l6-6-6-6"/>';
+    lbl.innerText = "Expand";
+  } else {
+    icon.innerHTML = '<path d="M9 18l6-6-6-6"/>';
+    lbl.innerText = "Expand";
+  }
+}
+
+function cycleRailMode() {
+  if (railMode === "compact") applyRailMode("expanded");
+  else if (railMode === "expanded") applyRailMode("collapsed");
+  else applyRailMode("compact");
+}
 
 function goSection(id, btn) {
   document.querySelectorAll(".rail-btn").forEach(b => b.classList.remove("active"));
@@ -374,6 +503,8 @@ function showMsg(txt, err = false) {
   const b = document.getElementById("msgBox");
   b.style.color = err ? "#ff8a80" : "#00e676";
   b.innerText = txt;
+  if (msgTimer) clearTimeout(msgTimer);
+  msgTimer = setTimeout(() => { b.innerText = ""; }, 4000);
 }
 
 function setDiag(txt) {
@@ -475,7 +606,9 @@ async function sendCmd(cmd) {
       body: JSON.stringify(cmd)
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
-    document.getElementById("modeChip").innerText = cmd === "stop" ? "STOPPED" : ("CMD: " + cmd.toUpperCase());
+    const chip = document.getElementById("modeChip");
+    chip.className = "chip";
+    chip.innerText = cmd === "stop" ? "STOPPED" : ("CMD: " + cmd.toUpperCase());
     showMsg("Command sent: " + cmd.toUpperCase());
     setDiag(`cmd=${cmd} OK`);
   } catch (e) {
@@ -515,7 +648,13 @@ async function fetchStatus() {
     document.getElementById("b2Fill").style.width = m2 + "%";
     document.getElementById("l1Val").innerText = Number(d.l1 ?? 0).toFixed(2) + " L";
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
-    if (d.status) document.getElementById("modeChip").innerText = String(d.status);
+
+    const modeChip = document.getElementById("modeChip");
+    if (d.status) {
+      const st = String(d.status);
+      modeChip.innerText = st;
+      modeChip.className = "chip" + (st === "DRY!" ? " dry" : (st === "RUN" ? " run" : ""));
+    }
 
     const ssidDisp = d.staSsid || latestSettings.wifiSsid || "None";
     const wBox = document.getElementById("wifiStatusBox");
@@ -523,9 +662,11 @@ async function fetchStatus() {
     if (d.staIP && d.staIP !== "0.0.0.0") {
       wBox.innerHTML = `Connected to <b>${ssidDisp}</b> · IP: <b>${d.staIP}</b>`;
       wChip.innerText = "CONNECTED";
+      wChip.className = "chip run";
     } else {
       wBox.innerHTML = `Saved SSID: <b>${ssidDisp}</b> · Router: <b>Disconnected</b>`;
       wChip.innerText = "STA";
+      wChip.className = "chip";
     }
 
     updatePill();
@@ -584,21 +725,24 @@ async function patchSettings(payload, btnId, okText) {
     if (!res.ok) {
       showMsg(`Save failed (${res.status})`, true);
       setDiag(`PATCH failed ${res.status}: ${rawText}`);
-      return;
+      return false;
     }
 
     justSavedUntil = Date.now() + 5000;
     ALL_INPUT_IDS.forEach(id => editing.delete(id));
     latestSettings = { ...latestSettings, ...payload };
     lastSettingsSig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + ts;
+    document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
     showMsg(okText);
 
     await new Promise(r => setTimeout(r, 400));
     const verified = await fetchSettings(true);
     setDiag(`Saved ts=${ts} | DB z1_0=${verified?.z1_0 ?? payload.z1_0} z2_0=${verified?.z2_0 ?? payload.z2_0}`);
+    return true;
   } catch (e) {
     showMsg(`Error: ${e.message}`, true);
     setDiag(`PATCH error: ${e.message}`);
+    return false;
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -623,26 +767,39 @@ async function saveBands() {
   await patchSettings(payload, "saveBandsBtn", "Moisture water targets saved!");
 }
 
+function daysInMonthJs(m, y) {
+  if (m === 2) {
+    const leap = ((y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0));
+    return leap ? 29 : 28;
+  }
+  if (m === 4 || m === 6 || m === 9 || m === 11) return 30;
+  return 31;
+}
+
 async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
+  const safeY = Math.max(2025, Math.min(2099, Math.trunc(y)));
+  const safeMo = Math.max(1, Math.min(12, Math.trunc(mo)));
+  const maxDay = daysInMonthJs(safeMo, safeY);
+  const safeD = Math.max(1, Math.min(maxDay, Math.trunc(d)));
+  const safeH = Math.max(0, Math.min(23, Math.trunc(h)));
+  const safeMi = Math.max(0, Math.min(59, Math.trunc(mi)));
+  const safeS = Math.max(0, Math.min(59, Math.trunc(s)));
+
   const rtcPayload = {
-    rtcY: Math.max(2025, Math.min(2099, Math.trunc(y))),
-    rtcMo: Math.max(1, Math.min(12, Math.trunc(mo))),
-    rtcD: Math.max(1, Math.min(31, Math.trunc(d))),
-    rtcH: Math.max(0, Math.min(23, Math.trunc(h))),
-    rtcMi: Math.max(0, Math.min(59, Math.trunc(mi))),
-    rtcS: Math.max(0, Math.min(59, Math.trunc(s))),
+    rtcY: safeY,
+    rtcMo: safeMo,
+    rtcD: safeD,
+    rtcH: safeH,
+    rtcMi: safeMi,
+    rtcS: safeS,
     setRtc: true
   };
-  await patchSettings(rtcPayload, btnId, okText);
-  setTimeout(() => {
-    fetch(`${DB_URL}/settings.json`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ setRtc: false })
-    }).catch(() => {});
-  }, 4000);
-  const p2 = n => String(n).padStart(2, "0");
-  setDiag(`RTC pushed -> ${rtcPayload.rtcY}-${p2(rtcPayload.rtcMo)}-${p2(rtcPayload.rtcD)} ${p2(rtcPayload.rtcH)}:${p2(rtcPayload.rtcMi)}:${p2(rtcPayload.rtcS)} (setRtc=true)`);
+
+  const ok = await patchSettings(rtcPayload, btnId, okText);
+  if (ok) {
+    const p2 = n => String(n).padStart(2, "0");
+    setDiag(`RTC pushed -> ${safeY}-${p2(safeMo)}-${p2(safeD)} ${p2(safeH)}:${p2(safeMi)}:${p2(safeS)} (setRtc=true)`);
+  }
 }
 
 async function setManualRtc() {
