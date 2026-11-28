@@ -19,6 +19,7 @@
     --sub:#94a3b8;
   }
   *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
   body{
     margin:0;
     background:radial-gradient(circle at 60% -10%,#11223d 0%,var(--bg) 58%);
@@ -32,6 +33,13 @@
     padding:12px 14px;background:var(--card);border-radius:16px;
     border:1px solid var(--line);margin-bottom:12px;
   }
+  .brand-row{display:flex;align-items:center;gap:10px}
+  .menu-btn{
+    width:38px;height:38px;padding:0;border-radius:11px;
+    background:var(--card2);color:var(--cyan);border:1px solid var(--line);
+    font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
   .brand{font-weight:900;font-size:16px;letter-spacing:.4px}
   .brand span{color:var(--cyan)}
   .sub{font-size:11.5px;color:var(--sub);margin-top:2px}
@@ -40,10 +48,44 @@
     background:#2a0d12;color:var(--red);border:1px solid rgba(255,82,82,.4);
   }
   .pill.on{background:#092533;color:var(--green);border-color:rgba(0,230,118,.35)}
+  .drawer-backdrop{
+    position:fixed;inset:0;background:rgba(2,6,14,.68);
+    backdrop-filter:blur(2px);z-index:90;opacity:0;pointer-events:none;
+    transition:opacity .22s ease;
+  }
+  .drawer-backdrop.open{opacity:1;pointer-events:auto}
+  .left-drawer{
+    position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;
+    background:var(--card);border-right:1px solid var(--line);
+    z-index:100;padding:14px;display:flex;flex-direction:column;gap:6px;
+    transform:translateX(-100%);transition:transform .24s ease;
+  }
+  .left-drawer.open{transform:translateX(0)}
+  .drawer-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid var(--line);
+  }
+  .close-btn{
+    width:32px;height:32px;padding:0;border-radius:9px;
+    background:var(--card2);color:var(--sub);border:1px solid var(--line);
+    font-size:14px;display:flex;align-items:center;justify-content:center;
+  }
+  .nav-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 12px;border-radius:11px;color:var(--text);text-decoration:none;
+    font-size:13px;font-weight:700;background:transparent;border:1px solid transparent;
+  }
+  .nav-item:hover,.nav-item:active{
+    background:var(--card2);border-color:var(--line);color:var(--cyan);
+  }
+  .nav-tag{
+    font-size:10px;color:var(--sub);background:#09101d;
+    padding:2px 7px;border-radius:999px;border:1px solid #1b2a44;
+  }
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   .card{
     background:var(--card);border-radius:16px;padding:14px;
-    border:1px solid var(--line);margin-bottom:12px;
+    border:1px solid var(--line);margin-bottom:12px;scroll-margin-top:12px;
   }
   .z1{border-top:3px solid var(--cyan)}
   .z2{border-top:3px solid var(--mag)}
@@ -108,11 +150,30 @@
 </style>
 </head>
 <body>
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleDrawer(false)"></div>
+
+<aside class="left-drawer" id="leftDrawer" aria-label="Navigation Menu">
+  <div class="drawer-top">
+    <div class="brand">QUAN<span>TIX</span> MENU</div>
+    <button type="button" class="close-btn" onclick="toggleDrawer(false)" aria-label="Close Menu">&#10005;</button>
+  </div>
+  <a class="nav-item" href="#topBar" onclick="toggleDrawer(false)"><span>Live Zones</span><span class="nav-tag">HOME</span></a>
+  <a class="nav-item" href="#secControl" onclick="toggleDrawer(false)"><span>Quick Control</span><span class="nav-tag">CMD</span></a>
+  <a class="nav-item" href="#secSchedule" onclick="toggleDrawer(false)"><span>Schedule &amp; Flow Cal</span><span class="nav-tag">SCH</span></a>
+  <a class="nav-item" href="#secBands" onclick="toggleDrawer(false)"><span>Moisture Targets</span><span class="nav-tag">ML</span></a>
+  <a class="nav-item" href="#secRtc" onclick="toggleDrawer(false)"><span>RTC Clock &amp; Date</span><span class="nav-tag">RTC</span></a>
+  <a class="nav-item" href="#secWifi" onclick="toggleDrawer(false)"><span>Router Wi-Fi</span><span class="nav-tag">STA</span></a>
+  <a class="nav-item" href="#dbgBox" onclick="toggleDrawer(false)"><span>Diagnostics</span><span class="nav-tag">LOG</span></a>
+</aside>
+
 <div class="wrap">
-  <header class="appbar">
-    <div>
-      <div class="brand">QUAN<span>TIX</span> TECH</div>
-      <div class="sub" id="rtcText">RTC: --/--/---- --:--</div>
+  <header class="appbar" id="topBar">
+    <div class="brand-row">
+      <button type="button" class="menu-btn" onclick="toggleDrawer(true)" aria-label="Open Menu">&#9776;</button>
+      <div>
+        <div class="brand">QUAN<span>TIX</span> TECH</div>
+        <div class="sub" id="rtcText">RTC: --/--/---- --:--</div>
+      </div>
     </div>
     <div class="pill" id="linkPill">OFFLINE</div>
   </header>
@@ -134,7 +195,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="secControl" style="margin-top:12px">
     <div class="title"><span>Quick Control</span><span class="chip" id="modeChip">IDLE</span></div>
     <div class="grid2" style="margin:0">
       <button class="b-green cmd-btn" onclick="sendCmd('start')">START BOTH</button>
@@ -147,7 +208,7 @@
     <button class="b-ghost cmd-btn" onclick="sendCmd('resetL')">Reset Total Litres</button>
   </div>
 
-  <div class="card">
+  <div class="card" id="secSchedule">
     <div class="title"><span>Daily Schedule &amp; Flow Cal</span><span class="chip" id="savedSchedChip">Sch: --:--</span></div>
     <div class="row">
       <label>Morning Sch 1 (HH:MM)</label>
@@ -173,7 +234,7 @@
     <button class="b-cyan" id="saveSchedBtn" onclick="saveSchedule()">Save Schedule &amp; Cal</button>
   </div>
 
-  <div class="card">
+  <div class="card" id="secBands">
     <div class="title"><span>Moisture Band Water Target (ml)</span><span class="chip">0-100%</span></div>
     <table>
       <thead>
@@ -190,7 +251,7 @@
     <button class="b-cyan" id="saveBandsBtn" onclick="saveBands()">Save Water Targets</button>
   </div>
 
-  <div class="card">
+  <div class="card" id="secRtc">
     <div class="title"><span>RTC Clock &amp; Date Sync</span><span class="chip">DS3231</span></div>
     <div class="row">
       <label>Date (Y-M-D)</label>
@@ -212,7 +273,7 @@
     <button class="b-ghost" id="syncRtcBtn" onclick="syncPhoneRtc()">Sync RTC with Phone Clock</button>
   </div>
 
-  <div class="card">
+  <div class="card" id="secWifi">
     <div class="title"><span>Router Wi-Fi Setup</span><span class="chip" id="wifiChip">STA</span></div>
     <div class="wifi-status" id="wifiStatusBox">Router: Checking...</div>
     <div style="margin-bottom:8px">
@@ -251,6 +312,18 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function toggleDrawer(open) {
+  const drawer = document.getElementById("leftDrawer");
+  const backdrop = document.getElementById("drawerBackdrop");
+  if (!drawer || !backdrop) return;
+  drawer.classList.toggle("open", open);
+  backdrop.classList.toggle("open", open);
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") toggleDrawer(false);
+});
 
 ALL_INPUT_IDS.forEach(id => {
   const el = document.getElementById(id);
