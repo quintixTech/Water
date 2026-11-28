@@ -1363,9 +1363,6 @@
 <script>
 "use strict";
 
-/* =========================================================
-   1. CONFIGURATION & CONSTANTS
-========================================================= */
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 const ESP_STALE_MS = 15000;
@@ -1375,11 +1372,11 @@ const WEATHER_REFRESH_MS = 600000;
 const MAX_INSIGHT_LOGS = 500;
 
 const STORAGE_KEYS = {
-  INSIGHT_LOGS: "quantix_insight_logs_v4",
-  COORD: "quantix_controller_coord_v4",
-  COORD_LOCK: "quantix_coord_locked_v4",
-  PAGE_LOCKS: "quantix_page_locks_v4",
-  MANUAL_RUN: "quantix_manual_run_v4"
+  INSIGHT_LOGS: "quantix_insight_logs_v5",
+  COORD: "quantix_controller_coord_v5",
+  COORD_LOCK: "quantix_coord_locked_v5",
+  PAGE_LOCKS: "quantix_page_locks_v5",
+  MANUAL_RUN: "quantix_manual_run_v5"
 };
 
 const SCHED_FLOW_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
@@ -1410,9 +1407,6 @@ const INFO_MODAL_CONTENT = {
   }
 };
 
-/* =========================================================
-   2. CENTRAL APPLICATION STATE
-========================================================= */
 const AppState = {
   status: null,
   settings: null,
@@ -1452,9 +1446,6 @@ const AppState = {
   audioCtx: null
 };
 
-/* =========================================================
-   3. DOM & NETWORK HELPERS
-========================================================= */
 function $(id) {
   return document.getElementById(id);
 }
@@ -1518,9 +1509,7 @@ function fillInputIfClean(id, value) {
   }
 }
 
-/* =========================================================
-   4. MODALS & PAGE LOCKS
-========================================================= */
+/* Modals & Page Locks */
 function openInfoModal(type) {
   const item = INFO_MODAL_CONTENT[type] || INFO_MODAL_CONTENT.about;
   setText("infoModalTitle", item.title);
@@ -1611,9 +1600,7 @@ function ensurePageUnlocked(tabId) {
   return true;
 }
 
-/* =========================================================
-   5. RUN TIMER & WARNING BEEP ENGINE
-========================================================= */
+/* Run Timer & Warning Beep */
 function formatClock(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
   const hrs = Math.floor(totalSec / 3600);
@@ -1805,9 +1792,7 @@ function restoreRunSession() {
   } catch (e) {}
 }
 
-/* =========================================================
-   6. PUMP & VALVES LIVE VISUALS
-========================================================= */
+/* Pump & Valves Visuals */
 function computeRigState() {
   const online = isControllerOnline();
   const d = AppState.status || {};
@@ -1892,9 +1877,7 @@ function updateRigVisuals() {
   setRigUnit("ctrlValve2Unit", "ctrlValve2Badge", null, "ctrlValve2Wave", "v2", v2Open, false, "OPEN", "CLOSED");
 }
 
-/* =========================================================
-   7. SETTINGS & TARGETS CLOUD SYNC (MATCHES ESP FIRMWARE)
-========================================================= */
+/* Firebase /settings Sync */
 function extractZoneList(sourceObj, zoneKey, prefixKey) {
   if (!sourceObj || typeof sourceObj !== "object") return [null, null, null, null, null];
   const out = [null, null, null, null, null];
@@ -1970,9 +1953,7 @@ async function pullSettingsFromCloud(force = false) {
   try {
     const s = await apiRequest(`${DB_URL}/settings.json`, {}, 1);
     const sig = JSON.stringify(s || {});
-    if (!force && sig === AppState.lastSettingsSig) {
-      return;
-    }
+    if (!force && sig === AppState.lastSettingsSig) return;
     AppState.lastSettingsSig = sig;
     AppState.settings = (s && typeof s === "object") ? s : {};
     applyCloudSettingsToInputs(AppState.settings, AppState.status);
@@ -1981,9 +1962,7 @@ async function pullSettingsFromCloud(force = false) {
     setText("targetsSyncTag", "Synced");
     setText("wifiSyncTag", "Synced");
     setText("rtcSyncTag", "Synced");
-  } catch (e) {
-    console.warn("Settings fetch warning:", e);
-  }
+  } catch (e) {}
 }
 
 async function patchSettingsCloud(fields) {
@@ -1991,12 +1970,28 @@ async function patchSettingsCloud(fields) {
   const nowTs = Date.now();
   const payload = { ...fields, updatedAt: nowTs };
   try {
-    const res = await apiRequest(`${DB_URL}/settings.json`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }, 2);
-    AppState.settings = { ...(AppState.settings || {}), ...payload, ...(res || {}) };
+    let savedData = null;
+    try {
+      savedData = await apiRequest(`${DB_URL}/settings.json`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }, 2);
+    } catch (patchErr) {
+      const existing = await apiRequest(`${DB_URL}/settings.json`, {}, 1).catch(() => ({}));
+      const mergedBody = { ...(existing && typeof existing === "object" ? existing : {}), ...payload };
+      savedData = await apiRequest(`${DB_URL}/settings.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mergedBody)
+      }, 2);
+    }
+
+    AppState.settings = {
+      ...(AppState.settings && typeof AppState.settings === "object" ? AppState.settings : {}),
+      ...payload,
+      ...(savedData && typeof savedData === "object" ? savedData : {})
+    };
     AppState.lastSettingsSig = JSON.stringify(AppState.settings);
     return AppState.settings;
   } finally {
@@ -2023,7 +2018,7 @@ async function saveScheduleAndFlow() {
     SCHED_FLOW_IDS.forEach(id => AppState.dirtyFields.delete(id));
     applyCloudSettingsToInputs(merged, AppState.status);
     setText("schedSyncTag", "Saved ✓");
-    showToast("Schedule & Flow Cal saved to cloud!");
+    showToast("Schedule & Flow Cal saved!");
   } catch (e) {
     showToast("Save failed: " + e.message, true);
   } finally {
@@ -2047,7 +2042,7 @@ async function saveTargets() {
     TARGET_IDS.forEach(id => AppState.dirtyFields.delete(id));
     applyCloudSettingsToInputs(merged, AppState.status);
     setText("targetsSyncTag", "Saved ✓");
-    showToast("Moisture targets saved to cloud!");
+    showToast("Moisture targets saved!");
   } catch (e) {
     showToast("Targets save failed: " + e.message, true);
   } finally {
@@ -2076,7 +2071,7 @@ async function saveWifi() {
     AppState.dirtyFields.delete("wifiPass");
     applyCloudSettingsToInputs(merged, AppState.status);
     setText("wifiSyncTag", "Saved ✓");
-    showToast("Wi-Fi credentials saved to cloud!");
+    showToast("Wi-Fi credentials saved!");
   } catch (e) {
     showToast("Wi-Fi save failed: " + e.message, true);
   } finally {
@@ -2129,7 +2124,7 @@ async function saveRtc(usePhoneNow) {
     });
     ["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"].forEach(id => AppState.dirtyFields.delete(id));
     setText("rtcSyncTag", "Saved ✓");
-    showToast("RTC Date & Time sent to cloud!");
+    showToast("RTC Date & Time sent!");
   } catch (e) {
     showToast("RTC save failed: " + e.message, true);
   } finally {
@@ -2148,9 +2143,7 @@ function initRtcInputs() {
   fillInputIfClean("rtcS", now.getSeconds());
 }
 
-/* =========================================================
-   8. CONTROL COMMANDS
-========================================================= */
+/* Control Commands */
 function setControlButtonsEnabled(enabled) {
   document.querySelectorAll(".ctrl-btn").forEach(btn => {
     btn.disabled = !enabled;
@@ -2204,9 +2197,7 @@ async function sendCmd(cmd) {
   }
 }
 
-/* =========================================================
-   9. TELEMETRY & LIVE STATUS POLLING
-========================================================= */
+/* Telemetry & Polling */
 function bandLabel(m) {
   if (m < 20) return "<20%";
   if (m < 40) return "20-39%";
@@ -2342,9 +2333,7 @@ async function pollStatus() {
   }
 }
 
-/* =========================================================
-   10. COORDINATES & LEAFLET MAP
-========================================================= */
+/* Coordinates & Map */
 function getSavedCoord() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.COORD);
@@ -2755,9 +2744,7 @@ async function clearControllerCoordinate() {
   showToast("Controller coordinate cleared");
 }
 
-/* =========================================================
-   11. AREA WEATHER ENGINE
-========================================================= */
+/* Weather Engine */
 function getWeatherVisual(code, isDay = 1) {
   const sunSvg = `<svg width="36" height="36" viewBox="0 0 64 64" fill="none">
     <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
@@ -2934,9 +2921,7 @@ async function updateWeather(force = false) {
   }
 }
 
-/* =========================================================
-   12. INSIGHTS & GRAPHS
-========================================================= */
+/* Insights & Graphs */
 function loadInsightLogs() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.INSIGHT_LOGS);
@@ -3277,9 +3262,7 @@ function refreshInsightsGraphs() {
   }
 }
 
-/* =========================================================
-   13. NAVIGATION & EVENT BINDINGS
-========================================================= */
+/* Navigation & Events */
 function switchTab(btn) {
   if (!btn || !btn.dataset.tab) return;
   document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
@@ -3357,9 +3340,7 @@ window.addEventListener("online", () => {
   updateWeather(true);
 });
 
-/* =========================================================
-   14. BOOTSTRAP
-========================================================= */
+/* Bootstrap */
 loadPageLocks();
 bindInputTracking();
 initRtcInputs();
