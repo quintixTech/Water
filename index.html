@@ -497,8 +497,8 @@ async function fetchStatus() {
       return;
     }
 
-    const key = (d.uptimeMs ?? d.lastSeen ?? `${d.time}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`);
-    if (String(key) !== String(lastSeenKey)) {
+    const key = `${d.uptimeMs ?? ""}|${d.time ?? ""}|${d.m1 ?? ""}|${d.m2 ?? ""}|${d.l1 ?? ""}|${d.l2 ?? ""}`;
+    if (key !== lastSeenKey) {
       lastSeenKey = key;
       lastSeenAt = Date.now();
     }
