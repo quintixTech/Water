@@ -93,7 +93,10 @@
   .wrap{
     margin-left:66px;
     max-width:640px;
-    padding:12px 12px 32px;
+    padding:12px 12px 24px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
   }
 
   .appbar{
@@ -356,6 +359,45 @@
   .kpi-mini span{display:block;font-size:9px;color:var(--sub);font-weight:700}
   .kpi-mini b{display:block;font-size:12.5px;font-weight:900;margin-top:2px;color:#fff}
 
+  .about-p{
+    font-size:12px;color:var(--text);line-height:1.6;margin-bottom:8px;
+  }
+  .founder-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;
+  }
+  @media(max-width:440px){
+    .founder-grid{grid-template-columns:1fr}
+  }
+  .founder-box{
+    background:#09101d;border:1px solid #1b2a44;border-radius:11px;padding:9px 10px;
+  }
+  .founder-name{font-size:12px;font-weight:900;color:#fff}
+  .founder-role{font-size:10.5px;font-weight:800;color:var(--cyan);margin-top:2px}
+  .disc-text{
+    font-size:11.5px;color:var(--sub);line-height:1.6;
+  }
+  .disc-text b{color:#ff8a80}
+
+  .app-footer{
+    margin-top:auto;
+    padding-top:10px;
+  }
+  .footer-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:6px;
+    font-size:11px;
+    color:var(--sub);
+  }
+  .footer-box b{color:#fff}
+  .footer-box .ft-accent{color:var(--cyan);font-weight:800}
+
   .dry-modal-backdrop{
     position:fixed;inset:0;background:rgba(4,8,16,.72);
     z-index:120;display:none;align-items:center;justify-content:center;
@@ -501,6 +543,14 @@
       <path d="M3 12h4l2.5-6 5 12 2.5-6H21" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <span>LOG</span>
+  </button>
+
+  <button type="button" class="rail-btn" style="--ico-col:#facc15" data-page="pageAbout" onclick="openPage('pageAbout', this)" title="About & Disclaimer Page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <circle cx="12" cy="12" r="9" fill="rgba(250,204,21,.16)"/>
+      <path d="M12 10.5v6M12 7.5h.01" stroke-linecap="round"/>
+    </svg>
+    <span>ABOUT</span>
   </button>
 </nav>
 
@@ -917,6 +967,46 @@
       <div class="dbg" id="dbgBox">Diag: ready</div>
     </div>
   </section>
+
+  <!-- PAGE 10: ABOUT & DISCLAIMER -->
+  <section class="page-view" id="pageAbout">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#facc15">ABOUT &amp; DISCLAIMER</span>
+      <span class="chip">KOLKATA</span>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--cyan)">
+      <div class="title"><span>About Quantix Tech</span><span class="chip run">IoT &amp; AUTOMATION</span></div>
+      <p class="about-p">
+        <b>Quantix Tech</b> holo ekta <b>Kolkata-based automation company</b>, ja <b>IoT</b>, <b>embedded system</b>, ebong <b>industrial controller</b> niye kaj kore. Smart monitoring, real-time telemetry, ebong reliable hardware-software integration-er maddhome practical automation solution toiri kora-i Quantix Tech-er mul lokkho.
+      </p>
+      <div class="founder-grid">
+        <div class="founder-box">
+          <div class="founder-name">Abhishek Mukhopadhyay</div>
+          <div class="founder-role">Founder &amp; Chief Engineer</div>
+        </div>
+        <div class="founder-box">
+          <div class="founder-name">Surojit Pal</div>
+          <div class="founder-role">Founder &amp; Creative Head</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--amber)">
+      <div class="title"><span style="color:var(--amber)">Disclaimer</span><span class="chip dry">SAFETY NOTICE</span></div>
+      <p class="disc-text">
+        <b>Disclaimer:</b> Ei dashboard ebong connected controller-ti shudhu monitoring o automation assistance-er jonno toiri. Network delay, sensor reading error, power fluctuation, ba dry-run condition-er somoy pump, solenoid valve, ba electrical line-er physical safety nijer dayittwe jaachai kore bebohar korun. Industrial ba high-load khetre proper fuse, relay rating, o emergency cut-off protection bebohar kora batadhhyotamulok; kono porokkho ba protokkho khoti-r jonno Quantix Tech dayi thakbe na.
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <div class="footer-box">
+      <div>Developed by : <span class="ft-accent">Abhishek Mukhopadhyay</span></div>
+      <div>Copy right : <b>Quantix Tech</b></div>
+    </div>
+  </footer>
 </div>
 
 <script>
