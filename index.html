@@ -1189,7 +1189,7 @@
               <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
             </div>
           </div>
-          <button class="b-cyan" id="btnSaveSched" onclick="saveSettings()">Save Schedule &amp; Flow Cal</button>
+          <button class="b-cyan" id="btnSaveSched" onclick="saveScheduleAndFlow()">Save Schedule &amp; Flow Cal</button>
         </div>
       </div>
     </section>
@@ -1211,7 +1211,7 @@
             <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
             <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
           </table>
-          <button class="b-cyan" id="btnSaveTargets" onclick="saveSettings()">Save Moisture Targets</button>
+          <button class="b-cyan" id="btnSaveTargets" onclick="saveTargets()">Save Moisture Targets</button>
         </div>
       </div>
     </section>
@@ -1367,7 +1367,6 @@
    1. CONFIGURATION & CONSTANTS
 ========================================================= */
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const CONTROLLER_COORD_CLOUD_PATH = `${DB_URL}/settings/controllerCoord.json`;
 
 const ESP_STALE_MS = 15000;
 const STATUS_POLL_MS = 2500;
@@ -1376,15 +1375,15 @@ const WEATHER_REFRESH_MS = 600000;
 const MAX_INSIGHT_LOGS = 500;
 
 const STORAGE_KEYS = {
-  INSIGHT_LOGS: "quantix_insight_logs_v2",
-  COORD: "quantix_controller_coord_v2",
-  COORD_LOCK: "quantix_coord_locked_v2",
-  PAGE_LOCKS: "quantix_page_locks_v2",
-  MANUAL_RUN: "quantix_manual_run_v2"
+  INSIGHT_LOGS: "quantix_insight_logs_v3",
+  COORD: "quantix_controller_coord_v3",
+  COORD_LOCK: "quantix_coord_locked_v3",
+  PAGE_LOCKS: "quantix_page_locks_v3",
+  MANUAL_RUN: "quantix_manual_run_v3"
 };
 
-const SETTINGS_FIELD_IDS = [
-  "s1h", "s1m", "s2h", "s2m", "c1", "c2",
+const SCHED_FLOW_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
+const TARGET_IDS = [
   "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
   "z2_0", "z2_1", "z2_2", "z2_3", "z2_4"
 ];
@@ -1417,8 +1416,8 @@ const INFO_MODAL_CONTENT = {
 const AppState = {
   status: null,
   settings: null,
-  lastSettingsUpdatedAt: 0,
-  isSavingSettings: false,
+  lastSettingsSyncSig: "",
+  isSavingCloud: false,
   dirtyFields: new Set(),
 
   lastSeenHeartbeatVal: null,
@@ -1509,12 +1508,14 @@ function readNumberInput(id, fallback) {
 }
 
 function fillInputIfClean(id, value) {
-  if (value === undefined || value === null) return;
+  if (value === undefined || value === null || value === "") return;
   const el = $(id);
   if (!el) return;
   if (document.activeElement === el) return;
   if (AppState.dirtyFields.has(id)) return;
-  el.value = value;
+  if (String(el.value) !== String(value)) {
+    el.value = value;
+  }
 }
 
 /* =========================================================
@@ -1892,32 +1893,68 @@ function updateRigVisuals() {
 }
 
 /* =========================================================
-   7. SETTINGS CLOUD SYNC (SINGLE SOURCE OF TRUTH)
+   7. SETTINGS & TARGETS CLOUD SYNC (COMPATIBLE WITH ESP & APP)
 ========================================================= */
-function applySettingsToForm(s) {
-  if (!s || typeof s !== "object") return;
+function extractZoneList(sourceObj, zoneKey, prefixKey) {
+  if (!sourceObj || typeof sourceObj !== "object") return [null, null, null, null, null];
+  const out = [null, null, null, null, null];
+  const arr = sourceObj[zoneKey];
 
-  SETTINGS_FIELD_IDS.forEach(id => {
-    if (s[id] !== undefined && s[id] !== null) {
-      fillInputIfClean(id, s[id]);
+  if (Array.isArray(arr)) {
+    for (let i = 0; i < 5; i++) {
+      if (arr[i] !== undefined && arr[i] !== null) out[i] = arr[i];
+    }
+  } else if (arr && typeof arr === "object") {
+    for (let i = 0; i < 5; i++) {
+      if (arr[String(i)] !== undefined && arr[String(i)] !== null) out[i] = arr[String(i)];
+    }
+  }
+
+  for (let i = 0; i < 5; i++) {
+    const flatKey = `${prefixKey}_${i}`;
+    if (sourceObj[flatKey] !== undefined && sourceObj[flatKey] !== null) {
+      out[i] = sourceObj[flatKey];
+    }
+  }
+  return out;
+}
+
+function applyCloudSettingsToInputs(s, st) {
+  const src = (s && typeof s === "object") ? s : {};
+
+  SCHED_FLOW_IDS.forEach(id => {
+    if (src[id] !== undefined && src[id] !== null) {
+      fillInputIfClean(id, src[id]);
     }
   });
 
-  if (s.wifiSsid) {
-    fillInputIfClean("wifiSsid", s.wifiSsid);
+  if (src.wifiSsid) {
+    fillInputIfClean("wifiSsid", src.wifiSsid);
   }
 
-  if (s.controllerCoord && s.controllerCoord.lat !== undefined && s.controllerCoord.lon !== undefined) {
-    const c = s.controllerCoord;
-    const lat = Number(c.lat);
-    const lon = Number(c.lon);
+  const z1FromSettings = extractZoneList(src, "z1", "z1");
+  const z2FromSettings = extractZoneList(src, "z2", "z2");
+  const z1FromStatus = extractZoneList(st, "z1", "z1");
+  const z2FromStatus = extractZoneList(st, "z2", "z2");
+
+  for (let i = 0; i < 5; i++) {
+    const v1 = z1FromSettings[i] !== null ? z1FromSettings[i] : z1FromStatus[i];
+    const v2 = z2FromSettings[i] !== null ? z2FromSettings[i] : z2FromStatus[i];
+    if (v1 !== null) fillInputIfClean(`z1_${i}`, v1);
+    if (v2 !== null) fillInputIfClean(`z2_${i}`, v2);
+  }
+
+  const coordObj = src.controllerCoord || (st && st.controllerCoord);
+  if (coordObj && coordObj.lat !== undefined && coordObj.lon !== undefined) {
+    const lat = Number(coordObj.lat);
+    const lon = Number(coordObj.lon);
     if (Number.isFinite(lat) && Number.isFinite(lon)) {
       localStorage.setItem(STORAGE_KEYS.COORD, JSON.stringify({
         lat,
         lon,
-        place: c.place ? String(c.place).trim() : "",
-        method: c.method ? String(c.method).trim() : "Cloud Sync",
-        updatedAt: Number(c.updatedAt || Date.now())
+        place: coordObj.place ? String(coordObj.place).trim() : "",
+        method: coordObj.method ? String(coordObj.method).trim() : "Cloud Sync",
+        updatedAt: Number(coordObj.updatedAt || Date.now())
       }));
       renderSavedCoordSummary();
     }
@@ -1927,59 +1964,48 @@ function applySettingsToForm(s) {
 }
 
 async function pullSettingsFromCloud(force = false) {
-  if (AppState.isSavingSettings && !force) return;
+  if (AppState.isSavingCloud && !force) return;
   try {
     const s = await apiRequest(`${DB_URL}/settings.json`, {}, 1);
-    if (!s || typeof s !== "object") return;
-
-    const remoteTs = Number(s.updatedAt || 0);
-    if (!force && remoteTs > 0 && remoteTs === AppState.lastSettingsUpdatedAt) {
+    const sig = JSON.stringify(s || {});
+    if (!force && sig === AppState.lastSettingsSyncSig) {
       return;
     }
+    AppState.lastSettingsSyncSig = sig;
+    AppState.settings = (s && typeof s === "object") ? s : {};
+    applyCloudSettingsToInputs(AppState.settings, AppState.status);
 
-    AppState.settings = s;
-    if (remoteTs > 0) AppState.lastSettingsUpdatedAt = remoteTs;
-    applySettingsToForm(s);
-
-    const tagText = "Synced";
-    setText("schedSyncTag", tagText);
-    setText("targetsSyncTag", tagText);
-    setText("wifiSyncTag", tagText);
-    setText("rtcSyncTag", tagText);
+    setText("schedSyncTag", "Synced");
+    setText("targetsSyncTag", "Synced");
+    setText("wifiSyncTag", "Synced");
+    setText("rtcSyncTag", "Synced");
   } catch (e) {
-    console.warn("Settings fetch error:", e);
+    console.warn("Settings fetch warning:", e);
   }
 }
 
-async function writeSettingsPatch(fields) {
-  AppState.isSavingSettings = true;
+async function patchSettingsCloud(fields) {
+  AppState.isSavingCloud = true;
   const nowTs = Date.now();
   const payload = { ...fields, updatedAt: nowTs };
-
   try {
     const res = await apiRequest(`${DB_URL}/settings.json`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     }, 2);
-
-    const merged = { ...(AppState.settings || {}), ...payload, ...(res || {}) };
-    AppState.settings = merged;
-    AppState.lastSettingsUpdatedAt = nowTs;
-    return merged;
+    AppState.settings = { ...(AppState.settings || {}), ...payload, ...(res || {}) };
+    AppState.lastSettingsSyncSig = JSON.stringify(AppState.settings);
+    return AppState.settings;
   } finally {
-    AppState.isSavingSettings = false;
+    AppState.isSavingCloud = false;
   }
 }
 
-async function saveSettings() {
-  const activeTab = document.querySelector(".tab-panel.active")?.id;
-  if (!ensurePageUnlocked(activeTab)) return;
-
-  const btn1 = $("btnSaveSched");
-  const btn2 = $("btnSaveTargets");
-  if (btn1) btn1.disabled = true;
-  if (btn2) btn2.disabled = true;
+async function saveScheduleAndFlow() {
+  if (!ensurePageUnlocked("tab-sched")) return;
+  const btn = $("btnSaveSched");
+  if (btn) btn.disabled = true;
 
   const payload = {
     applySettings: true,
@@ -1988,31 +2014,64 @@ async function saveSettings() {
     s2h: readNumberInput("s2h", 17),
     s2m: readNumberInput("s2m", 0),
     c1: readNumberInput("c1", 7.5),
-    c2: readNumberInput("c2", 7.5),
-    z1_0: readNumberInput("z1_0", 0),
-    z1_1: readNumberInput("z1_1", 0),
-    z1_2: readNumberInput("z1_2", 0),
-    z1_3: readNumberInput("z1_3", 0),
-    z1_4: readNumberInput("z1_4", 0),
-    z2_0: readNumberInput("z2_0", 0),
-    z2_1: readNumberInput("z2_1", 0),
-    z2_2: readNumberInput("z2_2", 0),
-    z2_3: readNumberInput("z2_3", 0),
-    z2_4: readNumberInput("z2_4", 0)
+    c2: readNumberInput("c2", 7.5)
   };
 
   try {
-    const merged = await writeSettingsPatch(payload);
-    SETTINGS_FIELD_IDS.forEach(id => AppState.dirtyFields.delete(id));
-    applySettingsToForm(merged);
+    const merged = await patchSettingsCloud(payload);
+    SCHED_FLOW_IDS.forEach(id => AppState.dirtyFields.delete(id));
+    applyCloudSettingsToInputs(merged, AppState.status);
     setText("schedSyncTag", "Saved ✓");
-    setText("targetsSyncTag", "Saved ✓");
-    showToast("Settings saved to cloud!");
+    showToast("Schedule & Flow Cal saved!");
   } catch (e) {
     showToast("Save failed: " + e.message, true);
   } finally {
-    if (btn1) btn1.disabled = false;
-    if (btn2) btn2.disabled = false;
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function saveTargets() {
+  if (!ensurePageUnlocked("tab-cfg")) return;
+  const btn = $("btnSaveTargets");
+  if (btn) btn.disabled = true;
+
+  const z1Arr = [];
+  const z2Arr = [];
+  const flatMap = {};
+
+  for (let i = 0; i < 5; i++) {
+    const v1 = readNumberInput(`z1_${i}`, 0);
+    const v2 = readNumberInput(`z2_${i}`, 0);
+    z1Arr.push(v1);
+    z2Arr.push(v2);
+    flatMap[`z1_${i}`] = v1;
+    flatMap[`z2_${i}`] = v2;
+  }
+
+  try {
+    const merged = await patchSettingsCloud({
+      applySettings: true,
+      ...flatMap,
+      z1: z1Arr,
+      z2: z2Arr
+    });
+
+    try {
+      await apiRequest(`${DB_URL}/status.json`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ z1: z1Arr, z2: z2Arr })
+      }, 1);
+    } catch (e) {}
+
+    TARGET_IDS.forEach(id => AppState.dirtyFields.delete(id));
+    applyCloudSettingsToInputs(merged, AppState.status);
+    setText("targetsSyncTag", "Saved ✓");
+    showToast("Moisture targets saved!");
+  } catch (e) {
+    showToast("Targets save failed: " + e.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -2029,16 +2088,16 @@ async function saveWifi() {
   if (btn) btn.disabled = true;
 
   try {
-    const merged = await writeSettingsPatch({
+    const merged = await patchSettingsCloud({
       wifiSsid: ssid,
       wifiPass: pass,
       applyWifi: true
     });
     AppState.dirtyFields.delete("wifiSsid");
     AppState.dirtyFields.delete("wifiPass");
-    applySettingsToForm(merged);
+    applyCloudSettingsToInputs(merged, AppState.status);
     setText("wifiSyncTag", "Saved ✓");
-    showToast("Wi-Fi credentials saved to cloud!");
+    showToast("Wi-Fi credentials saved!");
   } catch (e) {
     showToast("Wi-Fi save failed: " + e.message, true);
   } finally {
@@ -2080,7 +2139,7 @@ async function saveRtc(usePhoneNow) {
   if (b2) b2.disabled = true;
 
   try {
-    await writeSettingsPatch({
+    await patchSettingsCloud({
       setRtc: true,
       rtcY: y,
       rtcMo: mo,
@@ -2091,7 +2150,7 @@ async function saveRtc(usePhoneNow) {
     });
     ["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"].forEach(id => AppState.dirtyFields.delete(id));
     setText("rtcSyncTag", "Saved ✓");
-    showToast("RTC Date & Time sent to cloud!");
+    showToast("RTC Date & Time sent!");
   } catch (e) {
     showToast("RTC save failed: " + e.message, true);
   } finally {
@@ -2285,10 +2344,12 @@ async function pollStatus() {
     if ($("b2")) $("b2").style.width = m2 + "%";
     setText("l1", l1.toFixed(2) + " L");
     setText("l2", l2.toFixed(2) + " L");
-    setText("wifiState", d.staSsid || "Not set");
+    setText("wifiState", d.staSsid || AppState.settings?.wifiSsid || "Not set");
     setText("ipState", d.staIP || "--");
-    setText("curSsid", d.staSsid || "Not set");
+    setText("curSsid", d.staSsid || AppState.settings?.wifiSsid || "Not set");
     setText("curIp", d.staIP || "--");
+
+    applyCloudSettingsToInputs(AppState.settings, AppState.status);
 
     if (isControllerOnline()) {
       recordInsightPoint(m1, m2, l1, l2, AppState.weather);
@@ -2676,7 +2737,7 @@ async function addControllerCoordinate() {
 
   let cloudOk = false;
   try {
-    await writeSettingsPatch({ controllerCoord: payload });
+    await patchSettingsCloud({ controllerCoord: payload });
     cloudOk = true;
   } catch (e) {}
 
@@ -2704,7 +2765,7 @@ async function clearControllerCoordinate() {
   AppState.dirtyFields.delete("manLon");
 
   try {
-    await writeSettingsPatch({ controllerCoord: null });
+    await patchSettingsCloud({ controllerCoord: null });
   } catch (e) {}
 
   AppState.geo = null;
