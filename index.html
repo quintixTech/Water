@@ -173,6 +173,7 @@ let lastSeenKey = null;
 let lastSeenAt = 0;
 let justSavedUntil = 0;
 let lastSettingsSig = "";
+let latestSettings = { s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5 };
 const editing = new Set();
 
 SCHED_IDS.forEach(id => {
@@ -213,7 +214,7 @@ function updatePill() {
 }
 
 function formatSchedChip(s) {
-  const p2 = n => String(Number(n || 0)).padStart(2, "0");
+  const p2 = n => String(Number(n ?? 0)).padStart(2, "0");
   return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
 }
 
@@ -290,29 +291,45 @@ async function fetchSettings(forceFill = false) {
       return null;
     }
 
-    document.getElementById("savedSchedChip").innerText = formatSchedChip(s);
+    latestSettings = {
+      s1h: Number(s.s1h ?? latestSettings.s1h),
+      s1m: Number(s.s1m ?? latestSettings.s1m),
+      s2h: Number(s.s2h ?? latestSettings.s2h),
+      s2m: Number(s.s2m ?? latestSettings.s2m),
+      c1: Number(s.c1 ?? latestSettings.c1),
+      c2: Number(s.c2 ?? latestSettings.c2)
+    };
 
-    const sig = SCHED_IDS.map(k => s[k] ?? "").join(",") + "|" + (s.updatedAt ?? "");
+    document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
+
+    const sig = SCHED_IDS.map(k => latestSettings[k]).join(",") + "|" + (s.updatedAt ?? "");
     if (!forceFill && sig === lastSettingsSig) return s;
 
     SCHED_IDS.forEach(id => {
       const inp = document.getElementById(id);
-      if (s[id] === undefined || s[id] === null) return;
+      if (latestSettings[id] === undefined || latestSettings[id] === null) return;
       if (forceFill) {
-        inp.value = s[id];
+        inp.value = latestSettings[id];
         editing.delete(id);
       } else if (document.activeElement !== inp && !editing.has(id) && Date.now() > justSavedUntil) {
-        inp.value = s[id];
+        inp.value = latestSettings[id];
       }
     });
 
     lastSettingsSig = sig;
-    setDiag(`DB /settings -> s1=${s.s1h}:${s.s1m}, s2=${s.s2h}:${s.s2m}, c1=${s.c1}, c2=${s.c2}`);
+    setDiag(`DB /settings -> s1=${latestSettings.s1h}:${latestSettings.s1m}, s2=${latestSettings.s2h}:${latestSettings.s2m}, c1=${latestSettings.c1}, c2=${latestSettings.c2}`);
     return s;
   } catch (e) {
     setDiag(`settings GET error: ${e.message}`);
     return null;
   }
+}
+
+function readNumOrFallback(id, fallbackVal) {
+  const raw = document.getElementById(id).value;
+  if (raw === "" || raw === null || raw === undefined) return fallbackVal;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : fallbackVal;
 }
 
 async function saveSchedule() {
@@ -326,12 +343,12 @@ async function saveSchedule() {
   });
 
   const payload = {
-    s1h: Number(document.getElementById("s1h").value || 0),
-    s1m: Number(document.getElementById("s1m").value || 0),
-    s2h: Number(document.getElementById("s2h").value || 0),
-    s2m: Number(document.getElementById("s2m").value || 0),
-    c1: Number(document.getElementById("c1").value || 7.5),
-    c2: Number(document.getElementById("c2").value || 7.5),
+    s1h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s1h", latestSettings.s1h)))),
+    s1m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s1m", latestSettings.s1m)))),
+    s2h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s2h", latestSettings.s2h)))),
+    s2m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s2m", latestSettings.s2m)))),
+    c1: Math.max(0.5, Math.min(30, readNumOrFallback("c1", latestSettings.c1))),
+    c2: Math.max(0.5, Math.min(30, readNumOrFallback("c2", latestSettings.c2))),
     updatedAt: Date.now()
   };
 
