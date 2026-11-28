@@ -268,7 +268,6 @@
     font-variant-numeric:tabular-nums;
   }
 
-  /* Pump & Solenoid Valves Animated Rig */
   .rig-card{
     background:linear-gradient(145deg,#101a2d 0%,#0b1322 100%);
     border:1px solid #223554;
@@ -1367,11 +1366,11 @@
           <div class="dt-grid">
             <div class="dt-box">
               <label for="manLat">Latitude</label>
-              <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat (e.g. 22.7506)">
+              <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat">
             </div>
             <div class="dt-box">
               <label for="manLon">Longitude</label>
-              <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon (e.g. 88.3426)">
+              <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon">
             </div>
           </div>
           <button type="button" class="b-ghost" id="clearCoordBtn" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
@@ -1433,7 +1432,7 @@
       </div>
       <div class="page-body">
         <div class="card">
-          <div class="sec-title">Controller Date &amp; Time</div>
+          <div class="sec-title">DS3231 Date &amp; Time</div>
           <div class="row">
             <label>Date (YYYY/MM/DD)</label>
             <div>
@@ -1457,7 +1456,7 @@
     </section>
 
     <footer class="app-footer">
-      App developed by <b>Abhishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
+      app development by <b>Abhishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
     </footer>
   </div>
 </div>
@@ -1494,7 +1493,8 @@
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const CONTROLLER_COORD_CLOUD_PATH = `${DB_URL}/settings/controllerCoord.json`;
 const ESP_STALE_MS = 15000;
-const WEATHER_REFRESH_MS = 600000; // 10 min
+const WEATHER_REFRESH_MS = 600000;
+const SAVE_HOLD_MS = 15000;
 const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
 const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
 const CONTROLLER_LOCK_KEY = "quantix_coord_locked_v1";
@@ -1573,6 +1573,7 @@ let currentMapMode = "street";
 let isCoordLocked = localStorage.getItem(CONTROLLER_LOCK_KEY) === "1";
 let pageLocks = loadPageLocks();
 const dirtyInputs = new Set();
+const recentSavedUntil = new Map();
 
 let manualRunStartedAt = 0;
 let manualRunMode = "";
@@ -2673,7 +2674,10 @@ function resetDateRangeFilter() {
 function bindInputEditGuards() {
   document.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
-      if (inp.id) dirtyInputs.add(inp.id);
+      if (inp.id) {
+        dirtyInputs.add(inp.id);
+        recentSavedUntil.delete(inp.id);
+      }
       if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
         refreshInsightsGraphs();
       }
@@ -2688,15 +2692,28 @@ function bindInputEditGuards() {
   });
 }
 
-function clearDirtyGroup(ids) {
-  ids.forEach(id => dirtyInputs.delete(id));
+function markRecentSavedGroup(ids, holdMs = SAVE_HOLD_MS) {
+  const until = Date.now() + holdMs;
+  ids.forEach(id => {
+    dirtyInputs.delete(id);
+    recentSavedUntil.set(id, until);
+  });
 }
 
-function canAutoFill(inputId) {
+function canAutoFill(inputId, incomingVal = null) {
   const el = document.getElementById(inputId);
   if (!el) return false;
   if (document.activeElement === el) return false;
   if (dirtyInputs.has(inputId)) return false;
+
+  const holdUntil = recentSavedUntil.get(inputId) || 0;
+  if (Date.now() < holdUntil) {
+    if (incomingVal !== null && incomingVal !== undefined && String(el.value) === String(incomingVal)) {
+      recentSavedUntil.delete(inputId);
+      return true;
+    }
+    return false;
+  }
   return true;
 }
 
@@ -3379,7 +3396,7 @@ async function saveSettings() {
   };
   try {
     await patchSettings(payload);
-    clearDirtyGroup([
+    markRecentSavedGroup([
       "s1h","s1m","s2h","s2m","c1","c2",
       "z1_0","z1_1","z1_2","z1_3","z1_4",
       "z2_0","z2_1","z2_2","z2_3","z2_4"
@@ -3405,7 +3422,7 @@ async function saveWifi() {
   }
   try {
     await patchSettings({ wifiSsid: ssid, wifiPass: pass });
-    clearDirtyGroup(["wifiSsid", "wifiPass"]);
+    markRecentSavedGroup(["wifiSsid", "wifiPass"]);
     showMsg("Wi-Fi saved to cloud!");
   } catch (e) {
     showMsg("Wi-Fi save failed: " + e.message, true);
@@ -3427,6 +3444,12 @@ async function saveRtc(usePhoneNow) {
     h = now.getHours();
     mi = now.getMinutes();
     s = now.getSeconds();
+    document.getElementById("rtcY").value = y;
+    document.getElementById("rtcMo").value = mo;
+    document.getElementById("rtcD").value = d;
+    document.getElementById("rtcH").value = h;
+    document.getElementById("rtcMi").value = mi;
+    document.getElementById("rtcS").value = s;
   } else {
     y = Number(document.getElementById("rtcY").value || 2026);
     mo = Number(document.getElementById("rtcMo").value || 1);
@@ -3445,7 +3468,7 @@ async function saveRtc(usePhoneNow) {
       rtcMi: mi,
       rtcS: s
     });
-    clearDirtyGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
+    markRecentSavedGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
     showMsg("RTC time saved to cloud!");
   } catch (e) {
     showMsg("RTC save failed: " + e.message, true);
@@ -3464,16 +3487,16 @@ function initRtcInputs() {
 
 function populateInputsFromSettings(s) {
   if (!s) return;
-  if (s.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = s.s1h;
-  if (s.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = s.s1m;
-  if (s.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = s.s2h;
-  if (s.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = s.s2m;
-  if (s.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = s.c1;
-  if (s.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = s.c2;
-  if (s.wifiSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = s.wifiSsid;
+  if (s.s1h !== undefined && canAutoFill("s1h", s.s1h)) document.getElementById("s1h").value = s.s1h;
+  if (s.s1m !== undefined && canAutoFill("s1m", s.s1m)) document.getElementById("s1m").value = s.s1m;
+  if (s.s2h !== undefined && canAutoFill("s2h", s.s2h)) document.getElementById("s2h").value = s.s2h;
+  if (s.s2m !== undefined && canAutoFill("s2m", s.s2m)) document.getElementById("s2m").value = s.s2m;
+  if (s.c1 !== undefined && canAutoFill("c1", s.c1)) document.getElementById("c1").value = s.c1;
+  if (s.c2 !== undefined && canAutoFill("c2", s.c2)) document.getElementById("c2").value = s.c2;
+  if (s.wifiSsid && canAutoFill("wifiSsid", s.wifiSsid)) document.getElementById("wifiSsid").value = s.wifiSsid;
   for (let i = 0; i < 5; i++) {
-    if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i)) document.getElementById("z1_" + i).value = s["z1_" + i];
-    if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i)) document.getElementById("z2_" + i).value = s["z2_" + i];
+    if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i, s["z1_" + i])) document.getElementById("z1_" + i).value = s["z1_" + i];
+    if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i, s["z2_" + i])) document.getElementById("z2_" + i).value = s["z2_" + i];
   }
   if (s.controllerCoord && s.controllerCoord.lat !== undefined && s.controllerCoord.lon !== undefined) {
     const c = s.controllerCoord;
@@ -3495,18 +3518,18 @@ function populateInputsFromSettings(s) {
 
 function populateInputsFromStatus(d) {
   if (!d) return;
-  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
-  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
-  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
-  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
-  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
-  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
-  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
+  if (d.s1h !== undefined && canAutoFill("s1h", d.s1h)) document.getElementById("s1h").value = d.s1h;
+  if (d.s1m !== undefined && canAutoFill("s1m", d.s1m)) document.getElementById("s1m").value = d.s1m;
+  if (d.s2h !== undefined && canAutoFill("s2h", d.s2h)) document.getElementById("s2h").value = d.s2h;
+  if (d.s2m !== undefined && canAutoFill("s2m", d.s2m)) document.getElementById("s2m").value = d.s2m;
+  if (d.c1 !== undefined && canAutoFill("c1", d.c1)) document.getElementById("c1").value = d.c1;
+  if (d.c2 !== undefined && canAutoFill("c2", d.c2)) document.getElementById("c2").value = d.c2;
+  if (d.staSsid && canAutoFill("wifiSsid", d.staSsid)) document.getElementById("wifiSsid").value = d.staSsid;
   for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i, d.z1[i])) {
       document.getElementById("z1_" + i).value = d.z1[i];
     }
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i, d.z2[i])) {
       document.getElementById("z2_" + i).value = d.z2[i];
     }
   }
