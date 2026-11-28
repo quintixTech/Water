@@ -487,4 +487,1789 @@
     <span>INSIGHT</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#fb7185" data-page="pageLog" onclick="openPage('pageLog', this)" title="Diagnostic
+  <button type="button" class="rail-btn" style="--ico-col:#fb7185" data-page="pageLog" onclick="openPage('pageLog', this)" title="Diagnostics Page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M3 12h4l2.5-6 5 12 2.5-6H21" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>LOG</span>
+  </button>
+</nav>
+
+<div class="wrap">
+  <header class="appbar" id="topBar">
+    <div>
+      <div class="brand">QUAN<span>TIX</span> TECH</div>
+      <div class="sub" id="rtcText">RTC: --/--/---- --:--</div>
+    </div>
+    <div class="pill" id="linkPill">OFFLINE</div>
+  </header>
+
+  <div class="msg" id="msgBox"></div>
+
+  <!-- PAGE 1: HOME -->
+  <section class="page-view active" id="pageZones">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#00e5ff">HOME MONITOR</span>
+      <span class="chip" id="zonePageChip">LIVE</span>
+    </div>
+    <div class="grid2">
+      <div class="card z1" id="cardZ1" style="margin:0">
+        <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+        <div class="val" id="m1Val">--%</div>
+        <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
+        <div class="stat"><span>Used</span><b id="l1Val">0.00 L</b></div>
+      </div>
+      <div class="card z2" id="cardZ2" style="margin:0">
+        <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+        <div class="val" id="m2Val">--%</div>
+        <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
+        <div class="stat"><span>Used</span><b id="l2Val">0.00 L</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 2: CONTROL -->
+  <section class="page-view" id="pageControl">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#00e676">QUICK CONTROL</span>
+      <span class="chip" id="modeChip">IDLE</span>
+    </div>
+    <div class="card" id="secControl">
+      <div class="title"><span>Live Pump &amp; Valve Animation</span><span class="chip" id="animStateChip">ALL OFF</span></div>
+
+      <div class="anim-stage" id="animStage">
+        <svg class="anim-svg" viewBox="0 0 360 152">
+          <!-- Main Header Pipe from Pump to Manifold -->
+          <path d="M94 76 L185 76" stroke="#1e3150" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path id="pipeMainFlow" d="M94 76 L185 76" stroke="#00e5ff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0"/>
+
+          <!-- Vertical Manifold -->
+          <path d="M185 40 L185 112" stroke="#1e3150" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path id="pipeManifoldFlow" d="M185 40 L185 112" stroke="#00e5ff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0"/>
+
+          <!-- Z1 Branch Pipe -->
+          <path d="M185 40 L238 40 L264 40 L336 40" stroke="#1e3150" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path id="pipeZ1Flow" d="M185 40 L238 40 L264 40 L336 40" stroke="#00e676" stroke-width="3.6" stroke-linecap="round" fill="none" opacity="0"/>
+
+          <!-- Z2 Branch Pipe -->
+          <path d="M185 112 L238 112 L264 112 L336 112" stroke="#1e3150" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path id="pipeZ2Flow" d="M185 112 L238 112 L264 112 L336 112" stroke="#e879f9" stroke-width="3.6" stroke-linecap="round" fill="none" opacity="0"/>
+
+          <!-- PUMP UNIT (x=68, y=76) -->
+          <circle id="pumpGlowCircle" cx="68" cy="76" r="34" fill="rgba(0,229,255,.16)" opacity="0"/>
+          <rect x="34" y="104" width="68" height="7" rx="3.5" fill="#1e2f4a"/>
+          <circle id="pumpBodyCircle" cx="68" cy="76" r="24" fill="#0d1729" stroke="#334155" stroke-width="3"/>
+          <g id="pumpImpellerGroup">
+            <circle cx="68" cy="76" r="6" fill="#060a12" stroke="#64748b" stroke-width="2"/>
+            <line x1="68" y1="58" x2="68" y2="94" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="50" y1="76" x2="86" y2="76" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="55.3" y1="63.3" x2="80.7" y2="88.7" stroke="#94a3b8" stroke-width="2.4" stroke-linecap="round"/>
+            <line x1="80.7" y1="63.3" x2="55.3" y2="88.7" stroke="#94a3b8" stroke-width="2.4" stroke-linecap="round"/>
+          </g>
+          <text x="68" y="20" fill="#cbd5e1" font-size="10.5" font-weight="900" text-anchor="middle">WATER PUMP</text>
+          <text id="pumpSvgLabel" x="68" y="130" fill="#64748b" font-size="10" font-weight="900" text-anchor="middle">OFF</text>
+
+          <!-- Z1 VALVE (x=250, y=40) -->
+          <g id="z1ValveGroup">
+            <circle id="z1GlowCircle" cx="250" cy="40" r="20" fill="rgba(0,230,118,.18)" opacity="0"/>
+            <rect x="237" y="28" width="26" height="24" rx="6" fill="#0d1729" stroke="#334155" stroke-width="2.5"/>
+            <line x1="250" y1="28" x2="250" y2="19" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+            <rect id="z1HandleBar" x="241" y="16" width="18" height="4.5" rx="2" fill="#64748b"/>
+            <!-- Gate indicator inside Z1 valve -->
+            <line id="z1GateLine" x1="250" y1="32" x2="250" y2="48" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <text x="298" y="22" fill="#00e676" font-size="10" font-weight="900" text-anchor="middle">Z1 VALVE</text>
+          <text id="z1SvgLabel" x="298" y="58" fill="#64748b" font-size="9.5" font-weight="900" text-anchor="middle">CLOSED</text>
+
+          <!-- Z2 VALVE (x=250, y=112) -->
+          <g id="z2ValveGroup">
+            <circle id="z2GlowCircle" cx="250" cy="112" r="20" fill="rgba(232,121,249,.18)" opacity="0"/>
+            <rect x="237" y="100" width="26" height="24" rx="6" fill="#0d1729" stroke="#334155" stroke-width="2.5"/>
+            <line x1="250" y1="100" x2="250" y2="91" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+            <rect id="z2HandleBar" x="241" y="88" width="18" height="4.5" rx="2" fill="#64748b"/>
+            <!-- Gate indicator inside Z2 valve -->
+            <line id="z2GateLine" x1="250" y1="104" x2="250" y2="120" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <text x="298" y="94" fill="#e879f9" font-size="10" font-weight="900" text-anchor="middle">Z2 VALVE</text>
+          <text id="z2SvgLabel" x="298" y="130" fill="#64748b" font-size="9.5" font-weight="900" text-anchor="middle">CLOSED</text>
+        </svg>
+
+        <div class="equip-badges">
+          <div class="eq-pill" id="eqPillPump">
+            <span class="eq-name">PUMP</span>
+            <span class="eq-st" id="eqStPump">OFF</span>
+          </div>
+          <div class="eq-pill" id="eqPillZ1">
+            <span class="eq-name">Z1 VALVE</span>
+            <span class="eq-st" id="eqStZ1">CLOSED</span>
+          </div>
+          <div class="eq-pill" id="eqPillZ2">
+            <span class="eq-name">Z2 VALVE</span>
+            <span class="eq-st" id="eqStZ2">CLOSED</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="title"><span>Manual &amp; Counter Control</span></div>
+      <div class="grid2" style="margin:0">
+        <button class="b-green cmd-btn" onclick="sendCmd('start')">START BOTH</button>
+        <button class="b-red cmd-btn" onclick="sendCmd('stop')">STOP ALL</button>
+      </div>
+      <div class="grid2" style="margin-top:8px;margin-bottom:0">
+        <button class="b-z1 cmd-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
+        <button class="b-z2 cmd-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
+      </div>
+      <button class="b-ghost cmd-btn" onclick="sendCmd('resetL')">Reset Total Litres</button>
+
+      <div class="run-banner" id="manualRunBanner">
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--sub)" id="manualRunLabel">MANUAL RUN TIMER</div>
+          <div style="font-size:10px;color:var(--sub)" id="manualBeepState">Sudon beep: OFF</div>
+        </div>
+        <div class="run-timer-val" id="manualLiveTimer">00:00</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3: SCHEDULE & FLOW CAL -->
+  <section class="page-view" id="pageSchedule">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#ffab00">SCHEDULE &amp; FLOW CAL</span>
+      <div class="page-head-right">
+        <span class="chip" id="savedSchedChip">Sch: --:--</span>
+        <button type="button" class="lock-btn" id="lockBtnSchedule" onclick="togglePageLock('schedule')">LOCKED</button>
+      </div>
+    </div>
+    <div class="card" id="secSchedule">
+      <div class="title"><span>Daily Schedule &amp; Flow Cal</span></div>
+      <div class="row">
+        <label>Morning Sch 1 (HH:MM)</label>
+        <div>
+          <input id="s1h" class="lockable-schedule" type="number" min="0" max="23" style="width:54px" disabled> :
+          <input id="s1m" class="lockable-schedule" type="number" min="0" max="59" style="width:54px" disabled>
+        </div>
+      </div>
+      <div class="row">
+        <label>Evening Sch 2 (HH:MM)</label>
+        <div>
+          <input id="s2h" class="lockable-schedule" type="number" min="0" max="23" style="width:54px" disabled> :
+          <input id="s2m" class="lockable-schedule" type="number" min="0" max="59" style="width:54px" disabled>
+        </div>
+      </div>
+      <div class="row">
+        <label>Flow Cal Z1 / Z2</label>
+        <div>
+          <input id="c1" class="lockable-schedule" type="number" step="0.1" style="width:62px" disabled>
+          <input id="c2" class="lockable-schedule" type="number" step="0.1" style="width:62px" disabled>
+        </div>
+      </div>
+      <button class="b-cyan lockable-schedule" id="saveSchedBtn" onclick="saveSchedule()" disabled>Save Schedule &amp; Cal</button>
+    </div>
+  </section>
+
+  <!-- PAGE 4: MOISTURE BAND TARGETS -->
+  <section class="page-view" id="pageBands">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#e879f9">MOISTURE BAND TARGETS</span>
+      <div class="page-head-right">
+        <span class="chip">0-100%</span>
+        <button type="button" class="lock-btn" id="lockBtnBands" onclick="togglePageLock('bands')">LOCKED</button>
+      </div>
+    </div>
+    <div class="card" id="secBands">
+      <div class="title"><span>Moisture Band Water Target (ml)</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt; 20%</td><td><input id="z1_0" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_0" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>20 - 39%</td><td><input id="z1_1" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_1" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>40 - 59%</td><td><input id="z1_2" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_2" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>60 - 79%</td><td><input id="z1_3" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_3" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>80 - 100%</td><td><input id="z1_4" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_4" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="b-cyan lockable-bands" id="saveBandsBtn" onclick="saveBands()" disabled>Save Water Targets</button>
+    </div>
+  </section>
+
+  <!-- PAGE 5: RTC CLOCK -->
+  <section class="page-view" id="pageRtc">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#2dd4bf">RTC CLOCK &amp; DATE</span>
+      <div class="page-head-right">
+        <span class="chip">DS3231</span>
+        <button type="button" class="lock-btn" id="lockBtnRtc" onclick="togglePageLock('rtc')">LOCKED</button>
+      </div>
+    </div>
+    <div class="card" id="secRtc">
+      <div class="title"><span>RTC Clock &amp; Date Sync</span></div>
+      <div class="row">
+        <label>Date (Y-M-D)</label>
+        <div>
+          <input id="dtY" class="lockable-rtc" type="number" min="2025" max="2099" style="width:62px" disabled> -
+          <input id="dtMo" class="lockable-rtc" type="number" min="1" max="12" style="width:46px" disabled> -
+          <input id="dtD" class="lockable-rtc" type="number" min="1" max="31" style="width:46px" disabled>
+        </div>
+      </div>
+      <div class="row">
+        <label>Time (H:M:S)</label>
+        <div>
+          <input id="dtH" class="lockable-rtc" type="number" min="0" max="23" style="width:46px" disabled> :
+          <input id="dtMi" class="lockable-rtc" type="number" min="0" max="59" style="width:46px" disabled> :
+          <input id="dtS" class="lockable-rtc" type="number" min="0" max="59" style="width:46px" disabled>
+        </div>
+      </div>
+      <button class="b-cyan lockable-rtc" id="setRtcBtn" onclick="setManualRtc()" disabled>Set Date &amp; Time</button>
+      <button class="b-ghost lockable-rtc" id="syncRtcBtn" onclick="syncPhoneRtc()" disabled>Sync RTC with Phone Clock</button>
+    </div>
+  </section>
+
+  <!-- PAGE 6: ROUTER WI-FI -->
+  <section class="page-view" id="pageWifi">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#38bdf8">ROUTER WI-FI</span>
+      <div class="page-head-right">
+        <span class="chip" id="wifiChip">STA</span>
+        <button type="button" class="lock-btn" id="lockBtnWifi" onclick="togglePageLock('wifi')">LOCKED</button>
+      </div>
+    </div>
+    <div class="card" id="secWifi">
+      <div class="title"><span>Router Wi-Fi Setup</span></div>
+      <div class="wifi-status" id="wifiStatusBox">Router: Checking...</div>
+      <div style="margin-bottom:8px">
+        <label>Router Wi-Fi SSID</label>
+        <input id="wifiSsid" class="input-wide lockable-wifi" type="text" placeholder="Enter Wi-Fi Name" disabled>
+      </div>
+      <div>
+        <label>Router Wi-Fi Password</label>
+        <input id="wifiPass" class="input-wide lockable-wifi" type="password" placeholder="Enter Wi-Fi Password" disabled>
+      </div>
+      <button class="b-cyan lockable-wifi" id="saveWifiBtn" onclick="saveWifiCreds()" disabled>Save &amp; Connect Wi-Fi</button>
+    </div>
+  </section>
+
+  <!-- PAGE 7: INSIGHT (CUSTOM DATE + MANUAL/AUTO TIME + BAR / LINE / POINT GRAPH) -->
+  <section class="page-view" id="pageInsight">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#a78bfa">INSIGHT ANALYTICS</span>
+      <span class="chip" id="insightRangeChip">CUSTOM DATE</span>
+    </div>
+
+    <div class="card">
+      <div class="title"><span>Custom Date Range</span></div>
+      <div class="row" style="margin:6px 0">
+        <label>From Date</label>
+        <input type="date" id="insFromDate" onchange="applyInsightFilter()">
+      </div>
+      <div class="row" style="margin:6px 0">
+        <label>To Date</label>
+        <input type="date" id="insToDate" onchange="applyInsightFilter()">
+      </div>
+      <button type="button" class="b-cyan" onclick="applyInsightFilter()">Load Custom Date Data</button>
+    </div>
+
+    <div class="card">
+      <div class="title"><span>Summary Information</span><span class="chip" id="insPointInfo">Tap point/bar</span></div>
+      <div class="grid4">
+        <div class="kpi-mini">
+          <span>MANUAL TIME</span>
+          <b id="insManTimeSum" style="color:var(--cyan)">00m 00s</b>
+        </div>
+        <div class="kpi-mini">
+          <span>AUTO TIME</span>
+          <b id="insAutoTimeSum" style="color:var(--amber)">00m 00s</b>
+        </div>
+        <div class="kpi-mini">
+          <span>WATER Z1+Z2</span>
+          <b id="insWaterSum" style="color:var(--mag)">0.00 L</b>
+        </div>
+        <div class="kpi-mini">
+          <span>AVG MOIST</span>
+          <b id="insAvgMoist" style="color:var(--green)">0%</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><span>Graph View (Point / Bar / Line)</span><span class="chip" id="insGraphTypeChip">BAR</span></div>
+
+      <div class="mode-bar">
+        <button type="button" class="mode-btn active" id="gModeBar" onclick="setGraphType('bar')">BAR</button>
+        <button type="button" class="mode-btn" id="gModeLine" onclick="setGraphType('line')">LINE</button>
+        <button type="button" class="mode-btn" id="gModePoint" onclick="setGraphType('point')">POINT</button>
+      </div>
+
+      <div class="metric-bar">
+        <button type="button" class="metric-btn active" id="mMetricRuntime" onclick="setInsightMetric('runtime')">MAN / AUTO TIME</button>
+        <button type="button" class="metric-btn" id="mMetricWater" onclick="setInsightMetric('water')">WATER USED (L)</button>
+        <button type="button" class="metric-btn" id="mMetricMoist" onclick="setInsightMetric('moist')">MOISTURE (%)</button>
+      </div>
+
+      <div class="chart-box">
+        <svg id="insightSvg" class="chart-svg" viewBox="0 0 360 200"></svg>
+        <div class="legend-row">
+          <span class="leg-item" id="legDot1Wrap"><span class="leg-dot" id="legDot1Col" style="background:var(--cyan)"></span><span id="legDot1Txt">Manual Time</span></span>
+          <span class="leg-item" id="legDot2Wrap"><span class="leg-dot" id="legDot2Col" style="background:var(--amber)"></span><span id="legDot2Txt">Auto Time</span></span>
+          <span id="insSelectedDetail" style="color:#fff;font-weight:800">Select a date point</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><span>Date-wise Breakdown (Manual vs Auto Time)</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Manual</th><th>Auto</th><th>Z1 / Z2</th></tr>
+          </thead>
+          <tbody id="insightTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 8: DIAGNOSTICS LOG -->
+  <section class="page-view" id="pageLog">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#fb7185">DIAGNOSTICS LOG</span>
+      <span class="chip">RTDB</span>
+    </div>
+    <div class="card">
+      <div class="title"><span>System Diagnostics</span></div>
+      <div class="dbg" id="dbgBox">Diag: ready</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
+const STALE_MS = 8000;
+const DRY_VISUAL_MS = 5000;
+const DRY_AUTO_STOP_MS = 5000;
+const DRY_STATUS_TIMEOUT_MS = 10000;
+const HISTORY_STORAGE_KEY = "quantix_irrigation_history_v2";
+const SCHED_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
+const BAND_IDS = [
+  "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
+  "z2_0", "z2_1", "z2_2", "z2_3", "z2_4"
+];
+const ALL_INPUT_IDS = [...SCHED_IDS, ...BAND_IDS, "wifiSsid", "wifiPass"];
+
+let lastSeenKey = null;
+let lastSeenAt = 0;
+let justSavedUntil = 0;
+let lastSettingsSig = "";
+let rtcDefaultsFilled = false;
+let msgTimer = null;
+let railOpen = false;
+let activePageId = "pageZones";
+
+let dryVisualUntil = 0;
+let dryVisualInterval = null;
+let drySoundActive = false;
+let drySoundTimer = null;
+let lastDryServerSeenAt = 0;
+let audioCtx = null;
+
+let dryAutoStopTimer = null;
+let dryAutoStopFired = false;
+
+let manualActive = false;
+let manualModeLabel = "";
+let manualLiveSec = 0;
+let manualTickInterval = null;
+let sudonBeepTimer = null;
+let lastAutoTickAt = 0;
+let prevLitresTotal = null;
+
+let equipState = { pump: false, z1: false, z2: false, dry: false };
+
+let insightGraphType = "bar";
+let insightMetric = "runtime";
+let selectedInsightIdx = -1;
+
+const pageUnlocked = {
+  schedule: false,
+  bands: false,
+  rtc: false,
+  wifi: false
+};
+let latestSettings = {
+  s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
+  z1_0: 1000, z1_1: 500, z1_2: 0, z1_3: 0, z1_4: 0,
+  z2_0: 1000, z2_1: 500, z2_2: 0, z2_3: 0, z2_4: 0,
+  wifiSsid: "", wifiPass: ""
+};
+const editing = new Set();
+
+function renderEquipmentAnimation() {
+  const { pump, z1, z2, dry } = equipState;
+
+  const stage = document.getElementById("animStage");
+  const stateChip = document.getElementById("animStateChip");
+  if (stage) stage.classList.toggle("dry-stage", Boolean(dry));
+
+  const pumpBody = document.getElementById("pumpBodyCircle");
+  const pumpGlow = document.getElementById("pumpGlowCircle");
+  const pumpImp = document.getElementById("pumpImpellerGroup");
+  const pumpLbl = document.getElementById("pumpSvgLabel");
+  const mainFlow = document.getElementById("pipeMainFlow");
+  const manFlow = document.getElementById("pipeManifoldFlow");
+
+  const z1Glow = document.getElementById("z1GlowCircle");
+  const z1Handle = document.getElementById("z1HandleBar");
+  const z1Gate = document.getElementById("z1GateLine");
+  const z1Lbl = document.getElementById("z1SvgLabel");
+  const z1Flow = document.getElementById("pipeZ1Flow");
+
+  const z2Glow = document.getElementById("z2GlowCircle");
+  const z2Handle = document.getElementById("z2HandleBar");
+  const z2Gate = document.getElementById("z2GateLine");
+  const z2Lbl = document.getElementById("z2SvgLabel");
+  const z2Flow = document.getElementById("pipeZ2Flow");
+
+  const pillPump = document.getElementById("eqPillPump");
+  const stPump = document.getElementById("eqStPump");
+  const pillZ1 = document.getElementById("eqPillZ1");
+  const stZ1 = document.getElementById("eqStZ1");
+  const pillZ2 = document.getElementById("eqPillZ2");
+  const stZ2 = document.getElementById("eqStZ2");
+
+  // Reset classes
+  [pillPump, pillZ1, pillZ2].forEach(p => {
+    if (p) p.className = "eq-pill" + (dry ? " dry-st" : "");
+  });
+  pumpImp?.classList.remove("impeller-spin");
+  pumpGlow?.classList.remove("pump-halo");
+  mainFlow?.classList.remove("flow-line-anim");
+  manFlow?.classList.remove("flow-line-anim");
+  z1Flow?.classList.remove("flow-line-anim");
+  z2Flow?.classList.remove("flow-line-anim");
+
+  // PUMP state
+  if (pump && !dry) {
+    if (pumpBody) {
+      pumpBody.setAttribute("stroke", "#00e5ff");
+      pumpBody.setAttribute("fill", "#0b2239");
+    }
+    if (pumpGlow) {
+      pumpGlow.setAttribute("fill", "rgba(0,229,255,.22)");
+      pumpGlow.setAttribute("opacity", "1");
+      pumpGlow.classList.add("pump-halo");
+    }
+    if (pumpImp) pumpImp.classList.add("impeller-spin");
+    if (pumpLbl) {
+      pumpLbl.textContent = "RUNNING";
+      pumpLbl.setAttribute("fill", "#00e5ff");
+    }
+    if (mainFlow) {
+      mainFlow.setAttribute("opacity", "1");
+      mainFlow.classList.add("flow-line-anim");
+    }
+    if (manFlow) {
+      manFlow.setAttribute("opacity", "1");
+      manFlow.classList.add("flow-line-anim");
+    }
+    if (pillPump) pillPump.classList.add("on-pump");
+    if (stPump) stPump.textContent = "ON";
+  } else {
+    if (pumpBody) {
+      pumpBody.setAttribute("stroke", dry ? "#ff5252" : "#334155");
+      pumpBody.setAttribute("fill", dry ? "#290c14" : "#0d1729");
+    }
+    if (pumpGlow) pumpGlow.setAttribute("opacity", "0");
+    if (mainFlow) mainFlow.setAttribute("opacity", "0");
+    if (manFlow) manFlow.setAttribute("opacity", "0");
+    if (pumpLbl) {
+      pumpLbl.textContent = dry ? "DRY STOP" : "OFF";
+      pumpLbl.setAttribute("fill", dry ? "#ff8a80" : "#64748b");
+    }
+    if (stPump) stPump.textContent = dry ? "DRY!" : "OFF";
+  }
+
+  // Z1 VALVE state
+  const z1Open = Boolean(z1 && !dry);
+  if (z1Open) {
+    if (z1Glow) z1Glow.setAttribute("opacity", "1");
+    if (z1Handle) {
+      z1Handle.setAttribute("fill", "#00e676");
+      z1Handle.setAttribute("x", "238");
+      z1Handle.setAttribute("width", "24");
+    }
+    if (z1Gate) {
+      // Horizontal open bar
+      z1Gate.setAttribute("x1", "242");
+      z1Gate.setAttribute("y1", "40");
+      z1Gate.setAttribute("x2", "258");
+      z1Gate.setAttribute("y2", "40");
+      z1Gate.setAttribute("stroke", "#00e676");
+    }
+    if (z1Lbl) {
+      z1Lbl.textContent = "OPEN";
+      z1Lbl.setAttribute("fill", "#00e676");
+    }
+    if (z1Flow) {
+      z1Flow.setAttribute("opacity", "1");
+      z1Flow.classList.add("flow-line-anim");
+    }
+    if (pillZ1) pillZ1.classList.add("on-z1");
+    if (stZ1) stZ1.textContent = "OPEN";
+  } else {
+    if (z1Glow) z1Glow.setAttribute("opacity", "0");
+    if (z1Handle) {
+      z1Handle.setAttribute("fill", dry ? "#ff5252" : "#64748b");
+      z1Handle.setAttribute("x", "241");
+      z1Handle.setAttribute("width", "18");
+    }
+    if (z1Gate) {
+      // Vertical closed gate
+      z1Gate.setAttribute("x1", "250");
+      z1Gate.setAttribute("y1", "32");
+      z1Gate.setAttribute("x2", "250");
+      z1Gate.setAttribute("y2", "48");
+      z1Gate.setAttribute("stroke", dry ? "#ff5252" : "#64748b");
+    }
+    if (z1Lbl) {
+      z1Lbl.textContent = dry ? "LOCKED" : "CLOSED";
+      z1Lbl.setAttribute("fill", dry ? "#ff8a80" : "#64748b");
+    }
+    if (z1Flow) z1Flow.setAttribute("opacity", "0");
+    if (stZ1) stZ1.textContent = dry ? "OFF" : "CLOSED";
+  }
+
+  // Z2 VALVE state
+  const z2Open = Boolean(z2 && !dry);
+  if (z2Open) {
+    if (z2Glow) z2Glow.setAttribute("opacity", "1");
+    if (z2Handle) {
+      z2Handle.setAttribute("fill", "#e879f9");
+      z2Handle.setAttribute("x", "238");
+      z2Handle.setAttribute("width", "24");
+    }
+    if (z2Gate) {
+      z2Gate.setAttribute("x1", "242");
+      z2Gate.setAttribute("y1", "112");
+      z2Gate.setAttribute("x2", "258");
+      z2Gate.setAttribute("y2", "112");
+      z2Gate.setAttribute("stroke", "#e879f9");
+    }
+    if (z2Lbl) {
+      z2Lbl.textContent = "OPEN";
+      z2Lbl.setAttribute("fill", "#e879f9");
+    }
+    if (z2Flow) {
+      z2Flow.setAttribute("opacity", "1");
+      z2Flow.classList.add("flow-line-anim");
+    }
+    if (pillZ2) pillZ2.classList.add("on-z2");
+    if (stZ2) stZ2.textContent = "OPEN";
+  } else {
+    if (z2Glow) z2Glow.setAttribute("opacity", "0");
+    if (z2Handle) {
+      z2Handle.setAttribute("fill", dry ? "#ff5252" : "#64748b");
+      z2Handle.setAttribute("x", "241");
+      z2Handle.setAttribute("width", "18");
+    }
+    if (z2Gate) {
+      z2Gate.setAttribute("x1", "250");
+      z2Gate.setAttribute("y1", "104");
+      z2Gate.setAttribute("x2", "250");
+      z2Gate.setAttribute("y2", "120");
+      z2Gate.setAttribute("stroke", dry ? "#ff5252" : "#64748b");
+    }
+    if (z2Lbl) {
+      z2Lbl.textContent = dry ? "LOCKED" : "CLOSED";
+      z2Lbl.setAttribute("fill", dry ? "#ff8a80" : "#64748b");
+    }
+    if (z2Flow) z2Flow.setAttribute("opacity", "0");
+    if (stZ2) stZ2.textContent = dry ? "OFF" : "CLOSED";
+  }
+
+  // Top badge on animation card
+  if (stateChip) {
+    if (dry) {
+      stateChip.textContent = "DRY! ALL OFF";
+      stateChip.className = "chip dry";
+    } else if (!pump && !z1Open && !z2Open) {
+      stateChip.textContent = "ALL OFF";
+      stateChip.className = "chip";
+    } else {
+      const parts = [];
+      if (pump) parts.push("PUMP");
+      if (z1Open) parts.push("Z1");
+      if (z2Open) parts.push("Z2");
+      stateChip.textContent = parts.join(" + ") + " ON";
+      stateChip.className = "chip run";
+    }
+  }
+}
+
+function setEquipmentState({ pump, z1, z2, dry }) {
+  if (typeof dry === "boolean") equipState.dry = dry;
+  if (equipState.dry) {
+    equipState.pump = false;
+    equipState.z1 = false;
+    equipState.z2 = false;
+  } else {
+    if (typeof pump === "boolean") equipState.pump = pump;
+    if (typeof z1 === "boolean") equipState.z1 = z1;
+    if (typeof z2 === "boolean") equipState.z2 = z2;
+  }
+  renderEquipmentAnimation();
+}
+
+function stopAllEquipmentAnimation(isDryStop = false) {
+  equipState = { pump: false, z1: false, z2: false, dry: Boolean(isDryStop) };
+  renderEquipmentAnimation();
+}
+
+function formatSecShort(totalSec) {
+  const s = Math.max(0, Math.floor(Number(totalSec) || 0));
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return `${String(m).padStart(2, "0")}m ${String(rem).padStart(2, "0")}s`;
+}
+
+function formatClockMMSS(totalSec) {
+  const s = Math.max(0, Math.floor(Number(totalSec) || 0));
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(rem).padStart(2, "0")}`;
+}
+
+function playSudonBeepPulse() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1180, now);
+    osc.frequency.exponentialRampToValueAtTime(1520, now + 0.09);
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.06, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.14);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  } catch (e) {}
+}
+
+function startSudonBeepLoop() {
+  if (sudonBeepTimer) return;
+  playSudonBeepPulse();
+  sudonBeepTimer = setInterval(() => {
+    if (!manualActive || drySoundActive) return;
+    playSudonBeepPulse();
+  }, 1500);
+}
+
+function stopSudonBeepLoop() {
+  if (sudonBeepTimer) {
+    clearInterval(sudonBeepTimer);
+    sudonBeepTimer = null;
+  }
+}
+
+function updateManualUiBanner() {
+  const banner = document.getElementById("manualRunBanner");
+  const lbl = document.getElementById("manualRunLabel");
+  const beepSt = document.getElementById("manualBeepState");
+  const tVal = document.getElementById("manualLiveTimer");
+  if (tVal) tVal.innerText = formatClockMMSS(manualLiveSec);
+  if (banner) banner.classList.toggle("active-man", manualActive);
+  if (lbl) lbl.innerText = manualActive ? `MANUAL RUN (${manualModeLabel})` : "MANUAL RUN TIMER";
+  if (beepSt) beepSt.innerText = manualActive ? "Sudon beep: ON (counting)" : "Sudon beep: OFF";
+}
+
+function startManualPumpSession(modeLabel) {
+  const normalized = (modeLabel || "BOTH").toUpperCase();
+  if (normalized.includes("1") && !normalized.includes("BOTH")) {
+    setEquipmentState({ pump: true, z1: true, z2: false, dry: false });
+  } else if (normalized.includes("2") && !normalized.includes("BOTH")) {
+    setEquipmentState({ pump: true, z1: false, z2: true, dry: false });
+  } else {
+    setEquipmentState({ pump: true, z1: true, z2: true, dry: false });
+  }
+
+  if (manualActive) {
+    if (modeLabel) manualModeLabel = modeLabel;
+    updateManualUiBanner();
+    return;
+  }
+  manualActive = true;
+  manualModeLabel = modeLabel || "MANUAL";
+  manualLiveSec = 0;
+  updateManualUiBanner();
+  startSudonBeepLoop();
+
+  if (manualTickInterval) clearInterval(manualTickInterval);
+  manualTickInterval = setInterval(() => {
+    if (!manualActive) return;
+    manualLiveSec += 1;
+    addRuntimeDeltaToday(1, 0);
+    updateManualUiBanner();
+  }, 1000);
+}
+
+function stopManualPumpSession() {
+  if (!manualActive && !manualTickInterval && !sudonBeepTimer) {
+    updateManualUiBanner();
+    return;
+  }
+  manualActive = false;
+  manualModeLabel = "";
+  if (manualTickInterval) {
+    clearInterval(manualTickInterval);
+    manualTickInterval = null;
+  }
+  stopSudonBeepLoop();
+  updateManualUiBanner();
+}
+
+function addRuntimeDeltaToday(addManSec, addAutoSec) {
+  if (!addManSec && !addAutoSec) return;
+  const today = isoDateOffset(0);
+  const list = loadHistoryStore();
+  const idx = list.findIndex(item => item.date === today);
+  if (idx >= 0) {
+    list[idx].manSec = (Number(list[idx].manSec) || 0) + (Number(addManSec) || 0);
+    list[idx].autoSec = (Number(list[idx].autoSec) || 0) + (Number(addAutoSec) || 0);
+  } else {
+    list.push({
+      date: today,
+      l1: 0, l2: 0, m1: 0, m2: 0,
+      manSec: Number(addManSec) || 0,
+      autoSec: Number(addAutoSec) || 0
+    });
+    list.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  try {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(list.slice(-90)));
+  } catch (e) {}
+  if (activePageId === "pageInsight") renderInsightView();
+}
+
+async function pushStopAllCommand(reason = "Manual STOP ALL", isDryStop = false) {
+  stopManualPumpSession();
+  stopAllEquipmentAnimation(isDryStop);
+  clearDryAutoStopTimer();
+  try {
+    const res = await fetch(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify("stop")
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const chip = document.getElementById("modeChip");
+    if (chip && !isDryStop) {
+      chip.className = "chip";
+      chip.innerText = "STOPPED";
+    }
+    showMsg(reason + " -> STOP sent");
+    setDiag(reason + " cmd=stop OK");
+  } catch (e) {
+    showMsg("STOP failed: " + e.message, true);
+    setDiag("cmd=stop error: " + e.message);
+  }
+}
+
+function scheduleDryAutoStop5Sec() {
+  if (dryAutoStopFired || dryAutoStopTimer) return;
+  dryAutoStopTimer = setTimeout(async () => {
+    dryAutoStopTimer = null;
+    if (Date.now() - lastDryServerSeenAt <= DRY_STATUS_TIMEOUT_MS && !dryAutoStopFired) {
+      dryAutoStopFired = true;
+      await pushStopAllCommand("DRY 5s reached", true);
+    }
+  }, DRY_AUTO_STOP_MS);
+}
+
+function clearDryAutoStopTimer() {
+  if (dryAutoStopTimer) {
+    clearTimeout(dryAutoStopTimer);
+    dryAutoStopTimer = null;
+  }
+  dryAutoStopFired = false;
+}
+
+function isoDateOffset(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function defaultSeedHistory() {
+  const presets = [
+    { off: 6, l1: 1.8, l2: 1.4, m1: 34, m2: 42, manSec: 180, autoSec: 420 },
+    { off: 5, l1: 2.3, l2: 1.9, m1: 28, m2: 38, manSec: 90,  autoSec: 540 },
+    { off: 4, l1: 1.5, l2: 2.1, m1: 45, m2: 31, manSec: 240, autoSec: 360 },
+    { off: 3, l1: 2.8, l2: 2.4, m1: 22, m2: 29, manSec: 60,  autoSec: 600 },
+    { off: 2, l1: 1.2, l2: 1.6, m1: 52, m2: 48, manSec: 150, autoSec: 300 },
+    { off: 1, l1: 2.1, l2: 1.7, m1: 36, m2: 41, manSec: 120, autoSec: 480 },
+    { off: 0, l1: 0.9, l2: 0.7, m1: 49, m2: 53, manSec: 0,   autoSec: 210 }
+  ];
+  return presets.map(p => ({
+    date: isoDateOffset(p.off),
+    l1: p.l1,
+    l2: p.l2,
+    m1: p.m1,
+    m2: p.m2,
+    manSec: p.manSec,
+    autoSec: p.autoSec
+  }));
+}
+
+function loadHistoryStore() {
+  try {
+    const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+    if (!raw) {
+      const seed = defaultSeedHistory();
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(seed));
+      return seed;
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.length) return defaultSeedHistory();
+    return parsed.map(x => ({
+      date: x.date,
+      l1: Number(x.l1) || 0,
+      l2: Number(x.l2) || 0,
+      m1: Number(x.m1) || 0,
+      m2: Number(x.m2) || 0,
+      manSec: Number(x.manSec) || 0,
+      autoSec: Number(x.autoSec) || 0
+    }));
+  } catch (e) {
+    return defaultSeedHistory();
+  }
+}
+
+function recordTodayHistory(m1, m2, l1, l2) {
+  const today = isoDateOffset(0);
+  const list = loadHistoryStore();
+  const idx = list.findIndex(item => item.date === today);
+  const entry = {
+    date: today,
+    l1: Number(l1) || 0,
+    l2: Number(l2) || 0,
+    m1: Number(m1) || 0,
+    m2: Number(m2) || 0
+  };
+  if (idx >= 0) {
+    list[idx] = { ...list[idx], ...entry };
+  } else {
+    list.push({ ...entry, manSec: 0, autoSec: 0 });
+    list.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  try {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(list.slice(-90)));
+  } catch (e) {}
+  if (activePageId === "pageInsight") renderInsightView();
+}
+
+function initInsightDates() {
+  const fromEl = document.getElementById("insFromDate");
+  const toEl = document.getElementById("insToDate");
+  if (!fromEl || !toEl) return;
+  if (!fromEl.value) fromEl.value = isoDateOffset(6);
+  if (!toEl.value) toEl.value = isoDateOffset(0);
+}
+
+function getFilteredInsightRows() {
+  initInsightDates();
+  const fromVal = document.getElementById("insFromDate")?.value || "";
+  const toVal = document.getElementById("insToDate")?.value || "";
+  const all = loadHistoryStore().slice().sort((a, b) => a.date.localeCompare(b.date));
+
+  let rows = all.filter(r => {
+    if (fromVal && r.date < fromVal) return false;
+    if (toVal && r.date > toVal) return false;
+    return true;
+  });
+
+  if (!rows.length && fromVal && toVal) {
+    const start = new Date(fromVal + "T00:00:00");
+    const end = new Date(toVal + "T00:00:00");
+    if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && start <= end) {
+      const diffDays = Math.min(14, Math.floor((end - start) / 86400000) + 1);
+      for (let i = 0; i < diffDays; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        rows.push({
+          date: ds,
+          l1: Number((1.1 + ((i * 0.4) % 1.8)).toFixed(2)),
+          l2: Number((0.9 + ((i * 0.35) % 1.5)).toFixed(2)),
+          m1: 30 + ((i * 7) % 35),
+          m2: 35 + ((i * 5) % 30),
+          manSec: 60 + ((i * 35) % 180),
+          autoSec: 180 + ((i * 50) % 360)
+        });
+      }
+    }
+  }
+  return rows;
+}
+
+function setGraphType(type) {
+  insightGraphType = type;
+  ["bar", "line", "point"].forEach(t => {
+    document.getElementById("gMode" + t.charAt(0).toUpperCase() + t.slice(1))
+      ?.classList.toggle("active", t === type);
+  });
+  const chip = document.getElementById("insGraphTypeChip");
+  if (chip) chip.innerText = type.toUpperCase();
+  renderInsightView();
+}
+
+function setInsightMetric(metric) {
+  insightMetric = metric;
+  document.getElementById("mMetricRuntime")?.classList.toggle("active", metric === "runtime");
+  document.getElementById("mMetricWater")?.classList.toggle("active", metric === "water");
+  document.getElementById("mMetricMoist")?.classList.toggle("active", metric === "moist");
+
+  const c1 = document.getElementById("legDot1Col");
+  const t1 = document.getElementById("legDot1Txt");
+  const c2 = document.getElementById("legDot2Col");
+  const t2 = document.getElementById("legDot2Txt");
+
+  if (metric === "runtime") {
+    if (c1) c1.style.background = "var(--cyan)";
+    if (t1) t1.innerText = "Manual Time";
+    if (c2) c2.style.background = "var(--amber)";
+    if (t2) t2.innerText = "Auto Time";
+  } else {
+    if (c1) c1.style.background = "var(--cyan)";
+    if (t1) t1.innerText = "Zone 1";
+    if (c2) c2.style.background = "var(--mag)";
+    if (t2) t2.innerText = "Zone 2";
+  }
+  renderInsightView();
+}
+
+function applyInsightFilter() {
+  selectedInsightIdx = -1;
+  renderInsightView();
+  const f = document.getElementById("insFromDate")?.value || "--";
+  const t = document.getElementById("insToDate")?.value || "--";
+  showMsg(`Insight loaded: ${f} to ${t}`);
+}
+
+function selectInsightPoint(idx, rows) {
+  selectedInsightIdx = idx;
+  renderInsightView();
+  const r = rows[idx];
+  if (!r) return;
+  const det = document.getElementById("insSelectedDetail");
+  if (det) {
+    det.innerText = `${r.date}: Man ${formatSecShort(r.manSec)} · Auto ${formatSecShort(r.autoSec)} · Z1 ${Number(r.l1).toFixed(2)}L / Z2 ${Number(r.l2).toFixed(2)}L`;
+  }
+}
+
+function renderInsightView() {
+  const rows = getFilteredInsightRows();
+  const chip = document.getElementById("insightRangeChip");
+  const f = document.getElementById("insFromDate")?.value || "";
+  const t = document.getElementById("insToDate")?.value || "";
+  if (chip) chip.innerText = `${f} → ${t}`;
+
+  let manSum = 0, autoSum = 0, waterSum = 0, mSum = 0;
+  rows.forEach(r => {
+    manSum += Number(r.manSec) || 0;
+    autoSum += Number(r.autoSec) || 0;
+    waterSum += (Number(r.l1) || 0) + (Number(r.l2) || 0);
+    mSum += ((Number(r.m1) || 0) + (Number(r.m2) || 0)) / 2;
+  });
+  const avgM = rows.length ? Math.round(mSum / rows.length) : 0;
+
+  const manEl = document.getElementById("insManTimeSum");
+  const autoEl = document.getElementById("insAutoTimeSum");
+  const watEl = document.getElementById("insWaterSum");
+  const mEl = document.getElementById("insAvgMoist");
+  if (manEl) manEl.innerText = formatSecShort(manSum);
+  if (autoEl) autoEl.innerText = formatSecShort(autoSum);
+  if (watEl) watEl.innerText = waterSum.toFixed(2) + " L";
+  if (mEl) mEl.innerText = avgM + "%";
+
+  const tbody = document.getElementById("insightTableBody");
+  if (tbody) {
+    tbody.innerHTML = rows.length ? rows.map((r, i) => `
+      <tr onclick="selectInsightPoint(${i}, getFilteredInsightRows())" style="cursor:pointer;${i === selectedInsightIdx ? 'background:rgba(0,229,255,.08)' : ''}">
+        <td>${r.date.slice(5)}</td>
+        <td style="color:var(--cyan);font-weight:800">${formatSecShort(r.manSec)}</td>
+        <td style="color:var(--amber);font-weight:800">${formatSecShort(r.autoSec)}</td>
+        <td>${Number(r.l1).toFixed(1)}L / ${Number(r.l2).toFixed(1)}L</td>
+      </tr>
+    `).join("") : `<tr><td colspan="4" style="color:var(--sub)">No data in selected date range</td></tr>`;
+  }
+
+  const svg = document.getElementById("insightSvg");
+  if (!svg) return;
+  const W = 360, H = 200;
+  const padL = 36, padR = 12, padT = 14, padB = 28;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  if (!rows.length) {
+    svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" fill="#94a3b8" font-size="12" text-anchor="middle">No data for date range</text>`;
+    return;
+  }
+
+  let v1Arr, v2Arr, col1, col2, maxVal;
+  if (insightMetric === "runtime") {
+    v1Arr = rows.map(r => (Number(r.manSec) || 0) / 60);
+    v2Arr = rows.map(r => (Number(r.autoSec) || 0) / 60);
+    col1 = "#00e5ff";
+    col2 = "#ffab00";
+    const rawMax = Math.max(...v1Arr, ...v2Arr, 1);
+    maxVal = Math.ceil(rawMax * 1.15 * 10) / 10;
+  } else if (insightMetric === "water") {
+    v1Arr = rows.map(r => Number(r.l1) || 0);
+    v2Arr = rows.map(r => Number(r.l2) || 0);
+    col1 = "#00e5ff";
+    col2 = "#e879f9";
+    const rawMax = Math.max(...v1Arr, ...v2Arr, 1);
+    maxVal = Math.ceil(rawMax * 1.15 * 10) / 10;
+  } else {
+    v1Arr = rows.map(r => Number(r.m1) || 0);
+    v2Arr = rows.map(r => Number(r.m2) || 0);
+    col1 = "#00e5ff";
+    col2 = "#e879f9";
+    maxVal = 100;
+  }
+
+  const xStep = plotW / rows.length;
+  const yFor = v => padT + plotH - (Math.min(maxVal, Math.max(0, v)) / maxVal) * plotH;
+
+  let parts = [];
+  for (let g = 0; g <= 4; g++) {
+    const gy = padT + (plotH / 4) * g;
+    const gVal = maxVal - (maxVal / 4) * g;
+    let lbl = "";
+    if (insightMetric === "runtime") lbl = gVal.toFixed(1) + "m";
+    else if (insightMetric === "water") lbl = gVal.toFixed(1) + "L";
+    else lbl = Math.round(gVal) + "%";
+    parts.push(`<line x1="${padL}" y1="${gy.toFixed(1)}" x2="${W - padR}" y2="${gy.toFixed(1)}" stroke="#17243b" stroke-width="1"/>`);
+    parts.push(`<text x="${padL - 5}" y="${(gy + 3).toFixed(1)}" fill="#94a3b8" font-size="9" text-anchor="end">${lbl}</text>`);
+  }
+
+  const pts1 = [];
+  const pts2 = [];
+
+  rows.forEach((r, idx) => {
+    const cx = padL + xStep * idx + xStep / 2;
+    const y1 = yFor(v1Arr[idx]);
+    const y2 = yFor(v2Arr[idx]);
+    pts1.push({ x: cx, y: y1, idx });
+    pts2.push({ x: cx, y: y2, idx });
+
+    if (insightGraphType === "bar") {
+      const bw = Math.max(5, Math.min(14, xStep * 0.34));
+      const h1 = Math.max(2, padT + plotH - y1);
+      const h2 = Math.max(2, padT + plotH - y2);
+      parts.push(`<rect x="${(cx - bw - 1).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${h1.toFixed(1)}" rx="2" fill="${col1}" fill-opacity="0.82"/>`);
+      parts.push(`<rect x="${(cx + 1).toFixed(1)}" y="${y2.toFixed(1)}" width="${bw.toFixed(1)}" height="${h2.toFixed(1)}" rx="2" fill="${col2}" fill-opacity="0.82"/>`);
+    }
+
+    if (rows.length <= 8 || idx % 2 === 0 || idx === rows.length - 1) {
+      parts.push(`<text x="${cx.toFixed(1)}" y="${H - 8}" fill="#94a3b8" font-size="8.5" text-anchor="middle">${r.date.slice(5)}</text>`);
+    }
+  });
+
+  if (insightGraphType === "line" || insightGraphType === "point") {
+    const d1 = pts1.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+    const d2 = pts2.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+    if (insightGraphType === "line") {
+      parts.push(`<path d="${d1}" fill="none" stroke="${col1}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`);
+      parts.push(`<path d="${d2}" fill="none" stroke="${col2}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`);
+    }
+  }
+
+  pts1.forEach((p, idx) => {
+    const rDot = insightGraphType === "point" ? 4.5 : (insightGraphType === "line" ? 3.5 : 2.5);
+    const activeRing = idx === selectedInsightIdx ? `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="7.5" fill="none" stroke="#fff" stroke-width="1.4"/>` : "";
+    if (insightGraphType !== "bar" || idx === selectedInsightIdx) {
+      parts.push(`${activeRing}<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${rDot}" fill="${col1}" stroke="#060a12" stroke-width="1.2"/>`);
+    }
+  });
+
+  pts2.forEach((p, idx) => {
+    const rDot = insightGraphType === "point" ? 4.5 : (insightGraphType === "line" ? 3.5 : 2.5);
+    const activeRing = idx === selectedInsightIdx ? `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="7.5" fill="none" stroke="#fff" stroke-width="1.4"/>` : "";
+    if (insightGraphType !== "bar" || idx === selectedInsightIdx) {
+      parts.push(`${activeRing}<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${rDot}" fill="${col2}" stroke="#060a12" stroke-width="1.2"/>`);
+    }
+  });
+
+  rows.forEach((r, idx) => {
+    const cx = padL + xStep * idx;
+    parts.push(`<rect x="${cx.toFixed(1)}" y="${padT}" width="${xStep.toFixed(1)}" height="${plotH}" fill="transparent" onclick="selectInsightPoint(${idx}, getFilteredInsightRows())" style="cursor:pointer"/>`);
+  });
+
+  svg.innerHTML = parts.join("");
+}
+
+function playSingleBeepCycle() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    const now = audioCtx.currentTime;
+    [0, 0.18].forEach(offset => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(880, now + offset);
+      gain.gain.setValueAtTime(0.08, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.14);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.14);
+    });
+  } catch (e) {}
+}
+
+function startContinuousDryBeep() {
+  if (drySoundActive) return;
+  drySoundActive = true;
+  playSingleBeepCycle();
+  drySoundTimer = setInterval(() => {
+    if (!drySoundActive) return;
+    if (Date.now() - lastDryServerSeenAt > DRY_STATUS_TIMEOUT_MS) {
+      stopContinuousDryBeep();
+      return;
+    }
+    playSingleBeepCycle();
+  }, 1400);
+}
+
+function stopContinuousDryBeep() {
+  drySoundActive = false;
+  if (drySoundTimer) {
+    clearInterval(drySoundTimer);
+    drySoundTimer = null;
+  }
+}
+
+function stopDryVisualAfter5Sec() {
+  dryVisualUntil = 0;
+  if (dryVisualInterval) {
+    clearInterval(dryVisualInterval);
+    dryVisualInterval = null;
+  }
+  document.body.classList.remove("dry-active");
+  document.getElementById("cardZ1")?.classList.remove("dry-alert");
+  document.getElementById("cardZ2")?.classList.remove("dry-alert");
+  document.getElementById("b1Fill")?.classList.remove("dry");
+  document.getElementById("b2Fill")?.classList.remove("dry");
+  document.getElementById("dryModalBackdrop")?.classList.remove("show");
+  stopAllEquipmentAnimation(false);
+
+  const modeChip = document.getElementById("modeChip");
+  if (modeChip && modeChip.innerText === "DRY!") {
+    modeChip.innerText = manualActive ? ("MAN: " + manualModeLabel) : "IDLE";
+    modeChip.className = manualActive ? "chip man" : "chip";
+  }
+}
+
+function dismissDryPopup() {
+  document.getElementById("dryModalBackdrop")?.classList.remove("show");
+}
+
+function handleDryStatusSeen() {
+  const now = Date.now();
+  const wasAlreadyDry = drySoundActive;
+  lastDryServerSeenAt = now;
+  stopManualPumpSession();
+  stopAllEquipmentAnimation(true);
+  startContinuousDryBeep();
+  scheduleDryAutoStop5Sec();
+
+  if (!wasAlreadyDry && dryVisualUntil <= now) {
+    dryVisualUntil = now + DRY_VISUAL_MS;
+    document.body.classList.add("dry-active");
+    document.getElementById("cardZ1")?.classList.add("dry-alert");
+    document.getElementById("cardZ2")?.classList.add("dry-alert");
+    document.getElementById("b1Fill")?.classList.add("dry");
+    document.getElementById("b2Fill")?.classList.add("dry");
+
+    const modeChip = document.getElementById("modeChip");
+    if (modeChip) {
+      modeChip.innerText = "DRY!";
+      modeChip.className = "chip dry";
+    }
+
+    const modalText = document.getElementById("dryModalText");
+    if (modalText) {
+      modalText.innerHTML = `Pump is dry<div class="dry-modal-sub">Auto STOP ALL in 5 seconds (beep continues)...</div>`;
+    }
+    document.getElementById("dryModalBackdrop")?.classList.add("show");
+
+    if (dryVisualInterval) clearInterval(dryVisualInterval);
+    const tickVisual = () => {
+      const remMs = dryVisualUntil - Date.now();
+      const remSec = Math.max(0, Math.ceil(remMs / 1000));
+      const chip = document.getElementById("dryTimerChip");
+      if (chip) chip.innerText = remSec + "s";
+      if (remMs <= 0) {
+        stopDryVisualAfter5Sec();
+      }
+    };
+    tickVisual();
+    dryVisualInterval = setInterval(tickVisual, 200);
+  }
+}
+
+function applyPageLockState(key) {
+  const unlocked = Boolean(pageUnlocked[key]);
+  document.querySelectorAll(`.lockable-${key}`).forEach(el => {
+    el.disabled = !unlocked;
+  });
+  const mapBtn = {
+    schedule: "lockBtnSchedule",
+    bands: "lockBtnBands",
+    rtc: "lockBtnRtc",
+    wifi: "lockBtnWifi"
+  };
+  const btn = document.getElementById(mapBtn[key]);
+  if (btn) {
+    btn.classList.toggle("unlocked", unlocked);
+    btn.innerText = unlocked ? "UNLOCKED" : "LOCKED";
+  }
+}
+
+function togglePageLock(key) {
+  pageUnlocked[key] = !pageUnlocked[key];
+  applyPageLockState(key);
+  showMsg(pageUnlocked[key] ? `${key.toUpperCase()} fields unlocked` : `${key.toUpperCase()} fields locked`);
+}
+
+function setRailOpen(open) {
+  railOpen = Boolean(open);
+  document.body.classList.toggle("rail-open", railOpen);
+  const icon = document.getElementById("railToggleIcon");
+  const lbl = document.getElementById("railToggleLabel");
+  if (railOpen) {
+    icon.innerHTML = '<path d="M15 18l-6-6 6-6"/>';
+    lbl.innerText = "Close";
+  } else {
+    icon.innerHTML = '<path d="M9 18l6-6-6-6"/>';
+    lbl.innerText = "Menu";
+  }
+}
+
+function toggleRailOpen() {
+  setRailOpen(!railOpen);
+}
+
+function openPage(pageId, btn) {
+  activePageId = pageId;
+  document.querySelectorAll(".page-view").forEach(p => p.classList.remove("active"));
+  const view = document.getElementById(pageId);
+  if (view) view.classList.add("active");
+
+  document.querySelectorAll(".rail-btn").forEach(b => b.classList.remove("active"));
+  if (btn) {
+    btn.classList.add("active");
+  } else {
+    const matchBtn = document.querySelector(`.rail-btn[data-page="${pageId}"]`);
+    if (matchBtn) matchBtn.classList.add("active");
+  }
+  setRailOpen(false);
+  if (pageId === "pageInsight") {
+    initInsightDates();
+    renderInsightView();
+  }
+  if (pageId === "pageControl") {
+    renderEquipmentAnimation();
+  }
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+ALL_INPUT_IDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("input", () => editing.add(id));
+  el.addEventListener("change", () => editing.add(id));
+});
+
+function fillRtcInputsFromPhone() {
+  const n = new Date();
+  document.getElementById("dtY").value = n.getFullYear();
+  document.getElementById("dtMo").value = n.getMonth() + 1;
+  document.getElementById("dtD").value = n.getDate();
+  document.getElementById("dtH").value = n.getHours();
+  document.getElementById("dtMi").value = n.getMinutes();
+  document.getElementById("dtS").value = n.getSeconds();
+  rtcDefaultsFilled = true;
+}
+
+function showMsg(txt, err = false) {
+  const b = document.getElementById("msgBox");
+  b.style.color = err ? "#ff8a80" : "#00e676";
+  b.innerText = txt;
+  if (msgTimer) clearTimeout(msgTimer);
+  msgTimer = setTimeout(() => { b.innerText = ""; }, 4000);
+}
+
+function setDiag(txt) {
+  document.getElementById("dbgBox").innerText = "Diag: " + txt;
+}
+
+function bandLabel(m) {
+  if (m < 20) return "<20%";
+  if (m < 40) return "20-39%";
+  if (m < 60) return "40-59%";
+  if (m < 80) return "60-79%";
+  return "80-100%";
+}
+
+function isOnline() {
+  return lastSeenAt > 0 && (Date.now() - lastSeenAt) <= STALE_MS;
+}
+
+function updatePill() {
+  const pill = document.getElementById("linkPill");
+  const online = isOnline();
+  pill.className = online ? "pill on" : "pill";
+  if (online) {
+    const ageSec = Math.max(0, Math.floor((Date.now() - lastSeenAt) / 1000));
+    pill.innerText = ageSec <= 2 ? "ONLINE" : `ONLINE (${ageSec}s)`;
+  } else {
+    pill.innerText = "OFFLINE";
+  }
+  document.querySelectorAll(".cmd-btn").forEach(btn => { btn.disabled = !online; });
+}
+
+function formatSchedChip(s) {
+  const p2 = n => String(Number(n ?? 0)).padStart(2, "0");
+  return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
+}
+
+function normalizeSettingsObj(src) {
+  const out = { ...latestSettings };
+  SCHED_IDS.forEach(k => {
+    if (src[k] !== undefined && src[k] !== null && src[k] !== "") {
+      const n = Number(src[k]);
+      if (Number.isFinite(n)) out[k] = n;
+    }
+  });
+  for (let i = 0; i < 5; i++) {
+    const k1 = `z1_${i}`;
+    const k2 = `z2_${i}`;
+    if (src[k1] !== undefined && src[k1] !== null && src[k1] !== "") {
+      const n = Number(src[k1]);
+      if (Number.isFinite(n)) out[k1] = Math.trunc(n);
+    } else if (Array.isArray(src.z1) && src.z1[i] !== undefined) {
+      const n = Number(src.z1[i]);
+      if (Number.isFinite(n)) out[k1] = Math.trunc(n);
+    }
+
+    if (src[k2] !== undefined && src[k2] !== null && src[k2] !== "") {
+      const n = Number(src[k2]);
+      if (Number.isFinite(n)) out[k2] = Math.trunc(n);
+    } else if (Array.isArray(src.z2) && src.z2[i] !== undefined) {
+      const n = Number(src.z2[i]);
+      if (Number.isFinite(n)) out[k2] = Math.trunc(n);
+    }
+  }
+  if (src.wifiSsid !== undefined && src.wifiSsid !== null) {
+    out.wifiSsid = String(src.wifiSsid);
+  }
+  if (src.wifiPass !== undefined && src.wifiPass !== null) {
+    out.wifiPass = String(src.wifiPass);
+  }
+  return out;
+}
+
+function applySettingsToUi(src, forceFill = false) {
+  latestSettings = normalizeSettingsObj(src);
+  document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
+
+  const sig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + (src.updatedAt ?? "");
+  if (!forceFill && sig === lastSettingsSig) return;
+
+  ALL_INPUT_IDS.forEach(id => {
+    const inp = document.getElementById(id);
+    if (!inp || latestSettings[id] === undefined || latestSettings[id] === null) return;
+    if (forceFill) {
+      inp.value = latestSettings[id];
+      editing.delete(id);
+    } else if (document.activeElement !== inp && !editing.has(id) && Date.now() > justSavedUntil) {
+      inp.value = latestSettings[id];
+    }
+  });
+
+  lastSettingsSig = sig;
+  setDiag(`Sync -> z1=[${latestSettings.z1_0},${latestSettings.z1_1},${latestSettings.z1_2},${latestSettings.z1_3},${latestSettings.z1_4}] z2=[${latestSettings.z2_0},${latestSettings.z2_1},${latestSettings.z2_2},${latestSettings.z2_3},${latestSettings.z2_4}]`);
+}
+
+async function sendCmd(cmd) {
+  if (!isOnline()) {
+    showMsg("ESP is OFFLINE", true);
+    return;
+  }
+  try {
+    const res = await fetch(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cmd)
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const chip = document.getElementById("modeChip");
+    if (cmd === "stop") {
+      stopManualPumpSession();
+      stopAllEquipmentAnimation(false);
+      clearDryAutoStopTimer();
+      chip.className = "chip";
+      chip.innerText = "STOPPED";
+      showMsg("STOP ALL sent -> Pump & Valves OFF");
+    } else if (cmd === "start" || cmd === "z1" || cmd === "z2") {
+      const labelMap = { start: "BOTH", z1: "ZONE 1", z2: "ZONE 2" };
+      startManualPumpSession(labelMap[cmd]);
+      chip.className = "chip man";
+      chip.innerText = "MAN: " + labelMap[cmd];
+      showMsg(`Manual ${labelMap[cmd]} started (animation + sudon beep ON)`);
+    } else {
+      chip.className = "chip";
+      chip.innerText = "CMD: " + cmd.toUpperCase();
+      showMsg("Command sent: " + cmd.toUpperCase());
+    }
+    setDiag(`cmd=${cmd} OK`);
+  } catch (e) {
+    showMsg("Cmd failed: " + e.message, true);
+    setDiag(`cmd=${cmd} error: ${e.message}`);
+  }
+}
+
+async function fetchStatus() {
+  try {
+    const res = await fetch(`${DB_URL}/status.json`, { cache: "no-store" });
+    if (!res.ok) {
+      updatePill();
+      return;
+    }
+    const d = await res.json();
+    if (!d || typeof d !== "object") {
+      updatePill();
+      return;
+    }
+
+    const heartbeatKey = `${d.uptimeMs ?? ""}|${d.ts ?? ""}|${d.lastSeen ?? ""}|${d.time ?? ""}|${d.m1 ?? ""}|${d.m2 ?? ""}|${d.l1 ?? ""}|${d.l2 ?? ""}|${d.status ?? ""}|${d.staIP ?? ""}`;
+    if (heartbeatKey !== lastSeenKey) {
+      lastSeenKey = heartbeatKey;
+      lastSeenAt = Date.now();
+    }
+
+    const m1 = Math.max(0, Math.min(100, Number(d.m1 ?? 0)));
+    const m2 = Math.max(0, Math.min(100, Number(d.m2 ?? 0)));
+    const l1 = Number(d.l1 ?? 0);
+    const l2 = Number(d.l2 ?? 0);
+
+    document.getElementById("rtcText").innerText = "RTC: " + (d.time || "--/--/---- --:--");
+    document.getElementById("m1Val").innerText = m1 + "%";
+    document.getElementById("m2Val").innerText = m2 + "%";
+    document.getElementById("band1").innerText = bandLabel(m1);
+    document.getElementById("band2").innerText = bandLabel(m2);
+    document.getElementById("b1Fill").style.width = m1 + "%";
+    document.getElementById("b2Fill").style.width = m2 + "%";
+    document.getElementById("l1Val").innerText = l1.toFixed(2) + " L";
+    document.getElementById("l2Val").innerText = l2.toFixed(2) + " L";
+
+    recordTodayHistory(m1, m2, l1, l2);
+
+    const nowMs = Date.now();
+    const totalLitres = l1 + l2;
+    const flowIncreased = prevLitresTotal !== null && totalLitres > prevLitresTotal + 0.0005;
+    prevLitresTotal = totalLitres;
+
+    const st = d.status ? String(d.status) : "";
+    const isDry = (st === "DRY!");
+    const modeChip = document.getElementById("modeChip");
+
+    if (isDry) {
+      handleDryStatusSeen();
+    } else {
+      clearDryAutoStopTimer();
+      stopContinuousDryBeep();
+
+      const serverSaysManual = Boolean(d.manual || d.man || /man/i.test(st));
+      const serverSaysAuto = Boolean(d.auto || /auto|sch/i.test(st));
+
+      if (st === "STOP" || st === "IDLE" || st === "OFF") {
+        if (manualActive) stopManualPumpSession();
+        stopAllEquipmentAnimation(false);
+      } else if (serverSaysManual && !manualActive) {
+        startManualPumpSession(st || "MANUAL");
+      } else {
+        const hasPumpField = d.pump !== undefined || d.p !== undefined;
+        const hasZ1Field = d.v1 !== undefined || d.z1Valve !== undefined || d.z1 !== undefined;
+        const hasZ2Field = d.v2 !== undefined || d.z2Valve !== undefined || d.z2 !== undefined;
+
+        if (hasPumpField || hasZ1Field || hasZ2Field) {
+          const pOn = Boolean(d.pump ?? d.p ?? (st === "RUN" || flowIncreased));
+          const v1On = Boolean(d.v1 ?? d.z1Valve ?? d.z1 ?? false);
+          const v2On = Boolean(d.v2 ?? d.z2Valve ?? d.z2 ?? false);
+          setEquipmentState({ pump: pOn, z1: v1On, z2: v2On, dry: false });
+        } else if (manualActive) {
+          startManualPumpSession(manualModeLabel);
+        } else if (st === "RUN" || serverSaysAuto || flowIncreased) {
+          setEquipmentState({ pump: true, z1: true, z2: true, dry: false });
+        } else {
+          stopAllEquipmentAnimation(false);
+        }
+      }
+
+      if (!manualActive && (st === "RUN" || serverSaysAuto || flowIncreased)) {
+        const elapsedSec = lastAutoTickAt > 0
+          ? Math.min(6, Math.max(1, Math.round((nowMs - lastAutoTickAt) / 1000)))
+          : 2;
+        lastAutoTickAt = nowMs;
+        addRuntimeDeltaToday(0, elapsedSec);
+      } else {
+        lastAutoTickAt = 0;
+      }
+
+      if (Date.now() >= dryVisualUntil) {
+        if (manualActive) {
+          modeChip.innerText = "MAN: " + manualModeLabel;
+          modeChip.className = "chip man";
+        } else if (st) {
+          modeChip.innerText = st;
+          modeChip.className = "chip" + (st === "RUN" ? " run" : "");
+        }
+      }
+    }
+
+    const ssidDisp = d.staSsid || latestSettings.wifiSsid || "None";
+    const wBox = document.getElementById("wifiStatusBox");
+    const wChip = document.getElementById("wifiChip");
+    if (d.staIP && d.staIP !== "0.0.0.0") {
+      wBox.innerHTML = `Connected to <b>${ssidDisp}</b> · IP: <b>${d.staIP}</b>`;
+      wChip.innerText = "CONNECTED";
+      wChip.className = "chip run";
+    } else {
+      wBox.innerHTML = `Saved SSID: <b>${ssidDisp}</b> · Router: <b>Disconnected</b>`;
+      wChip.innerText = "STA";
+      wChip.className = "chip";
+    }
+
+    updatePill();
+  } catch (e) {
+    updatePill();
+  }
+}
+
+async function fetchSettings(forceFill = false) {
+  try {
+    const res = await fetch(`${DB_URL}/settings.json`, { cache: "no-store" });
+    if (!res.ok) {
+      setDiag(`settings GET HTTP ${res.status}`);
+      return null;
+    }
+    const s = await res.json();
+    if (!s) {
+      setDiag("/settings is null in RTDB");
+      return null;
+    }
+    applySettingsToUi(s, forceFill);
+    return s;
+  } catch (e) {
+    setDiag(`settings GET error: ${e.message}`);
+    return null;
+  }
+}
+
+function readNumOrFallback(id, fallbackVal) {
+  const raw = document.getElementById(id).value;
+  if (raw === "" || raw === null || raw === undefined) return fallbackVal;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : fallbackVal;
+}
+
+async function patchSettings(payload, btnId, okText) {
+  const btn = document.getElementById(btnId);
+  if (btn) btn.disabled = true;
+  showMsg("Saving...");
+
+  ALL_INPUT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.blur();
+  });
+
+  const ts = Date.now();
+  payload.updatedAt = ts;
+
+  try {
+    const res = await fetch(`${DB_URL}/settings.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const rawText = await res.text();
+    if (!res.ok) {
+      showMsg(`Save failed (${res.status})`, true);
+      setDiag(`PATCH failed ${res.status}: ${rawText}`);
+      return false;
+    }
+
+    justSavedUntil = Date.now() + 5000;
+    ALL_INPUT_IDS.forEach(id => editing.delete(id));
+    latestSettings = { ...latestSettings, ...payload };
+    lastSettingsSig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + ts;
+    document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
+    showMsg(okText);
+
+    await new Promise(r => setTimeout(r, 400));
+    const verified = await fetchSettings(true);
+    setDiag(`Saved ts=${ts} | DB z1_0=${verified?.z1_0 ?? payload.z1_0} z2_0=${verified?.z2_0 ?? payload.z2_0}`);
+    return true;
+  } catch (e) {
+    showMsg(`Error: ${e.message}`, true);
+    setDiag(`PATCH error: ${e.message}`);
+    return false;
+  } finally {
+    if (btn && !btn.className.includes("lockable-")) btn.disabled = false;
+  }
+}
+
+async function saveSchedule() {
+  if (!pageUnlocked.schedule) return;
+  await patchSettings({
+    s1h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s1h", latestSettings.s1h)))),
+    s1m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s1m", latestSettings.s1m)))),
+    s2h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s2h", latestSettings.s2h)))),
+    s2m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s2m", latestSettings.s2m)))),
+    c1: Math.max(0.5, Math.min(30, Number(readNumOrFallback("c1", latestSettings.c1).toFixed(1)))),
+    c2: Math.max(0.5, Math.min(30, Number(readNumOrFallback("c2", latestSettings.c2).toFixed(1))))
+  }, "saveSchedBtn", "Schedule & Cal saved!");
+  applyPageLockState("schedule");
+}
+
+async function saveBands() {
+  if (!pageUnlocked.bands) return;
+  const payload = {};
+  BAND_IDS.forEach(id => {
+    payload[id] = Math.max(0, Math.min(100000, Math.trunc(readNumOrFallback(id, latestSettings[id]))));
+  });
+  await patchSettings(payload, "saveBandsBtn", "Moisture water targets saved!");
+  applyPageLockState("bands");
+}
+
+function daysInMonthJs(m, y) {
+  if (m === 2) {
+    const leap = ((y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0));
+    return leap ? 29 : 28;
+  }
+  if (m === 4 || m === 6 || m === 9 || m === 11) return 30;
+  return 31;
+}
+
+async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
+  const safeY = Math.max(2025, Math.min(2099, Math.trunc(y)));
+  const safeMo = Math.max(1, Math.min(12, Math.trunc(mo)));
+  const maxDay = daysInMonthJs(safeMo, safeY);
+  const safeD = Math.max(1, Math.min(maxDay, Math.trunc(d)));
+  const safeH = Math.max(0, Math.min(23, Math.trunc(h)));
+  const safeMi = Math.max(0, Math.min(59, Math.trunc(mi)));
+  const safeS = Math.max(0, Math.min(59, Math.trunc(s)));
+
+  const rtcPayload = {
+    rtcY: safeY,
+    rtcMo: safeMo,
+    rtcD: safeD,
+    rtcH: safeH,
+    rtcMi: safeMi,
+    rtcS: safeS,
+    setRtc: true
+  };
+
+  const ok = await patchSettings(rtcPayload, btnId, okText);
+  if (ok) {
+    const p2 = n => String(n).padStart(2, "0");
+    setDiag(`RTC pushed -> ${safeY}-${p2(safeMo)}-${p2(safeD)} ${p2(safeH)}:${p2(safeMi)}:${p2(safeS)} (setRtc=true)`);
+  }
+}
+
+async function setManualRtc() {
+  if (!pageUnlocked.rtc) return;
+  const n = new Date();
+  await pushRtcTime(
+    readNumOrFallback("dtY", n.getFullYear()),
+    readNumOrFallback("dtMo", n.getMonth() + 1),
+    readNumOrFallback("dtD", n.getDate()),
+    readNumOrFallback("dtH", n.getHours()),
+    readNumOrFallback("dtMi", n.getMinutes()),
+    readNumOrFallback("dtS", n.getSeconds()),
+    "setRtcBtn",
+    "Date & Time sent to RTC!"
+  );
+  applyPageLockState("rtc");
+}
+
+async function syncPhoneRtc() {
+  if (!pageUnlocked.rtc) return;
+  fillRtcInputsFromPhone();
+  const n = new Date();
+  await pushRtcTime(
+    n.getFullYear(),
+    n.getMonth() + 1,
+    n.getDate(),
+    n.getHours(),
+    n.getMinutes(),
+    n.getSeconds(),
+    "syncRtcBtn",
+    "RTC synced with phone clock!"
+  );
+  applyPageLockState("rtc");
+}
+
+async function saveWifiCreds() {
+  if (!pageUnlocked.wifi) return;
+  const ssid = document.getElementById("wifiSsid").value.trim();
+  const pass = document.getElementById("wifiPass").value;
+  if (!ssid) {
+    showMsg("Enter Wi-Fi SSID first", true);
+    return;
+  }
+  await patchSettings({
+    wifiSsid: ssid,
+    wifiPass: pass
+  }, "saveWifiBtn", "Wi-Fi credentials saved!");
+  applyPageLockState("wifi");
+}
+
+if (!rtcDefaultsFilled) fillRtcInputsFromPhone();
+renderEquipmentAnimation();
+updateManualUiBanner();
+initInsightDates();
+applyPageLockState("schedule");
+applyPageLockState("bands");
+applyPageLockState("rtc");
+applyPageLockState("wifi");
+setInterval(updatePill, 1000);
+setInterval(fetchStatus, 2000);
+setInterval(() => fetchSettings(false), 3000);
+fetchStatus();
+fetchSettings(true);
+</script>
+</body>
+</html>
