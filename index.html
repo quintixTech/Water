@@ -251,7 +251,7 @@ function formatSchedChip(s) {
   return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
 }
 
-function normalizeSettingsObj(src) {
+function normalizeSettingsObj(src, allowArrayFallback = true) {
   const out = { ...latestSettings };
   SCHED_IDS.forEach(k => {
     if (src[k] !== undefined && src[k] !== null) out[k] = Number(src[k]);
@@ -259,17 +259,23 @@ function normalizeSettingsObj(src) {
   for (let i = 0; i < 5; i++) {
     const k1 = `z1_${i}`;
     const k2 = `z2_${i}`;
-    if (src[k1] !== undefined && src[k1] !== null) out[k1] = Number(src[k1]);
-    else if (Array.isArray(src.z1) && src.z1[i] !== undefined) out[k1] = Number(src.z1[i]);
+    if (src[k1] !== undefined && src[k1] !== null) {
+      out[k1] = Number(src[k1]);
+    } else if (allowArrayFallback && Array.isArray(src.z1) && src.z1[i] !== undefined) {
+      out[k1] = Number(src.z1[i]);
+    }
 
-    if (src[k2] !== undefined && src[k2] !== null) out[k2] = Number(src[k2]);
-    else if (Array.isArray(src.z2) && src.z2[i] !== undefined) out[k2] = Number(src.z2[i]);
+    if (src[k2] !== undefined && src[k2] !== null) {
+      out[k2] = Number(src[k2]);
+    } else if (allowArrayFallback && Array.isArray(src.z2) && src.z2[i] !== undefined) {
+      out[k2] = Number(src.z2[i]);
+    }
   }
   return out;
 }
 
-function applySettingsToUi(src, forceFill = false) {
-  latestSettings = normalizeSettingsObj(src);
+function applySettingsToUi(src, forceFill = false, allowArrayFallback = true) {
+  latestSettings = normalizeSettingsObj(src, allowArrayFallback);
   document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
 
   const sig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + (src.updatedAt ?? "");
@@ -287,7 +293,7 @@ function applySettingsToUi(src, forceFill = false) {
   });
 
   lastSettingsSig = sig;
-  setDiag(`Sync -> s1=${latestSettings.s1h}:${latestSettings.s1m}, s2=${latestSettings.s2h}:${latestSettings.s2m}, z1_0=${latestSettings.z1_0}, z2_0=${latestSettings.z2_0}`);
+  setDiag(`Sync -> z1_0=${latestSettings.z1_0}, z1_1=${latestSettings.z1_1}, z2_0=${latestSettings.z2_0}, z2_1=${latestSettings.z2_1}`);
 }
 
 async function sendCmd(cmd) {
@@ -344,11 +350,6 @@ async function fetchStatus() {
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
     if (d.status) document.getElementById("modeChip").innerText = String(d.status);
 
-    // Only fill from /status if /settings hasn't been saved recently
-    if (Date.now() > justSavedUntil && (d.s1h !== undefined || d.s1m !== undefined || Array.isArray(d.z1))) {
-      applySettingsToUi(d, false);
-    }
-
     updatePill();
   } catch (e) {
     updatePill();
@@ -367,7 +368,7 @@ async function fetchSettings(forceFill = false) {
       setDiag("/settings is null in RTDB");
       return null;
     }
-    applySettingsToUi(s, forceFill);
+    applySettingsToUi(s, forceFill, true);
     return s;
   } catch (e) {
     setDiag(`settings GET error: ${e.message}`);
@@ -392,7 +393,6 @@ async function patchSettings(payload, btnId, okText) {
     if (el) el.blur();
   });
 
-  // Ensure monotonic 13-digit timestamp so ESP always sees a newer updatedAt
   const ts = Date.now();
   payload.updatedAt = ts;
   payload.appUpdatedAt = ts;
@@ -410,13 +410,12 @@ async function patchSettings(payload, btnId, okText) {
       return;
     }
 
-    justSavedUntil = Date.now() + 3500;
+    justSavedUntil = Date.now() + 6000;
     ALL_INPUT_IDS.forEach(id => editing.delete(id));
-    lastSettingsSig = "";
+    latestSettings = { ...latestSettings, ...payload };
+    lastSettingsSig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + ts;
     showMsg(okText);
-
-    await new Promise(r => setTimeout(r, 350));
-    await fetchSettings(true);
+    setDiag(`PATCH OK -> z1_0=${latestSettings.z1_0}, z2_0=${latestSettings.z2_0}, ts=${ts}`);
   } catch (e) {
     showMsg(`Error: ${e.message}`, true);
     setDiag(`PATCH error: ${e.message}`);
