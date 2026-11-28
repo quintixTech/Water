@@ -77,6 +77,11 @@
     padding:7px 9px;border-radius:10px;font-size:13px;font-weight:700;
     width:80px;text-align:center;
   }
+  .input-wide{width:100%;text-align:left;padding:9px 11px}
+  .wifi-status{
+    font-size:11.5px;color:var(--sub);background:#09101d;
+    border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
+  }
   table{width:100%;border-collapse:collapse;font-size:12.5px}
   th{color:var(--sub);font-weight:800;padding:6px 4px;border-bottom:1px solid var(--line)}
   td{padding:6px 4px;text-align:center;border-bottom:1px solid #152136}
@@ -185,6 +190,42 @@
     <button class="b-cyan" id="saveBandsBtn" onclick="saveBands()">Save Water Targets</button>
   </div>
 
+  <div class="card">
+    <div class="title"><span>RTC Clock &amp; Date Sync</span><span class="chip">DS3231</span></div>
+    <div class="row">
+      <label>Date (Y-M-D)</label>
+      <div>
+        <input id="dtY" type="number" min="2025" max="2099" style="width:66px"> -
+        <input id="dtMo" type="number" min="1" max="12" style="width:48px"> -
+        <input id="dtD" type="number" min="1" max="31" style="width:48px">
+      </div>
+    </div>
+    <div class="row">
+      <label>Time (H:M:S)</label>
+      <div>
+        <input id="dtH" type="number" min="0" max="23" style="width:48px"> :
+        <input id="dtMi" type="number" min="0" max="59" style="width:48px"> :
+        <input id="dtS" type="number" min="0" max="59" style="width:48px">
+      </div>
+    </div>
+    <button class="b-cyan" id="setRtcBtn" onclick="setManualRtc()">Set Date &amp; Time</button>
+    <button class="b-ghost" id="syncRtcBtn" onclick="syncPhoneRtc()">Sync RTC with Phone Clock</button>
+  </div>
+
+  <div class="card">
+    <div class="title"><span>Router Wi-Fi Setup</span><span class="chip" id="wifiChip">STA</span></div>
+    <div class="wifi-status" id="wifiStatusBox">Router: Checking...</div>
+    <div style="margin-bottom:8px">
+      <label>Router Wi-Fi SSID</label>
+      <input id="wifiSsid" class="input-wide" type="text" placeholder="Enter Wi-Fi Name">
+    </div>
+    <div>
+      <label>Router Wi-Fi Password</label>
+      <input id="wifiPass" class="input-wide" type="password" placeholder="Enter Wi-Fi Password">
+    </div>
+    <button class="b-cyan" id="saveWifiBtn" onclick="saveWifiCreds()">Save &amp; Connect Wi-Fi</button>
+  </div>
+
   <div class="dbg" id="dbgBox">Diag: ready</div>
 </div>
 
@@ -196,16 +237,18 @@ const BAND_IDS = [
   "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
   "z2_0", "z2_1", "z2_2", "z2_3", "z2_4"
 ];
-const ALL_INPUT_IDS = [...SCHED_IDS, ...BAND_IDS];
+const ALL_INPUT_IDS = [...SCHED_IDS, ...BAND_IDS, "wifiSsid", "wifiPass"];
 
 let lastSeenKey = null;
 let lastSeenAt = 0;
 let justSavedUntil = 0;
 let lastSettingsSig = "";
+let rtcDefaultsFilled = false;
 let latestSettings = {
   s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
   z1_0: 1000, z1_1: 500, z1_2: 0, z1_3: 0, z1_4: 0,
-  z2_0: 1000, z2_1: 500, z2_2: 0, z2_3: 0, z2_4: 0
+  z2_0: 1000, z2_1: 500, z2_2: 0, z2_3: 0, z2_4: 0,
+  wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
 
@@ -215,6 +258,17 @@ ALL_INPUT_IDS.forEach(id => {
   el.addEventListener("input", () => editing.add(id));
   el.addEventListener("change", () => editing.add(id));
 });
+
+function fillRtcInputsFromPhone() {
+  const n = new Date();
+  document.getElementById("dtY").value = n.getFullYear();
+  document.getElementById("dtMo").value = n.getMonth() + 1;
+  document.getElementById("dtD").value = n.getDate();
+  document.getElementById("dtH").value = n.getHours();
+  document.getElementById("dtMi").value = n.getMinutes();
+  document.getElementById("dtS").value = n.getSeconds();
+  rtcDefaultsFilled = true;
+}
 
 function showMsg(txt, err = false) {
   const b = document.getElementById("msgBox");
@@ -277,6 +331,12 @@ function normalizeSettingsObj(src) {
       const n = Number(src.z2[i]);
       if (Number.isFinite(n)) out[k2] = Math.trunc(n);
     }
+  }
+  if (src.wifiSsid !== undefined && src.wifiSsid !== null) {
+    out.wifiSsid = String(src.wifiSsid);
+  }
+  if (src.wifiPass !== undefined && src.wifiPass !== null) {
+    out.wifiPass = String(src.wifiPass);
   }
   return out;
 }
@@ -356,6 +416,17 @@ async function fetchStatus() {
     document.getElementById("l1Val").innerText = Number(d.l1 ?? 0).toFixed(2) + " L";
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
     if (d.status) document.getElementById("modeChip").innerText = String(d.status);
+
+    const ssidDisp = d.staSsid || latestSettings.wifiSsid || "None";
+    const wBox = document.getElementById("wifiStatusBox");
+    const wChip = document.getElementById("wifiChip");
+    if (d.staIP && d.staIP !== "0.0.0.0") {
+      wBox.innerHTML = `Connected to <b>${ssidDisp}</b> · IP: <b>${d.staIP}</b>`;
+      wChip.innerText = "CONNECTED";
+    } else {
+      wBox.innerHTML = `Saved SSID: <b>${ssidDisp}</b> · Router: <b>Disconnected</b>`;
+      wChip.innerText = "STA";
+    }
 
     updatePill();
   } catch (e) {
@@ -452,6 +523,61 @@ async function saveBands() {
   await patchSettings(payload, "saveBandsBtn", "Moisture water targets saved!");
 }
 
+async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
+  await patchSettings({
+    rtcY: Math.max(2025, Math.min(2099, Math.trunc(y))),
+    rtcMo: Math.max(1, Math.min(12, Math.trunc(mo))),
+    rtcD: Math.max(1, Math.min(31, Math.trunc(d))),
+    rtcH: Math.max(0, Math.min(23, Math.trunc(h))),
+    rtcMi: Math.max(0, Math.min(59, Math.trunc(mi))),
+    rtcS: Math.max(0, Math.min(59, Math.trunc(s))),
+    setRtc: true
+  }, btnId, okText);
+}
+
+async function setManualRtc() {
+  const n = new Date();
+  await pushRtcTime(
+    readNumOrFallback("dtY", n.getFullYear()),
+    readNumOrFallback("dtMo", n.getMonth() + 1),
+    readNumOrFallback("dtD", n.getDate()),
+    readNumOrFallback("dtH", n.getHours()),
+    readNumOrFallback("dtMi", n.getMinutes()),
+    readNumOrFallback("dtS", n.getSeconds()),
+    "setRtcBtn",
+    "Date & Time sent to RTC!"
+  );
+}
+
+async function syncPhoneRtc() {
+  fillRtcInputsFromPhone();
+  const n = new Date();
+  await pushRtcTime(
+    n.getFullYear(),
+    n.getMonth() + 1,
+    n.getDate(),
+    n.getHours(),
+    n.getMinutes(),
+    n.getSeconds(),
+    "syncRtcBtn",
+    "RTC synced with phone clock!"
+  );
+}
+
+async function saveWifiCreds() {
+  const ssid = document.getElementById("wifiSsid").value.trim();
+  const pass = document.getElementById("wifiPass").value;
+  if (!ssid) {
+    showMsg("Enter Wi-Fi SSID first", true);
+    return;
+  }
+  await patchSettings({
+    wifiSsid: ssid,
+    wifiPass: pass
+  }, "saveWifiBtn", "Wi-Fi credentials saved!");
+}
+
+if (!rtcDefaultsFilled) fillRtcInputsFromPhone();
 setInterval(updatePill, 1000);
 setInterval(fetchStatus, 2500);
 setInterval(() => fetchSettings(false), 3000);
