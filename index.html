@@ -21,180 +21,164 @@
     --red:#ff5252;
     --text:#f8fafc;
     --sub:#94a3b8;
-    --rail-w:66px;
-  }
-  body.rail-expanded{
-    --rail-w:146px;
-  }
-  body.rail-collapsed{
-    --rail-w:38px;
+    --rail-base:46px;
   }
   *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
-  html{scroll-behavior:smooth}
   body{
     margin:0;
     background:radial-gradient(circle at 60% -10%,#11223d 0%,var(--bg) 58%);
     color:var(--text);
     min-height:100vh;
-    padding:12px 12px 24px calc(var(--rail-w) + 12px);
-    transition:padding-left .22s ease;
+    padding:10px 10px 24px calc(var(--rail-base) + 10px);
+    overflow-x:hidden;
+  }
+  .rail-backdrop{
+    position:fixed;inset:0;background:rgba(2,6,14,.55);
+    z-index:75;display:none;backdrop-filter:blur(2px);
+  }
+  body.rail-open .rail-backdrop{
+    display:block;
   }
   .side-rail{
-    position:fixed;top:0;left:0;bottom:0;width:var(--rail-w);
-    background:rgba(12,19,33,.97);border-right:1px solid var(--line);
-    z-index:80;padding:10px 6px;display:flex;flex-direction:column;
-    align-items:center;gap:6px;backdrop-filter:blur(8px);
-    transition:width .22s ease,padding .22s ease;
+    position:fixed;top:0;left:0;bottom:0;width:var(--rail-base);
+    background:rgba(11,18,32,.98);border-right:1px solid var(--line);
+    z-index:80;padding:8px 4px;display:flex;flex-direction:column;
+    align-items:center;gap:5px;transition:width .2s ease;
     overflow:hidden;
   }
-  body.rail-collapsed .side-rail{
-    padding:10px 3px;
+  body.rail-open .side-rail{
+    width:154px;align-items:stretch;padding:10px 8px;
+    box-shadow:8px 0 28px rgba(0,0,0,.55);
   }
   .rail-top{
     width:100%;display:flex;align-items:center;justify-content:center;
-    gap:6px;margin-bottom:2px;flex-shrink:0;
+    gap:7px;margin-bottom:2px;flex-shrink:0;
   }
-  body.rail-expanded .rail-top{
-    justify-content:space-between;padding:0 4px;
+  body.rail-open .rail-top{
+    justify-content:space-between;
   }
   .rail-logo{
-    width:44px;height:44px;border-radius:13px;
+    width:34px;height:34px;border-radius:10px;
     background:linear-gradient(145deg,#132947,#0b1322);
     border:1px solid rgba(0,229,255,.35);
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-  }
-  body.rail-collapsed .rail-logo{
-    width:30px;height:30px;border-radius:9px;
-  }
-  body.rail-collapsed .rail-logo svg{
-    width:17px;height:17px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
   .rail-brand-txt{
-    display:none;font-size:11.5px;font-weight:900;letter-spacing:.4px;
+    display:none;font-size:12px;font-weight:900;letter-spacing:.4px;
     color:#fff;white-space:nowrap;
   }
   .rail-brand-txt span{color:var(--cyan)}
-  body.rail-expanded .rail-brand-txt{
+  body.rail-open .rail-brand-txt{
     display:inline;
   }
   .rail-toggle{
-    width:100%;max-width:52px;height:28px;border-radius:9px;
+    width:34px;height:26px;border-radius:8px;
     background:var(--card2);border:1px solid var(--line);
     color:var(--cyan);display:flex;align-items:center;justify-content:center;
-    gap:4px;cursor:pointer;padding:0;flex-shrink:0;
-    transition:all .16s ease;
+    cursor:pointer;padding:0;flex-shrink:0;
   }
-  body.rail-expanded .rail-toggle{
-    width:auto;max-width:none;padding:0 8px;
-  }
-  body.rail-collapsed .rail-toggle{
-    width:30px;height:26px;border-radius:8px;
-  }
-  .rail-toggle:hover{
-    border-color:var(--cyan);background:#1b2c49;
+  body.rail-open .rail-toggle{
+    width:auto;padding:0 8px;gap:4px;
   }
   .rail-toggle span{
-    display:none;font-size:9.5px;font-weight:800;color:var(--sub);
+    display:none;font-size:10px;font-weight:800;color:var(--sub);
   }
-  body.rail-expanded .rail-toggle span{
+  body.rail-open .rail-toggle span{
     display:inline;
   }
   .rail-btn{
-    width:100%;max-width:52px;min-height:46px;padding:5px 2px;border-radius:12px;
+    width:36px;min-height:40px;padding:4px 0;border-radius:10px;
     background:transparent;border:1px solid transparent;
     color:var(--sub);display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:3px;
-    cursor:pointer;transition:all .16s ease;flex-shrink:0;
+    align-items:center;justify-content:center;gap:2px;
+    cursor:pointer;transition:all .15s ease;flex-shrink:0;
   }
-  body.rail-expanded .rail-btn{
-    max-width:none;flex-direction:row;justify-content:flex-start;
-    min-height:40px;padding:6px 10px;gap:9px;
-  }
-  body.rail-collapsed .rail-btn{
-    width:30px;min-height:38px;padding:4px 0;border-radius:9px;
+  body.rail-open .rail-btn{
+    width:100%;flex-direction:row;justify-content:flex-start;
+    min-height:38px;padding:6px 10px;gap:9px;
   }
   .rail-btn svg{
-    width:19px;height:19px;flex-shrink:0;
+    width:17px;height:17px;flex-shrink:0;
     color:var(--ico-col, var(--cyan));
-    filter:drop-shadow(0 0 4px rgba(0,0,0,.35));
-  }
-  body.rail-collapsed .rail-btn svg{
-    width:16px;height:16px;
   }
   .rail-btn span{
-    font-size:9px;font-weight:800;letter-spacing:.2px;line-height:1;
+    font-size:8px;font-weight:800;letter-spacing:.1px;line-height:1;
     white-space:nowrap;
   }
-  body.rail-expanded .rail-btn span{
-    font-size:11px;letter-spacing:.3px;
-  }
-  body.rail-collapsed .rail-btn span{
-    display:none;
+  body.rail-open .rail-btn span{
+    font-size:11.5px;
   }
   .rail-btn:hover{
-    background:var(--card2);color:var(--text);border-color:var(--line);
+    background:var(--card2);color:#fff;border-color:var(--line);
   }
   .rail-btn.active{
-    background:rgba(255,255,255,.06);
+    background:rgba(255,255,255,.07);
     color:#fff;
     border-color:var(--ico-col, var(--cyan));
-    box-shadow:inset 0 0 12px rgba(255,255,255,.05);
   }
-  .wrap{max-width:720px;margin:0 auto}
+  .wrap{max-width:720px;margin:0 auto;min-width:0}
   .appbar{
     display:flex;justify-content:space-between;align-items:center;gap:8px;
-    padding:12px 14px;background:var(--card);border-radius:16px;
+    padding:10px 12px;background:var(--card);border-radius:14px;
     border:1px solid var(--line);margin-bottom:10px;
   }
-  .brand{font-weight:900;font-size:16px;letter-spacing:.4px}
+  .brand{font-weight:900;font-size:15px;letter-spacing:.3px;white-space:nowrap}
   .brand span{color:var(--cyan)}
-  .sub{font-size:11.5px;color:var(--sub);margin-top:2px}
+  .sub{font-size:11px;color:var(--sub);margin-top:2px;white-space:nowrap}
   .pill{
-    padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;
+    padding:5px 10px;border-radius:999px;font-size:10.5px;font-weight:900;
     background:#2a0d12;color:var(--red);border:1px solid rgba(255,82,82,.4);
-    white-space:nowrap;
+    white-space:nowrap;flex-shrink:0;
   }
   .pill.on{background:#092533;color:var(--green);border-color:rgba(0,230,118,.35)}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .page-view{display:none;animation:fadeIn .16s ease}
+  .page-view.active{display:block}
+  @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+  .page-head{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:10px;padding:0 2px;
+  }
+  .page-head-title{font-size:13px;font-weight:900;letter-spacing:.4px;color:var(--cyan)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
   .card{
-    background:var(--card);border-radius:16px;padding:14px;
-    border:1px solid var(--line);margin-bottom:12px;scroll-margin-top:12px;
+    background:var(--card);border-radius:14px;padding:12px;
+    border:1px solid var(--line);margin-bottom:10px;
+    min-width:0;
   }
   .z1{border-top:3px solid var(--cyan)}
   .z2{border-top:3px solid var(--mag)}
-  .z-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800}
+  .z-head{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:11px;font-weight:800}
   .z1 .z-head{color:var(--cyan)}
   .z2 .z-head{color:var(--mag)}
   .chip{
-    font-size:10.5px;padding:2px 8px;border-radius:999px;
+    font-size:10px;padding:2px 7px;border-radius:999px;
     background:var(--card2);color:var(--sub);border:1px solid var(--line);
-    white-space:nowrap;
+    white-space:nowrap;flex-shrink:0;
   }
   .chip.run{color:var(--green);border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.08)}
   .chip.dry{color:var(--red);border-color:rgba(255,82,82,.4);background:rgba(255,82,82,.1)}
-  .val{font-size:28px;font-weight:900;margin:8px 0 6px}
+  .val{font-size:24px;font-weight:900;margin:6px 0}
   .meter{
-    height:9px;background:#09101d;border-radius:999px;overflow:hidden;
-    margin:4px 0 8px;border:1px solid #1b2a44;
+    height:8px;background:#09101d;border-radius:999px;overflow:hidden;
+    margin:4px 0 7px;border:1px solid #1b2a44;
   }
   .meter-fill{
     height:100%;width:0%;
     background:linear-gradient(90deg,#00c853,#00e676);
     transition:width .3s ease;
   }
-  .stat{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub)}
+  .stat{display:flex;justify-content:space-between;font-size:11.5px;color:var(--sub)}
   .stat b{color:#fff}
   .title{
-    font-size:13px;font-weight:800;color:var(--cyan);margin-bottom:10px;
-    display:flex;justify-content:space-between;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:800;color:var(--cyan);margin-bottom:8px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;
   }
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap}
-  label{font-size:12.5px;color:var(--sub)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:9px 0;flex-wrap:wrap}
+  label{font-size:12px;color:var(--sub)}
   input{
     background:#090f1b;border:1px solid #293954;color:#fff;
-    padding:7px 9px;border-radius:10px;font-size:13px;font-weight:700;
-    width:80px;text-align:center;
+    padding:6px 8px;border-radius:9px;font-size:12.5px;font-weight:700;
+    width:72px;text-align:center;
   }
   input:focus{outline:none;border-color:var(--cyan)}
   .input-wide{width:100%;text-align:left;padding:9px 11px}
@@ -202,14 +186,15 @@
     font-size:11.5px;color:var(--sub);background:#09101d;
     border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
   }
-  table{width:100%;border-collapse:collapse;font-size:12.5px}
-  th{color:var(--sub);font-weight:800;padding:6px 4px;border-bottom:1px solid var(--line)}
-  td{padding:6px 4px;text-align:center;border-bottom:1px solid #152136}
-  td:first-child{color:var(--sub);font-weight:700}
-  td input{width:84px;padding:6px 6px;font-size:12.5px}
+  .tbl-wrap{width:100%;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px;min-width:250px}
+  th{color:var(--sub);font-weight:800;padding:6px 3px;border-bottom:1px solid var(--line)}
+  td{padding:5px 3px;text-align:center;border-bottom:1px solid #152136}
+  td:first-child{color:var(--sub);font-weight:700;white-space:nowrap}
+  td input{width:100%;max-width:86px;padding:5px 4px;font-size:12px}
   button{
-    width:100%;padding:11px 12px;border:none;border-radius:12px;
-    font-weight:800;font-size:12.5px;cursor:pointer;
+    width:100%;padding:10px 12px;border:none;border-radius:11px;
+    font-weight:800;font-size:12px;cursor:pointer;
     transition:transform .08s ease,opacity .2s ease;
   }
   button:active:not(:disabled){transform:scale(.97)}
@@ -218,10 +203,10 @@
   .b-red{background:var(--red);color:#fff}
   .b-z1{background:#0284c7;color:#fff}
   .b-z2{background:#a21caf;color:#fff}
-  .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
-  .b-ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);margin-top:8px}
+  .b-cyan{background:var(--cyan);color:#04151c;margin-top:8px}
+  .b-ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);margin-top:7px}
   .msg{
-    text-align:center;font-size:12px;font-weight:700;min-height:20px;
+    text-align:center;font-size:12px;font-weight:700;min-height:18px;
     color:var(--green);margin-bottom:8px;padding:2px 6px;
   }
   .dbg{
@@ -231,10 +216,12 @@
 </style>
 </head>
 <body>
-<nav class="side-rail" id="sideRail" aria-label="Quick Section Rail">
+<div class="rail-backdrop" onclick="setRailOpen(false)"></div>
+
+<nav class="side-rail" id="sideRail" aria-label="Page Navigation Rail">
   <div class="rail-top">
     <div class="rail-logo" title="QUANTIX TECH">
-      <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
+      <svg viewBox="0 0 28 28" width="20" height="20" fill="none">
         <circle cx="14" cy="14" r="9.5" stroke="#00e5ff" stroke-width="2.2"/>
         <circle cx="14" cy="14" r="4" stroke="#00e676" stroke-width="1.8"/>
         <path d="M17.5 17.5L23.5 23.5" stroke="#ffab00" stroke-width="2.2" stroke-linecap="round"/>
@@ -243,51 +230,51 @@
     <span class="rail-brand-txt">QUAN<span>TIX</span></span>
   </div>
 
-  <button type="button" class="rail-toggle" id="railToggleBtn" onclick="cycleRailMode()" title="Collapse / Expand Menu">
-    <svg id="railToggleIcon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M15 18l-6-6 6-6"/>
+  <button type="button" class="rail-toggle" id="railToggleBtn" onclick="toggleRailOpen()" title="Expand / Collapse Menu">
+    <svg id="railToggleIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18l6-6-6-6"/>
     </svg>
-    <span id="railToggleLabel">Collapse</span>
+    <span id="railToggleLabel">Menu</span>
   </button>
 
-  <button type="button" class="rail-btn active" style="--ico-col:#00e5ff" data-target="topBar" onclick="goSection('topBar', this)" title="Zones">
+  <button type="button" class="rail-btn active" style="--ico-col:#00e5ff" data-page="pageZones" onclick="openPage('pageZones', this)" title="Zones Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
-      <path d="M12 2.8C12 2.8 5.5 10.1 5.5 14.6a6.5 6.5 0 0 0 13 0C18.5 10.1 12 2.8 12 2.8Z" fill="rgba(0,229,255,.16)"/>
+      <path d="M12 2.8C12 2.8 5.5 10.1 5.5 14.6a6.5 6.5 0 0 0 13 0C18.5 10.1 12 2.8 12 2.8Z" fill="rgba(0,229,255,.18)"/>
     </svg>
     <span>ZONES</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#00e676" data-target="secControl" onclick="goSection('secControl', this)" title="Control">
+  <button type="button" class="rail-btn" style="--ico-col:#00e676" data-page="pageControl" onclick="openPage('pageControl', this)" title="Control Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
-      <polygon points="6 4 20 12 6 20 6 4" fill="rgba(0,230,118,.18)"/>
+      <polygon points="6 4 20 12 6 20 6 4" fill="rgba(0,230,118,.2)"/>
     </svg>
     <span>CTRL</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#ffab00" data-target="secSchedule" onclick="goSection('secSchedule', this)" title="Schedule">
+  <button type="button" class="rail-btn" style="--ico-col:#ffab00" data-page="pageSchedule" onclick="openPage('pageSchedule', this)" title="Schedule Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
-      <circle cx="12" cy="12" r="8.5" fill="rgba(255,171,0,.14)"/>
+      <circle cx="12" cy="12" r="8.5" fill="rgba(255,171,0,.16)"/>
       <path d="M12 7.5V12l3 2" stroke-linecap="round"/>
     </svg>
     <span>SCH</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#e879f9" data-target="secBands" onclick="goSection('secBands', this)" title="Moisture ML">
+  <button type="button" class="rail-btn" style="--ico-col:#e879f9" data-page="pageBands" onclick="openPage('pageBands', this)" title="Moisture ML Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M4 18V11M10 18V7M16 18V13M22 18V4" stroke-linecap="round"/>
     </svg>
     <span>ML</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#2dd4bf" data-target="secRtc" onclick="goSection('secRtc', this)" title="RTC Clock">
+  <button type="button" class="rail-btn" style="--ico-col:#2dd4bf" data-page="pageRtc" onclick="openPage('pageRtc', this)" title="RTC Clock Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="rgba(45,212,191,.15)"/>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="rgba(45,212,191,.16)"/>
       <path d="M3.5 9.5H20.5M8 3v4M16 3v4" stroke-linecap="round"/>
     </svg>
     <span>RTC</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#38bdf8" data-target="secWifi" onclick="goSection('secWifi', this)" title="Router Wi-Fi">
+  <button type="button" class="rail-btn" style="--ico-col:#38bdf8" data-page="pageWifi" onclick="openPage('pageWifi', this)" title="Router Wi-Fi Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
       <path d="M3.5 9.5a12.5 12.5 0 0 1 17 0M7 13a7.5 7.5 0 0 1 10 0M10.5 16.5a2.5 2.5 0 0 1 3 0" stroke-linecap="round"/>
       <circle cx="12" cy="19.5" r="1.4" fill="currentColor" stroke="none"/>
@@ -295,7 +282,7 @@
     <span>WIFI</span>
   </button>
 
-  <button type="button" class="rail-btn" style="--ico-col:#fb7185" data-target="dbgBox" onclick="goSection('dbgBox', this)" title="Diagnostics">
+  <button type="button" class="rail-btn" style="--ico-col:#fb7185" data-page="pageLog" onclick="openPage('pageLog', this)" title="Diagnostics Page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
       <path d="M3 12h4l2.5-6 5 12 2.5-6H21" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -314,114 +301,168 @@
 
   <div class="msg" id="msgBox"></div>
 
-  <div class="grid2">
-    <div class="card z1" style="margin:0">
-      <div class="z-head"><span>ZONE 1 MOISTURE</span><span class="chip" id="band1">--</span></div>
-      <div class="val" id="m1Val">--%</div>
-      <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
-      <div class="stat"><span>Total Used</span><b id="l1Val">0.00 L</b></div>
+  <!-- PAGE 1: ZONES -->
+  <section class="page-view active" id="pageZones">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#00e5ff">ZONES MONITOR</span>
+      <span class="chip" id="zonePageChip">LIVE</span>
     </div>
-    <div class="card z2" style="margin:0">
-      <div class="z-head"><span>ZONE 2 MOISTURE</span><span class="chip" id="band2">--</span></div>
-      <div class="val" id="m2Val">--%</div>
-      <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
-      <div class="stat"><span>Total Used</span><b id="l2Val">0.00 L</b></div>
-    </div>
-  </div>
-
-  <div class="card" id="secControl" style="margin-top:12px">
-    <div class="title"><span>Quick Control</span><span class="chip" id="modeChip">IDLE</span></div>
-    <div class="grid2" style="margin:0">
-      <button class="b-green cmd-btn" onclick="sendCmd('start')">START BOTH</button>
-      <button class="b-red cmd-btn" onclick="sendCmd('stop')">STOP ALL</button>
-    </div>
-    <div class="grid2" style="margin-top:8px;margin-bottom:0">
-      <button class="b-z1 cmd-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
-      <button class="b-z2 cmd-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
-    </div>
-    <button class="b-ghost cmd-btn" onclick="sendCmd('resetL')">Reset Total Litres</button>
-  </div>
-
-  <div class="card" id="secSchedule">
-    <div class="title"><span>Daily Schedule &amp; Flow Cal</span><span class="chip" id="savedSchedChip">Sch: --:--</span></div>
-    <div class="row">
-      <label>Morning Sch 1 (HH:MM)</label>
-      <div>
-        <input id="s1h" type="number" min="0" max="23" style="width:58px"> :
-        <input id="s1m" type="number" min="0" max="59" style="width:58px">
+    <div class="grid2">
+      <div class="card z1" style="margin:0">
+        <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+        <div class="val" id="m1Val">--%</div>
+        <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
+        <div class="stat"><span>Used</span><b id="l1Val">0.00 L</b></div>
+      </div>
+      <div class="card z2" style="margin:0">
+        <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+        <div class="val" id="m2Val">--%</div>
+        <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
+        <div class="stat"><span>Used</span><b id="l2Val">0.00 L</b></div>
       </div>
     </div>
-    <div class="row">
-      <label>Evening Sch 2 (HH:MM)</label>
-      <div>
-        <input id="s2h" type="number" min="0" max="23" style="width:58px"> :
-        <input id="s2m" type="number" min="0" max="59" style="width:58px">
-      </div>
-    </div>
-    <div class="row">
-      <label>Flow Cal Z1 / Z2</label>
-      <div>
-        <input id="c1" type="number" step="0.1" style="width:68px">
-        <input id="c2" type="number" step="0.1" style="width:68px">
-      </div>
-    </div>
-    <button class="b-cyan" id="saveSchedBtn" onclick="saveSchedule()">Save Schedule &amp; Cal</button>
-  </div>
+  </section>
 
-  <div class="card" id="secBands">
-    <div class="title"><span>Moisture Band Water Target (ml)</span><span class="chip">0-100%</span></div>
-    <table>
-      <thead>
-        <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" min="0" max="100000" step="100"></td><td><input id="z2_0" type="number" min="0" max="100000" step="100"></td></tr>
-        <tr><td>20 - 39%</td><td><input id="z1_1" type="number" min="0" max="100000" step="100"></td><td><input id="z2_1" type="number" min="0" max="100000" step="100"></td></tr>
-        <tr><td>40 - 59%</td><td><input id="z1_2" type="number" min="0" max="100000" step="100"></td><td><input id="z2_2" type="number" min="0" max="100000" step="100"></td></tr>
-        <tr><td>60 - 79%</td><td><input id="z1_3" type="number" min="0" max="100000" step="100"></td><td><input id="z2_3" type="number" min="0" max="100000" step="100"></td></tr>
-        <tr><td>80 - 100%</td><td><input id="z1_4" type="number" min="0" max="100000" step="100"></td><td><input id="z2_4" type="number" min="0" max="100000" step="100"></td></tr>
-      </tbody>
-    </table>
-    <button class="b-cyan" id="saveBandsBtn" onclick="saveBands()">Save Water Targets</button>
-  </div>
-
-  <div class="card" id="secRtc">
-    <div class="title"><span>RTC Clock &amp; Date Sync</span><span class="chip">DS3231</span></div>
-    <div class="row">
-      <label>Date (Y-M-D)</label>
-      <div>
-        <input id="dtY" type="number" min="2025" max="2099" style="width:66px"> -
-        <input id="dtMo" type="number" min="1" max="12" style="width:48px"> -
-        <input id="dtD" type="number" min="1" max="31" style="width:48px">
+  <!-- PAGE 2: CONTROL -->
+  <section class="page-view" id="pageControl">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#00e676">QUICK CONTROL</span>
+      <span class="chip" id="modeChip">IDLE</span>
+    </div>
+    <div class="card" id="secControl">
+      <div class="title"><span>Manual &amp; Counter Control</span></div>
+      <div class="grid2" style="margin:0">
+        <button class="b-green cmd-btn" onclick="sendCmd('start')">START BOTH</button>
+        <button class="b-red cmd-btn" onclick="sendCmd('stop')">STOP ALL</button>
       </div>
-    </div>
-    <div class="row">
-      <label>Time (H:M:S)</label>
-      <div>
-        <input id="dtH" type="number" min="0" max="23" style="width:48px"> :
-        <input id="dtMi" type="number" min="0" max="59" style="width:48px"> :
-        <input id="dtS" type="number" min="0" max="59" style="width:48px">
+      <div class="grid2" style="margin-top:8px;margin-bottom:0">
+        <button class="b-z1 cmd-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
+        <button class="b-z2 cmd-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
       </div>
+      <button class="b-ghost cmd-btn" onclick="sendCmd('resetL')">Reset Total Litres</button>
     </div>
-    <button class="b-cyan" id="setRtcBtn" onclick="setManualRtc()">Set Date &amp; Time</button>
-    <button class="b-ghost" id="syncRtcBtn" onclick="syncPhoneRtc()">Sync RTC with Phone Clock</button>
-  </div>
+  </section>
 
-  <div class="card" id="secWifi">
-    <div class="title"><span>Router Wi-Fi Setup</span><span class="chip" id="wifiChip">STA</span></div>
-    <div class="wifi-status" id="wifiStatusBox">Router: Checking...</div>
-    <div style="margin-bottom:8px">
-      <label>Router Wi-Fi SSID</label>
-      <input id="wifiSsid" class="input-wide" type="text" placeholder="Enter Wi-Fi Name">
+  <!-- PAGE 3: SCHEDULE & FLOW CAL -->
+  <section class="page-view" id="pageSchedule">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#ffab00">SCHEDULE &amp; FLOW CAL</span>
+      <span class="chip" id="savedSchedChip">Sch: --:--</span>
     </div>
-    <div>
-      <label>Router Wi-Fi Password</label>
-      <input id="wifiPass" class="input-wide" type="password" placeholder="Enter Wi-Fi Password">
+    <div class="card" id="secSchedule">
+      <div class="title"><span>Daily Schedule &amp; Flow Cal</span></div>
+      <div class="row">
+        <label>Morning Sch 1 (HH:MM)</label>
+        <div>
+          <input id="s1h" type="number" min="0" max="23" style="width:54px"> :
+          <input id="s1m" type="number" min="0" max="59" style="width:54px">
+        </div>
+      </div>
+      <div class="row">
+        <label>Evening Sch 2 (HH:MM)</label>
+        <div>
+          <input id="s2h" type="number" min="0" max="23" style="width:54px"> :
+          <input id="s2m" type="number" min="0" max="59" style="width:54px">
+        </div>
+      </div>
+      <div class="row">
+        <label>Flow Cal Z1 / Z2</label>
+        <div>
+          <input id="c1" type="number" step="0.1" style="width:62px">
+          <input id="c2" type="number" step="0.1" style="width:62px">
+        </div>
+      </div>
+      <button class="b-cyan" id="saveSchedBtn" onclick="saveSchedule()">Save Schedule &amp; Cal</button>
     </div>
-    <button class="b-cyan" id="saveWifiBtn" onclick="saveWifiCreds()">Save &amp; Connect Wi-Fi</button>
-  </div>
+  </section>
 
-  <div class="dbg" id="dbgBox">Diag: ready</div>
+  <!-- PAGE 4: MOISTURE BAND TARGETS -->
+  <section class="page-view" id="pageBands">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#e879f9">MOISTURE BAND TARGETS</span>
+      <span class="chip">0-100%</span>
+    </div>
+    <div class="card" id="secBands">
+      <div class="title"><span>Moisture Band Water Target (ml)</span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" min="0" max="100000" step="100"></td><td><input id="z2_0" type="number" min="0" max="100000" step="100"></td></tr>
+            <tr><td>20 - 39%</td><td><input id="z1_1" type="number" min="0" max="100000" step="100"></td><td><input id="z2_1" type="number" min="0" max="100000" step="100"></td></tr>
+            <tr><td>40 - 59%</td><td><input id="z1_2" type="number" min="0" max="100000" step="100"></td><td><input id="z2_2" type="number" min="0" max="100000" step="100"></td></tr>
+            <tr><td>60 - 79%</td><td><input id="z1_3" type="number" min="0" max="100000" step="100"></td><td><input id="z2_3" type="number" min="0" max="100000" step="100"></td></tr>
+            <tr><td>80 - 100%</td><td><input id="z1_4" type="number" min="0" max="100000" step="100"></td><td><input id="z2_4" type="number" min="0" max="100000" step="100"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="b-cyan" id="saveBandsBtn" onclick="saveBands()">Save Water Targets</button>
+    </div>
+  </section>
+
+  <!-- PAGE 5: RTC CLOCK -->
+  <section class="page-view" id="pageRtc">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#2dd4bf">RTC CLOCK &amp; DATE</span>
+      <span class="chip">DS3231</span>
+    </div>
+    <div class="card" id="secRtc">
+      <div class="title"><span>RTC Clock &amp; Date Sync</span></div>
+      <div class="row">
+        <label>Date (Y-M-D)</label>
+        <div>
+          <input id="dtY" type="number" min="2025" max="2099" style="width:62px"> -
+          <input id="dtMo" type="number" min="1" max="12" style="width:46px"> -
+          <input id="dtD" type="number" min="1" max="31" style="width:46px">
+        </div>
+      </div>
+      <div class="row">
+        <label>Time (H:M:S)</label>
+        <div>
+          <input id="dtH" type="number" min="0" max="23" style="width:46px"> :
+          <input id="dtMi" type="number" min="0" max="59" style="width:46px"> :
+          <input id="dtS" type="number" min="0" max="59" style="width:46px">
+        </div>
+      </div>
+      <button class="b-cyan" id="setRtcBtn" onclick="setManualRtc()">Set Date &amp; Time</button>
+      <button class="b-ghost" id="syncRtcBtn" onclick="syncPhoneRtc()">Sync RTC with Phone Clock</button>
+    </div>
+  </section>
+
+  <!-- PAGE 6: ROUTER WI-FI -->
+  <section class="page-view" id="pageWifi">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#38bdf8">ROUTER WI-FI</span>
+      <span class="chip" id="wifiChip">STA</span>
+    </div>
+    <div class="card" id="secWifi">
+      <div class="title"><span>Router Wi-Fi Setup</span></div>
+      <div class="wifi-status" id="wifiStatusBox">Router: Checking...</div>
+      <div style="margin-bottom:8px">
+        <label>Router Wi-Fi SSID</label>
+        <input id="wifiSsid" class="input-wide" type="text" placeholder="Enter Wi-Fi Name">
+      </div>
+      <div>
+        <label>Router Wi-Fi Password</label>
+        <input id="wifiPass" class="input-wide" type="password" placeholder="Enter Wi-Fi Password">
+      </div>
+      <button class="b-cyan" id="saveWifiBtn" onclick="saveWifiCreds()">Save &amp; Connect Wi-Fi</button>
+    </div>
+  </section>
+
+  <!-- PAGE 7: DIAGNOSTICS LOG -->
+  <section class="page-view" id="pageLog">
+    <div class="page-head">
+      <span class="page-head-title" style="color:#fb7185">DIAGNOSTICS LOG</span>
+      <span class="chip">RTDB</span>
+    </div>
+    <div class="card">
+      <div class="title"><span>System Diagnostics</span></div>
+      <div class="dbg" id="dbgBox">Diag: ready</div>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -440,7 +481,8 @@ let justSavedUntil = 0;
 let lastSettingsSig = "";
 let rtcDefaultsFilled = false;
 let msgTimer = null;
-let railMode = "compact"; // "compact" -> "expanded" -> "collapsed"
+let railOpen = false;
+let activePageId = "pageZones";
 let latestSettings = {
   s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
   z1_0: 1000, z1_1: 500, z1_2: 0, z1_3: 0, z1_4: 0,
@@ -449,36 +491,39 @@ let latestSettings = {
 };
 const editing = new Set();
 
-function applyRailMode(mode) {
-  railMode = mode;
-  document.body.classList.remove("rail-expanded", "rail-collapsed");
+function setRailOpen(open) {
+  railOpen = Boolean(open);
+  document.body.classList.toggle("rail-open", railOpen);
   const icon = document.getElementById("railToggleIcon");
   const lbl = document.getElementById("railToggleLabel");
-  if (mode === "expanded") {
-    document.body.classList.add("rail-expanded");
+  if (railOpen) {
     icon.innerHTML = '<path d="M15 18l-6-6 6-6"/>';
-    lbl.innerText = "Mini";
-  } else if (mode === "collapsed") {
-    document.body.classList.add("rail-collapsed");
-    icon.innerHTML = '<path d="M9 18l6-6-6-6"/>';
-    lbl.innerText = "Expand";
+    lbl.innerText = "Close";
   } else {
     icon.innerHTML = '<path d="M9 18l6-6-6-6"/>';
-    lbl.innerText = "Expand";
+    lbl.innerText = "Menu";
   }
 }
 
-function cycleRailMode() {
-  if (railMode === "compact") applyRailMode("expanded");
-  else if (railMode === "expanded") applyRailMode("collapsed");
-  else applyRailMode("compact");
+function toggleRailOpen() {
+  setRailOpen(!railOpen);
 }
 
-function goSection(id, btn) {
+function openPage(pageId, btn) {
+  activePageId = pageId;
+  document.querySelectorAll(".page-view").forEach(p => p.classList.remove("active"));
+  const view = document.getElementById(pageId);
+  if (view) view.classList.add("active");
+
   document.querySelectorAll(".rail-btn").forEach(b => b.classList.remove("active"));
-  if (btn) btn.classList.add("active");
-  const target = document.getElementById(id);
-  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (btn) {
+    btn.classList.add("active");
+  } else {
+    const matchBtn = document.querySelector(`.rail-btn[data-page="${pageId}"]`);
+    if (matchBtn) matchBtn.classList.add("active");
+  }
+  setRailOpen(false);
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 ALL_INPUT_IDS.forEach(id => {
