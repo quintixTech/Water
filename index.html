@@ -624,7 +624,7 @@ async function saveBands() {
 }
 
 async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
-  await patchSettings({
+  const rtcPayload = {
     rtcY: Math.max(2025, Math.min(2099, Math.trunc(y))),
     rtcMo: Math.max(1, Math.min(12, Math.trunc(mo))),
     rtcD: Math.max(1, Math.min(31, Math.trunc(d))),
@@ -632,7 +632,10 @@ async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
     rtcMi: Math.max(0, Math.min(59, Math.trunc(mi))),
     rtcS: Math.max(0, Math.min(59, Math.trunc(s))),
     setRtc: true
-  }, btnId, okText);
+  };
+  await patchSettings(rtcPayload, btnId, okText);
+  const p2 = n => String(n).padStart(2, "0");
+  setDiag(`RTC pushed -> ${rtcPayload.rtcY}-${p2(rtcPayload.rtcMo)}-${p2(rtcPayload.rtcD)} ${p2(rtcPayload.rtcH)}:${p2(rtcPayload.rtcMi)}:${p2(rtcPayload.rtcS)} (setRtc=true)`);
 }
 
 async function setManualRtc() {
