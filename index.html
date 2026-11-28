@@ -1118,6 +1118,7 @@ const STORAGE_KEYS = {
 };
 
 let lastSettingsWriteAt = 0;
+let lastAppliedSettingsSig = "";
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
 let lastPayloadSig = "";
@@ -2424,11 +2425,13 @@ async function fetchJsonSafe(url, options = {}, retries = 2) {
 async function patchSettings(fields) {
   lastSettingsWriteAt = Date.now();
   const payload = { ...fields, updatedAt: lastSettingsWriteAt };
-  return fetchJsonSafe(`${DB_URL}/settings.json`, {
+  const res = await fetchJsonSafe(`${DB_URL}/settings.json`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   }, 2);
+  lastAppliedSettingsSig = "";
+  return res;
 }
 
 async function sendCmd(cmd) {
@@ -2559,8 +2562,21 @@ function initRtcInputs() {
   if (canAutoFill("rtcS")) document.getElementById("rtcS").value = now.getSeconds();
 }
 
+function computeSettingsSig(s) {
+  const z1 = [0, 1, 2, 3, 4].map(i => s["z1_" + i] ?? "").join(",");
+  const z2 = [0, 1, 2, 3, 4].map(i => s["z2_" + i] ?? "").join(",");
+  const coord = s.controllerCoord ? `${s.controllerCoord.lat ?? ""},${s.controllerCoord.lon ?? ""},${s.controllerCoord.updatedAt ?? ""}` : "";
+  return [
+    s.s1h ?? "", s.s1m ?? "", s.s2h ?? "", s.s2m ?? "",
+    s.c1 ?? "", s.c2 ?? "", s.wifiSsid ?? "", z1, z2, coord, s.updatedAt ?? ""
+  ].join("|");
+}
+
 function populateInputsFromSettings(s) {
   if (!s || isSettingsWriteCoolingDown()) return;
+  const sig = computeSettingsSig(s);
+  if (sig === lastAppliedSettingsSig && dirtyInputs.size === 0) return;
+
   if (s.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = s.s1h;
   if (s.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = s.s1m;
   if (s.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = s.s2h;
@@ -2586,26 +2602,7 @@ function populateInputsFromSettings(s) {
       renderSavedCoordSummary();
     }
   }
-  refreshInsightsGraphs();
-}
-
-function populateInputsFromStatus(d) {
-  if (!d || isSettingsWriteCoolingDown()) return;
-  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
-  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
-  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
-  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
-  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
-  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
-  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
-  for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
-      document.getElementById("z1_" + i).value = d.z1[i];
-    }
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
-      document.getElementById("z2_" + i).value = d.z2[i];
-    }
-  }
+  lastAppliedSettingsSig = sig;
   refreshInsightsGraphs();
 }
 
@@ -2628,7 +2625,7 @@ function renderBanner(st, dryAlert, watering, espAlive) {
   } else if (watering || st === "RUN" || runStartedAt > 0) {
     const dur = runStartedAt ? formatClock(Date.now() - runStartedAt) : "00:00";
     box.className = "banner run";
-    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${dur}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
+    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${dur}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>";
   } else {
     if (runStartedAt > 0 && Date.now() >= runGraceUntil) {
       stopRunSession("Stopped");
@@ -2720,7 +2717,6 @@ async function fetchStatus() {
     document.getElementById("curSsid").innerText = d.staSsid || "Not set";
     document.getElementById("curIp").innerText = d.staIP || "--";
 
-    populateInputsFromStatus(d);
     if (isEspAliveNow()) {
       recordInsightPoint(m1, m2, l1, l2, latestWeatherData);
     }
