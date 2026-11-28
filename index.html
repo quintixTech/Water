@@ -2708,12 +2708,9 @@ function canAutoFill(inputId, incomingVal = null) {
 
   const holdUntil = recentSavedUntil.get(inputId) || 0;
   if (Date.now() < holdUntil) {
-    if (incomingVal !== null && incomingVal !== undefined && String(el.value) === String(incomingVal)) {
-      recentSavedUntil.delete(inputId);
-      return true;
-    }
     return false;
   }
+  recentSavedUntil.delete(inputId);
   return true;
 }
 
@@ -3338,11 +3335,15 @@ async function fetchJsonSafe(url, options = {}, retries = 2) {
 
 async function patchSettings(fields) {
   const payload = { ...fields, updatedAt: Date.now() };
-  return fetchJsonSafe(`${DB_URL}/settings.json`, {
+  const updated = await fetchJsonSafe(`${DB_URL}/settings.json`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   }, 2);
+  if (updated && typeof updated === "object") {
+    populateInputsFromSettings(updated);
+  }
+  return updated;
 }
 
 async function sendCmd(cmd) {
@@ -3517,23 +3518,9 @@ function populateInputsFromSettings(s) {
 }
 
 function populateInputsFromStatus(d) {
+  // Intentionally kept non-destructive: user-editable settings & targets are read from /settings.json only
+  // so stale /status.json snapshots never overwrite recently entered values.
   if (!d) return;
-  if (d.s1h !== undefined && canAutoFill("s1h", d.s1h)) document.getElementById("s1h").value = d.s1h;
-  if (d.s1m !== undefined && canAutoFill("s1m", d.s1m)) document.getElementById("s1m").value = d.s1m;
-  if (d.s2h !== undefined && canAutoFill("s2h", d.s2h)) document.getElementById("s2h").value = d.s2h;
-  if (d.s2m !== undefined && canAutoFill("s2m", d.s2m)) document.getElementById("s2m").value = d.s2m;
-  if (d.c1 !== undefined && canAutoFill("c1", d.c1)) document.getElementById("c1").value = d.c1;
-  if (d.c2 !== undefined && canAutoFill("c2", d.c2)) document.getElementById("c2").value = d.c2;
-  if (d.staSsid && canAutoFill("wifiSsid", d.staSsid)) document.getElementById("wifiSsid").value = d.staSsid;
-  for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i, d.z1[i])) {
-      document.getElementById("z1_" + i).value = d.z1[i];
-    }
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i, d.z2[i])) {
-      document.getElementById("z2_" + i).value = d.z2[i];
-    }
-  }
-  refreshInsightsGraphs();
 }
 
 async function fetchSettingsOnce() {
