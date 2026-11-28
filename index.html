@@ -1059,7 +1059,7 @@
         <div class="card rig-card">
           <div class="sec-title"><span>Pump &amp; Valves Live Status</span><span class="chip" id="homeRigMode">STANDBY</span></div>
           <div class="ctrl-timer-box" style="margin-bottom:8px">
-            <span>Manual Run Timer:</span>
+            <span>Run Timer:</span>
             <b class="home-manual-timer-val">00:00 (Idle)</b>
           </div>
           <div class="rig-grid">
@@ -1201,7 +1201,7 @@
         <div class="card rig-card">
           <div class="sec-title"><span>Pump &amp; Solenoid Valves</span><span class="chip" id="ctrlRigMode">STANDBY</span></div>
           <div class="ctrl-timer-box">
-            <span>Manual Run Timer:</span>
+            <span>Run Timer:</span>
             <b id="ctrlManualTimer">00:00 (Idle)</b>
           </div>
 
@@ -1530,25 +1530,49 @@ function formatDurationClock(ms) {
   return hrs > 0 ? `${p(hrs)}:${p(mins)}:${p(secs)}` : `${p(mins)}:${p(secs)}`;
 }
 
-function playSingleWarningBeep() {
+function unlockAudioContext() {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return;
-    if (!audioCtx) audioCtx = new Ctx();
+    if (!Ctx) return null;
+    if (!audioCtx) {
+      audioCtx = new Ctx();
+    }
     if (audioCtx.state === "suspended") {
       audioCtx.resume().catch(() => {});
     }
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = "square";
-    osc.frequency.setValueAtTime(920, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+    return audioCtx;
+  } catch (e) {
+    return null;
+  }
+}
+
+function playSingleWarningBeep() {
+  try {
+    const ctx = unlockAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(1046, now + 0.14);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.28, now + 0.02);
+    gain.gain.setValueAtTime(0.28, now + 0.13);
+    gain.gain.linearRampToValueAtTime(0.24, now + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.30);
+
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.19);
-  } catch (e) {}
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.31);
+  } catch (e) {
+    console.warn("Beep playback failed:", e);
+  }
 }
 
 function startManualWarningBeepLoop() {
@@ -1560,7 +1584,7 @@ function startManualWarningBeepLoop() {
       return;
     }
     playSingleWarningBeep();
-  }, 1400);
+  }, 1500);
 }
 
 function stopManualWarningBeepLoop() {
@@ -1593,7 +1617,7 @@ function triggerBackgroundRunNotification(mode) {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
   try {
     new Notification("Quantix Tech Irrigation", {
-      body: `Manual run active (${String(mode || "RUN").toUpperCase()}). Tap Stop when done.`,
+      body: `Irrigation run active (${String(mode || "RUN").toUpperCase()}). Tap Stop when done.`,
       tag: "quantix-manual-run",
       renotify: true
     });
@@ -1619,6 +1643,27 @@ function updateManualTimerUi() {
   if (liveEl) liveEl.innerText = elapsedStr;
   homeTimers.forEach(el => { el.innerText = `${elapsedStr} (${modeLabel})`; });
   updatePumpAndValvesVisual();
+}
+
+function syncTimerWithHardwareRun(isRunningNow, modeHint = "auto") {
+  if (isRunningNow) {
+    if (!manualRunStartedAt) {
+      manualRunStartedAt = Date.now();
+      manualRunMode = modeHint || "auto";
+      saveManualSessionToStorage();
+      if (!manualTimerInterval) {
+        manualTimerInterval = setInterval(updateManualTimerUi, 500);
+      }
+      if (!beepLoopInterval) {
+        startManualWarningBeepLoop();
+      }
+    }
+    updateManualTimerUi();
+  } else {
+    if (manualRunStartedAt > 0) {
+      stopManualSession("Stopped");
+    }
+  }
 }
 
 function getActivePumpAndValvesState() {
@@ -1730,14 +1775,7 @@ function updatePumpAndValvesVisual() {
 
 function ensureAudioRunningForBackground() {
   if (!manualRunStartedAt) return;
-  try {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return;
-    if (!audioCtx) audioCtx = new Ctx();
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume().catch(() => {});
-    }
-  } catch (e) {}
+  unlockAudioContext();
   if (!beepLoopInterval) {
     startManualWarningBeepLoop();
   }
@@ -1748,6 +1786,7 @@ function ensureAudioRunningForBackground() {
 }
 
 function startManualSession(cmd) {
+  unlockAudioContext();
   manualRunStartedAt = Date.now();
   manualRunMode = cmd;
   saveManualSessionToStorage();
@@ -3448,6 +3487,13 @@ function updateEspLinkState() {
     badge.className = "status-pill";
     badge.innerText = st === "RDY" ? "ONLINE" : st;
     badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
+    const stUpper = String(st).toUpperCase();
+    const isDryNow = Boolean(latestStatusData && latestStatusData.dryAlert) || stUpper === "DRY!";
+    const isRunningNow = !isDryNow && (Boolean(latestStatusData && latestStatusData.watering) || stUpper === "RUN");
+    const detectedMode = (latestStatusData && latestStatusData.activeZone)
+      ? String(latestStatusData.activeZone).toLowerCase()
+      : (manualRunMode || "auto");
+    syncTimerWithHardwareRun(isRunningNow, detectedMode);
     renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
   } else {
     setControlsEnabled(false);
@@ -3456,6 +3502,7 @@ function updateEspLinkState() {
     badge.innerText = "OFFLINE";
     syncTag.innerText = "ESP Offline";
     cachedGeo = null;
+    syncTimerWithHardwareRun(false);
     renderBanner("OFFLINE", false, false, false);
     renderWeatherNotFound("📍 Controller offline");
     refreshInsightsGraphs();
@@ -3518,6 +3565,13 @@ async function fetchStatus() {
     updateEspLinkState();
   }
 }
+
+document.addEventListener("pointerdown", () => {
+  unlockAudioContext();
+  if (manualRunStartedAt && !beepLoopInterval) {
+    startManualWarningBeepLoop();
+  }
+}, { passive: true });
 
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeInfoModal();
