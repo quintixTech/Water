@@ -135,10 +135,21 @@
   .page-view.active{display:block}
   @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
   .page-head{
-    display:flex;justify-content:space-between;align-items:center;
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
     margin-bottom:10px;padding:0 2px;
   }
   .page-head-title{font-size:13px;font-weight:900;letter-spacing:.4px;color:var(--cyan)}
+  .page-head-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .lock-btn{
+    width:auto;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:800;
+    display:inline-flex;align-items:center;gap:4px;
+    background:rgba(255,171,0,.14);color:var(--amber);
+    border:1px solid rgba(255,171,0,.45);
+  }
+  .lock-btn.unlocked{
+    background:rgba(0,230,118,.14);color:var(--green);
+    border:1px solid rgba(0,230,118,.45);
+  }
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
   .card{
     background:var(--card);border-radius:14px;padding:12px;
@@ -178,9 +189,12 @@
   input{
     background:#090f1b;border:1px solid #293954;color:#fff;
     padding:6px 8px;border-radius:9px;font-size:12.5px;font-weight:700;
-    width:72px;text-align:center;
+    width:72px;text-align:center;transition:opacity .15s ease,border-color .15s ease;
   }
   input:focus{outline:none;border-color:var(--cyan)}
+  input:disabled{
+    opacity:.48;background:#070b14;border-color:#192438;color:#94a3b8;cursor:not-allowed;
+  }
   .input-wide{width:100%;text-align:left;padding:9px 11px}
   .wifi-status{
     font-size:11.5px;color:var(--sub);background:#09101d;
@@ -347,32 +361,35 @@
   <section class="page-view" id="pageSchedule">
     <div class="page-head">
       <span class="page-head-title" style="color:#ffab00">SCHEDULE &amp; FLOW CAL</span>
-      <span class="chip" id="savedSchedChip">Sch: --:--</span>
+      <div class="page-head-right">
+        <span class="chip" id="savedSchedChip">Sch: --:--</span>
+        <button type="button" class="lock-btn" id="lockBtnSchedule" onclick="togglePageLock('schedule')">LOCKED</button>
+      </div>
     </div>
     <div class="card" id="secSchedule">
       <div class="title"><span>Daily Schedule &amp; Flow Cal</span></div>
       <div class="row">
         <label>Morning Sch 1 (HH:MM)</label>
         <div>
-          <input id="s1h" type="number" min="0" max="23" style="width:54px"> :
-          <input id="s1m" type="number" min="0" max="59" style="width:54px">
+          <input id="s1h" class="lockable-schedule" type="number" min="0" max="23" style="width:54px" disabled> :
+          <input id="s1m" class="lockable-schedule" type="number" min="0" max="59" style="width:54px" disabled>
         </div>
       </div>
       <div class="row">
         <label>Evening Sch 2 (HH:MM)</label>
         <div>
-          <input id="s2h" type="number" min="0" max="23" style="width:54px"> :
-          <input id="s2m" type="number" min="0" max="59" style="width:54px">
+          <input id="s2h" class="lockable-schedule" type="number" min="0" max="23" style="width:54px" disabled> :
+          <input id="s2m" class="lockable-schedule" type="number" min="0" max="59" style="width:54px" disabled>
         </div>
       </div>
       <div class="row">
         <label>Flow Cal Z1 / Z2</label>
         <div>
-          <input id="c1" type="number" step="0.1" style="width:62px">
-          <input id="c2" type="number" step="0.1" style="width:62px">
+          <input id="c1" class="lockable-schedule" type="number" step="0.1" style="width:62px" disabled>
+          <input id="c2" class="lockable-schedule" type="number" step="0.1" style="width:62px" disabled>
         </div>
       </div>
-      <button class="b-cyan" id="saveSchedBtn" onclick="saveSchedule()">Save Schedule &amp; Cal</button>
+      <button class="b-cyan lockable-schedule" id="saveSchedBtn" onclick="saveSchedule()" disabled>Save Schedule &amp; Cal</button>
     </div>
   </section>
 
@@ -380,7 +397,10 @@
   <section class="page-view" id="pageBands">
     <div class="page-head">
       <span class="page-head-title" style="color:#e879f9">MOISTURE BAND TARGETS</span>
-      <span class="chip">0-100%</span>
+      <div class="page-head-right">
+        <span class="chip">0-100%</span>
+        <button type="button" class="lock-btn" id="lockBtnBands" onclick="togglePageLock('bands')">LOCKED</button>
+      </div>
     </div>
     <div class="card" id="secBands">
       <div class="title"><span>Moisture Band Water Target (ml)</span></div>
@@ -390,15 +410,15 @@
             <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
           </thead>
           <tbody>
-            <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" min="0" max="100000" step="100"></td><td><input id="z2_0" type="number" min="0" max="100000" step="100"></td></tr>
-            <tr><td>20 - 39%</td><td><input id="z1_1" type="number" min="0" max="100000" step="100"></td><td><input id="z2_1" type="number" min="0" max="100000" step="100"></td></tr>
-            <tr><td>40 - 59%</td><td><input id="z1_2" type="number" min="0" max="100000" step="100"></td><td><input id="z2_2" type="number" min="0" max="100000" step="100"></td></tr>
-            <tr><td>60 - 79%</td><td><input id="z1_3" type="number" min="0" max="100000" step="100"></td><td><input id="z2_3" type="number" min="0" max="100000" step="100"></td></tr>
-            <tr><td>80 - 100%</td><td><input id="z1_4" type="number" min="0" max="100000" step="100"></td><td><input id="z2_4" type="number" min="0" max="100000" step="100"></td></tr>
+            <tr><td>&lt; 20%</td><td><input id="z1_0" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_0" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>20 - 39%</td><td><input id="z1_1" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_1" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>40 - 59%</td><td><input id="z1_2" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_2" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>60 - 79%</td><td><input id="z1_3" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_3" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
+            <tr><td>80 - 100%</td><td><input id="z1_4" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td><td><input id="z2_4" class="lockable-bands" type="number" min="0" max="100000" step="100" disabled></td></tr>
           </tbody>
         </table>
       </div>
-      <button class="b-cyan" id="saveBandsBtn" onclick="saveBands()">Save Water Targets</button>
+      <button class="b-cyan lockable-bands" id="saveBandsBtn" onclick="saveBands()" disabled>Save Water Targets</button>
     </div>
   </section>
 
@@ -406,28 +426,31 @@
   <section class="page-view" id="pageRtc">
     <div class="page-head">
       <span class="page-head-title" style="color:#2dd4bf">RTC CLOCK &amp; DATE</span>
-      <span class="chip">DS3231</span>
+      <div class="page-head-right">
+        <span class="chip">DS3231</span>
+        <button type="button" class="lock-btn" id="lockBtnRtc" onclick="togglePageLock('rtc')">LOCKED</button>
+      </div>
     </div>
     <div class="card" id="secRtc">
       <div class="title"><span>RTC Clock &amp; Date Sync</span></div>
       <div class="row">
         <label>Date (Y-M-D)</label>
         <div>
-          <input id="dtY" type="number" min="2025" max="2099" style="width:62px"> -
-          <input id="dtMo" type="number" min="1" max="12" style="width:46px"> -
-          <input id="dtD" type="number" min="1" max="31" style="width:46px">
+          <input id="dtY" class="lockable-rtc" type="number" min="2025" max="2099" style="width:62px" disabled> -
+          <input id="dtMo" class="lockable-rtc" type="number" min="1" max="12" style="width:46px" disabled> -
+          <input id="dtD" class="lockable-rtc" type="number" min="1" max="31" style="width:46px" disabled>
         </div>
       </div>
       <div class="row">
         <label>Time (H:M:S)</label>
         <div>
-          <input id="dtH" type="number" min="0" max="23" style="width:46px"> :
-          <input id="dtMi" type="number" min="0" max="59" style="width:46px"> :
-          <input id="dtS" type="number" min="0" max="59" style="width:46px">
+          <input id="dtH" class="lockable-rtc" type="number" min="0" max="23" style="width:46px" disabled> :
+          <input id="dtMi" class="lockable-rtc" type="number" min="0" max="59" style="width:46px" disabled> :
+          <input id="dtS" class="lockable-rtc" type="number" min="0" max="59" style="width:46px" disabled>
         </div>
       </div>
-      <button class="b-cyan" id="setRtcBtn" onclick="setManualRtc()">Set Date &amp; Time</button>
-      <button class="b-ghost" id="syncRtcBtn" onclick="syncPhoneRtc()">Sync RTC with Phone Clock</button>
+      <button class="b-cyan lockable-rtc" id="setRtcBtn" onclick="setManualRtc()" disabled>Set Date &amp; Time</button>
+      <button class="b-ghost lockable-rtc" id="syncRtcBtn" onclick="syncPhoneRtc()" disabled>Sync RTC with Phone Clock</button>
     </div>
   </section>
 
@@ -435,20 +458,23 @@
   <section class="page-view" id="pageWifi">
     <div class="page-head">
       <span class="page-head-title" style="color:#38bdf8">ROUTER WI-FI</span>
-      <span class="chip" id="wifiChip">STA</span>
+      <div class="page-head-right">
+        <span class="chip" id="wifiChip">STA</span>
+        <button type="button" class="lock-btn" id="lockBtnWifi" onclick="togglePageLock('wifi')">LOCKED</button>
+      </div>
     </div>
     <div class="card" id="secWifi">
       <div class="title"><span>Router Wi-Fi Setup</span></div>
       <div class="wifi-status" id="wifiStatusBox">Router: Checking...</div>
       <div style="margin-bottom:8px">
         <label>Router Wi-Fi SSID</label>
-        <input id="wifiSsid" class="input-wide" type="text" placeholder="Enter Wi-Fi Name">
+        <input id="wifiSsid" class="input-wide lockable-wifi" type="text" placeholder="Enter Wi-Fi Name" disabled>
       </div>
       <div>
         <label>Router Wi-Fi Password</label>
-        <input id="wifiPass" class="input-wide" type="password" placeholder="Enter Wi-Fi Password">
+        <input id="wifiPass" class="input-wide lockable-wifi" type="password" placeholder="Enter Wi-Fi Password" disabled>
       </div>
-      <button class="b-cyan" id="saveWifiBtn" onclick="saveWifiCreds()">Save &amp; Connect Wi-Fi</button>
+      <button class="b-cyan lockable-wifi" id="saveWifiBtn" onclick="saveWifiCreds()" disabled>Save &amp; Connect Wi-Fi</button>
     </div>
   </section>
 
@@ -483,6 +509,12 @@ let rtcDefaultsFilled = false;
 let msgTimer = null;
 let railOpen = false;
 let activePageId = "pageZones";
+const pageUnlocked = {
+  schedule: false,
+  bands: false,
+  rtc: false,
+  wifi: false
+};
 let latestSettings = {
   s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
   z1_0: 1000, z1_1: 500, z1_2: 0, z1_3: 0, z1_4: 0,
@@ -490,6 +522,30 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function applyPageLockState(key) {
+  const unlocked = Boolean(pageUnlocked[key]);
+  document.querySelectorAll(`.lockable-${key}`).forEach(el => {
+    el.disabled = !unlocked;
+  });
+  const mapBtn = {
+    schedule: "lockBtnSchedule",
+    bands: "lockBtnBands",
+    rtc: "lockBtnRtc",
+    wifi: "lockBtnWifi"
+  };
+  const btn = document.getElementById(mapBtn[key]);
+  if (btn) {
+    btn.classList.toggle("unlocked", unlocked);
+    btn.innerText = unlocked ? "UNLOCKED" : "LOCKED";
+  }
+}
+
+function togglePageLock(key) {
+  pageUnlocked[key] = !pageUnlocked[key];
+  applyPageLockState(key);
+  showMsg(pageUnlocked[key] ? `${key.toUpperCase()} fields unlocked` : `${key.toUpperCase()} fields locked`);
+}
 
 function setRailOpen(open) {
   railOpen = Boolean(open);
@@ -789,11 +845,12 @@ async function patchSettings(payload, btnId, okText) {
     setDiag(`PATCH error: ${e.message}`);
     return false;
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn && !btn.className.includes("lockable-")) btn.disabled = false;
   }
 }
 
 async function saveSchedule() {
+  if (!pageUnlocked.schedule) return;
   await patchSettings({
     s1h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s1h", latestSettings.s1h)))),
     s1m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s1m", latestSettings.s1m)))),
@@ -802,14 +859,17 @@ async function saveSchedule() {
     c1: Math.max(0.5, Math.min(30, Number(readNumOrFallback("c1", latestSettings.c1).toFixed(1)))),
     c2: Math.max(0.5, Math.min(30, Number(readNumOrFallback("c2", latestSettings.c2).toFixed(1))))
   }, "saveSchedBtn", "Schedule & Cal saved!");
+  applyPageLockState("schedule");
 }
 
 async function saveBands() {
+  if (!pageUnlocked.bands) return;
   const payload = {};
   BAND_IDS.forEach(id => {
     payload[id] = Math.max(0, Math.min(100000, Math.trunc(readNumOrFallback(id, latestSettings[id]))));
   });
   await patchSettings(payload, "saveBandsBtn", "Moisture water targets saved!");
+  applyPageLockState("bands");
 }
 
 function daysInMonthJs(m, y) {
@@ -848,6 +908,7 @@ async function pushRtcTime(y, mo, d, h, mi, s, btnId, okText) {
 }
 
 async function setManualRtc() {
+  if (!pageUnlocked.rtc) return;
   const n = new Date();
   await pushRtcTime(
     readNumOrFallback("dtY", n.getFullYear()),
@@ -859,9 +920,11 @@ async function setManualRtc() {
     "setRtcBtn",
     "Date & Time sent to RTC!"
   );
+  applyPageLockState("rtc");
 }
 
 async function syncPhoneRtc() {
+  if (!pageUnlocked.rtc) return;
   fillRtcInputsFromPhone();
   const n = new Date();
   await pushRtcTime(
@@ -874,9 +937,11 @@ async function syncPhoneRtc() {
     "syncRtcBtn",
     "RTC synced with phone clock!"
   );
+  applyPageLockState("rtc");
 }
 
 async function saveWifiCreds() {
+  if (!pageUnlocked.wifi) return;
   const ssid = document.getElementById("wifiSsid").value.trim();
   const pass = document.getElementById("wifiPass").value;
   if (!ssid) {
@@ -887,9 +952,14 @@ async function saveWifiCreds() {
     wifiSsid: ssid,
     wifiPass: pass
   }, "saveWifiBtn", "Wi-Fi credentials saved!");
+  applyPageLockState("wifi");
 }
 
 if (!rtcDefaultsFilled) fillRtcInputsFromPhone();
+applyPageLockState("schedule");
+applyPageLockState("bands");
+applyPageLockState("rtc");
+applyPageLockState("wifi");
 setInterval(updatePill, 1000);
 setInterval(fetchStatus, 2500);
 setInterval(() => fetchSettings(false), 3000);
