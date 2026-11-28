@@ -1106,6 +1106,7 @@
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const ESP_STALE_MS = 15000;
 const WEATHER_REFRESH_MS = 600000; // 10 min
+const SETTINGS_WRITE_LOCK_MS = 10000; // 10 sec guard after saving settings
 const MAX_INSIGHT_LOGS = 500;
 
 const STORAGE_KEYS = {
@@ -1116,6 +1117,7 @@ const STORAGE_KEYS = {
 };
 
 let settingsLoaded = false;
+let lastSettingsWriteAt = 0;
 let lastSeenMillis = null;
 let lastSeenChangeAt = 0;
 let lastPayloadSig = "";
@@ -1146,6 +1148,10 @@ let timerInterval = null;
 let beepInterval = null;
 let audioCtx = null;
 
+function isSettingsWriteCoolingDown() {
+  return lastSettingsWriteAt > 0 && (Date.now() - lastSettingsWriteAt) < SETTINGS_WRITE_LOCK_MS;
+}
+
 function bindInputEditGuards() {
   document.querySelectorAll("input").forEach(inp => {
     inp.addEventListener("input", () => {
@@ -1173,6 +1179,7 @@ function canAutoFill(inputId) {
   if (!el) return false;
   if (document.activeElement === el) return false;
   if (dirtyInputs.has(inputId)) return false;
+  if (isSettingsWriteCoolingDown()) return false;
   return true;
 }
 
@@ -2415,7 +2422,8 @@ async function fetchJsonSafe(url, options = {}, retries = 2) {
 }
 
 async function patchSettings(fields) {
-  const payload = { ...fields, updatedAt: Date.now() };
+  lastSettingsWriteAt = Date.now();
+  const payload = { ...fields, updatedAt: lastSettingsWriteAt };
   return fetchJsonSafe(`${DB_URL}/settings.json`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -2552,7 +2560,7 @@ function initRtcInputs() {
 }
 
 function populateInputsFromSettings(s) {
-  if (!s) return;
+  if (!s || isSettingsWriteCoolingDown()) return;
   if (s.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = s.s1h;
   if (s.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = s.s1m;
   if (s.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = s.s2h;
@@ -2581,31 +2589,12 @@ function populateInputsFromSettings(s) {
   refreshInsightsGraphs();
 }
 
-function populateInputsFromStatus(d) {
-  if (!d) return;
-  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
-  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
-  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
-  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
-  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
-  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
-  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
-  for (let i = 0; i < 5; i++) {
-    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
-      document.getElementById("z1_" + i).value = d.z1[i];
-    }
-    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
-      document.getElementById("z2_" + i).value = d.z2[i];
-    }
-  }
-  refreshInsightsGraphs();
-}
-
-async function fetchSettingsOnce() {
-  if (settingsLoaded) return;
+async function fetchSettingsOnce(force = false) {
+  if (isSettingsWriteCoolingDown()) return;
+  if (settingsLoaded && !force) return;
   try {
     const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
-    if (s) {
+    if (s && !isSettingsWriteCoolingDown()) {
       populateInputsFromSettings(s);
       settingsLoaded = true;
     }
@@ -2713,7 +2702,6 @@ async function fetchStatus() {
     document.getElementById("curSsid").innerText = d.staSsid || "Not set";
     document.getElementById("curIp").innerText = d.staIP || "--";
 
-    populateInputsFromStatus(d);
     if (isEspAliveNow()) {
       recordInsightPoint(m1, m2, l1, l2, latestWeatherData);
     }
