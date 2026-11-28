@@ -231,7 +231,18 @@
     border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
   }
 
-  /* Map & Search Styles */
+  /* Map, Layer Switcher & Search Styles */
+  .layer-bar{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;
+  }
+  .layer-btn{
+    padding:6px 6px;border-radius:9px;background:#09101d;
+    border:1px solid #1e2f4d;color:var(--sub);font-size:10.5px;font-weight:800;
+  }
+  .layer-btn.active{
+    background:rgba(52,211,153,.16);border-color:#34d399;color:#fff;
+  }
+
   .search-bar{
     display:flex;gap:6px;align-items:center;margin-bottom:8px;
   }
@@ -256,14 +267,14 @@
   .search-item span{display:block;font-size:9.5px;color:var(--sub);margin-top:2px}
 
   .map-frame{
-    width:100%;height:240px;border-radius:12px;overflow:hidden;
+    width:100%;height:245px;border-radius:12px;overflow:hidden;
     border:1px solid #24385c;background:#08101e;position:relative;
     z-index:1;
   }
   .map-frame.map-locked-overlay::after{
     content:"LOCKED — Tap UNLOCKED above to pin or search";
     position:absolute;inset:0;
-    background:rgba(6,10,18,.52);
+    background:rgba(6,10,18,.48);
     color:#ffca28;font-size:11px;font-weight:800;
     display:flex;align-items:center;justify-content:center;
     pointer-events:none;z-index:500;text-align:center;padding:12px;
@@ -1017,7 +1028,13 @@
     </div>
 
     <div class="card" style="border-top:3px solid #34d399">
-      <div class="title"><span>Interactive Map, Search &amp; Pin to DB</span><span class="chip" id="pinStateChip">PIN READY</span></div>
+      <div class="title"><span>Satellite Map, Search &amp; Pin to DB</span><span class="chip" id="mapStyleChip">SATELLITE</span></div>
+
+      <div class="layer-bar">
+        <button type="button" class="layer-btn active" id="layerBtnSatellite" onclick="setMapLayerStyle('satellite')">SATELLITE</button>
+        <button type="button" class="layer-btn" id="layerBtnHybrid" onclick="setMapLayerStyle('hybrid')">HYBRID</button>
+        <button type="button" class="layer-btn" id="layerBtnStreet" onclick="setMapLayerStyle('street')">STREET</button>
+      </div>
 
       <div class="search-bar">
         <input id="locSearchInput" class="lockable-location" type="text" placeholder="Search place, city, area, PIN..." disabled onkeydown="if(event.key==='Enter'){event.preventDefault();searchPlaceOnMap();}">
@@ -1041,7 +1058,7 @@
         Fetch Location (GPS + Network Fallback)
       </button>
       <div style="font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.45">
-        Map-e click/tap kore ba pin drag kore/search select kore <b>Save Pin to DB</b> chaple lon, lat sorasori database-e save hobe. GPS/network na pele IP location fallback kaj kore.
+        Satellite / Hybrid / Street view switch kore map-e click/tap kore ba pin drag kore/search select kore <b>Save Pin to DB</b> chaple lon, lat database-e save hobe.
       </div>
     </div>
 
@@ -1245,6 +1262,9 @@ let pinnedCoord = { lat: null, lon: null };
 let lastWeatherCoordsKey = "";
 let leafletMap = null;
 let leafletMarker = null;
+let currentBaseTileLayer = null;
+let currentLabelTileLayer = null;
+let mapLayerStyle = "satellite";
 
 let insightGraphType = "bar";
 let insightMetric = "runtime";
@@ -1265,6 +1285,53 @@ let latestSettings = {
   wifiSsid: "", wifiPass: ""
 };
 const editing = new Set();
+
+function applyTileLayerToMap() {
+  if (!leafletMap || typeof L === "undefined") return;
+
+  if (currentBaseTileLayer) {
+    leafletMap.removeLayer(currentBaseTileLayer);
+    currentBaseTileLayer = null;
+  }
+  if (currentLabelTileLayer) {
+    leafletMap.removeLayer(currentLabelTileLayer);
+    currentLabelTileLayer = null;
+  }
+
+  if (mapLayerStyle === "street") {
+    currentBaseTileLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      subdomains: "abcd",
+      maxZoom: 20,
+      attribution: "&copy; CARTO"
+    }).addTo(leafletMap);
+  } else if (mapLayerStyle === "hybrid") {
+    currentBaseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "&copy; Esri"
+    }).addTo(leafletMap);
+    currentLabelTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "&copy; Esri"
+    }).addTo(leafletMap);
+  } else {
+    currentBaseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "&copy; Esri"
+    }).addTo(leafletMap);
+  }
+}
+
+function setMapLayerStyle(style) {
+  mapLayerStyle = style;
+  ["satellite", "hybrid", "street"].forEach(s => {
+    const btnId = "layerBtn" + s.charAt(0).toUpperCase() + s.slice(1);
+    document.getElementById(btnId)?.classList.toggle("active", s === style);
+  });
+  const chip = document.getElementById("mapStyleChip");
+  if (chip) chip.innerText = style.toUpperCase();
+  initControllerMap();
+  applyTileLayerToMap();
+}
 
 function renderPinnedCoordLabel() {
   const el = document.getElementById("pinnedCoordText");
@@ -1308,7 +1375,7 @@ function placePinOnMap(lat, lon, shouldPan = true) {
       syncMarkerDraggableState();
     }
     if (shouldPan) {
-      leafletMap.setView([numLat, numLon], Math.max(leafletMap.getZoom(), 14));
+      leafletMap.setView([numLat, numLon], Math.max(leafletMap.getZoom(), 15));
     }
   }
 }
@@ -1318,15 +1385,12 @@ function initControllerMap() {
   if (!box || typeof L === "undefined") return;
 
   if (!leafletMap) {
-    const startLat = Number.isFinite(controllerLocation.lat) ? controllerLocation.lat : 22.5726;
-    const startLon = Number.isFinite(controllerLocation.lon) ? controllerLocation.lon : 88.3639;
-    const startZoom = Number.isFinite(controllerLocation.lat) ? 14 : 10;
+    const startLat = Number.isFinite(controllerLocation.lat) ? controllerLocation.lat : 22.562627;
+    const startLon = Number.isFinite(controllerLocation.lon) ? controllerLocation.lon : 88.363045;
+    const startZoom = Number.isFinite(controllerLocation.lat) ? 15 : 11;
 
     leafletMap = L.map("controllerMapBox", { zoomControl: true }).setView([startLat, startLon], startZoom);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap"
-    }).addTo(leafletMap);
+    applyTileLayerToMap();
 
     leafletMap.on("click", e => {
       if (!pageUnlocked.location) {
