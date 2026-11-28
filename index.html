@@ -1517,6 +1517,7 @@ const dirtyInputs = new Set();
 
 let manualRunStartedAt = 0;
 let manualRunMode = "";
+let manualRunGraceUntil = 0;
 let manualTimerInterval = null;
 let beepLoopInterval = null;
 let audioCtx = null;
@@ -1647,6 +1648,7 @@ function updateManualTimerUi() {
 
 function syncTimerWithHardwareRun(isRunningNow, modeHint = "auto") {
   if (isRunningNow) {
+    manualRunGraceUntil = 0;
     if (!manualRunStartedAt) {
       manualRunStartedAt = Date.now();
       manualRunMode = modeHint || "auto";
@@ -1657,12 +1659,16 @@ function syncTimerWithHardwareRun(isRunningNow, modeHint = "auto") {
       if (!beepLoopInterval) {
         startManualWarningBeepLoop();
       }
-    } else if (manualRunMode === "auto" && modeHint && modeHint !== "auto") {
+    } else if ((!manualRunMode || manualRunMode === "auto") && modeHint && modeHint !== "auto") {
       manualRunMode = modeHint;
       saveManualSessionToStorage();
     }
     updateManualTimerUi();
   } else {
+    if (manualRunStartedAt > 0 && Date.now() < manualRunGraceUntil) {
+      updateManualTimerUi();
+      return;
+    }
     if (manualRunStartedAt > 0) {
       stopManualSession("Stopped");
     }
@@ -1792,6 +1798,7 @@ function startManualSession(cmd) {
   unlockAudioContext();
   manualRunStartedAt = Date.now();
   manualRunMode = cmd;
+  manualRunGraceUntil = Date.now() + 8000;
   saveManualSessionToStorage();
   requestAlertNotificationPermission();
   if (!manualTimerInterval) {
@@ -1806,6 +1813,7 @@ function stopManualSession(reasonText = "Manually stopped") {
   const finalDur = hadSession ? formatDurationClock(Date.now() - manualRunStartedAt) : "00:00";
   manualRunStartedAt = 0;
   manualRunMode = "";
+  manualRunGraceUntil = 0;
   saveManualSessionToStorage();
   if (manualTimerInterval) {
     clearInterval(manualTimerInterval);
@@ -3456,12 +3464,12 @@ function renderBanner(st, dryAlert, watering, espAlive) {
   if (dryAlert || st === "DRY!") {
     box.className = "banner dry";
     box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
-  } else if (watering || st === "RUN") {
+  } else if (watering || st === "RUN" || manualRunStartedAt > 0) {
     const curRunText = manualRunStartedAt ? formatDurationClock(Date.now() - manualRunStartedAt) : "00:00";
     box.className = "banner run";
     box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${curRunText}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
   } else {
-    if (manualRunStartedAt > 0) {
+    if (manualRunStartedAt > 0 && Date.now() >= manualRunGraceUntil) {
       stopManualSession("Stopped");
     }
     box.style.display = "none";
