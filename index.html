@@ -77,6 +77,11 @@
     padding:7px 9px;border-radius:10px;font-size:13px;font-weight:700;
     width:80px;text-align:center;
   }
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{color:var(--sub);font-weight:800;padding:6px 4px;border-bottom:1px solid var(--line)}
+  td{padding:6px 4px;text-align:center;border-bottom:1px solid #152136}
+  td:first-child{color:var(--sub);font-weight:700}
+  td input{width:84px;padding:6px 6px;font-size:12.5px}
   button{
     width:100%;padding:11px 12px;border:none;border-radius:12px;
     font-weight:800;font-size:12.5px;cursor:pointer;
@@ -89,6 +94,7 @@
   .b-z1{background:#0284c7;color:#fff}
   .b-z2{background:#a21caf;color:#fff}
   .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
+  .b-ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);margin-top:8px}
   .msg{text-align:center;font-size:12px;font-weight:700;min-height:18px;color:var(--green);margin-bottom:8px}
   .dbg{
     font-size:11px;color:var(--sub);background:#09101d;border:1px solid #1b2a44;
@@ -133,6 +139,7 @@
       <button class="b-z1 cmd-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
       <button class="b-z2 cmd-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
     </div>
+    <button class="b-ghost cmd-btn" onclick="sendCmd('resetL')">Reset Total Litres</button>
   </div>
 
   <div class="card">
@@ -158,7 +165,24 @@
         <input id="c2" type="number" step="0.1" style="width:68px">
       </div>
     </div>
-    <button class="b-cyan" id="saveBtn" onclick="saveSchedule()">Save Schedule</button>
+    <button class="b-cyan" id="saveSchedBtn" onclick="saveSchedule()">Save Schedule &amp; Cal</button>
+  </div>
+
+  <div class="card">
+    <div class="title"><span>Moisture Band Water Target (ml)</span><span class="chip">0-100%</span></div>
+    <table>
+      <thead>
+        <tr><th>Moisture</th><th>Zone 1 (ml)</th><th>Zone 2 (ml)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" min="0" max="100000" step="100"></td><td><input id="z2_0" type="number" min="0" max="100000" step="100"></td></tr>
+        <tr><td>20 - 39%</td><td><input id="z1_1" type="number" min="0" max="100000" step="100"></td><td><input id="z2_1" type="number" min="0" max="100000" step="100"></td></tr>
+        <tr><td>40 - 59%</td><td><input id="z1_2" type="number" min="0" max="100000" step="100"></td><td><input id="z2_2" type="number" min="0" max="100000" step="100"></td></tr>
+        <tr><td>60 - 79%</td><td><input id="z1_3" type="number" min="0" max="100000" step="100"></td><td><input id="z2_3" type="number" min="0" max="100000" step="100"></td></tr>
+        <tr><td>80 - 100%</td><td><input id="z1_4" type="number" min="0" max="100000" step="100"></td><td><input id="z2_4" type="number" min="0" max="100000" step="100"></td></tr>
+      </tbody>
+    </table>
+    <button class="b-cyan" id="saveBandsBtn" onclick="saveBands()">Save Water Targets</button>
   </div>
 
   <div class="dbg" id="dbgBox">Diag: ready</div>
@@ -168,15 +192,24 @@
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const STALE_MS = 30000;
 const SCHED_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
+const BAND_IDS = [
+  "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
+  "z2_0", "z2_1", "z2_2", "z2_3", "z2_4"
+];
+const ALL_INPUT_IDS = [...SCHED_IDS, ...BAND_IDS];
 
 let lastSeenKey = null;
 let lastSeenAt = 0;
 let justSavedUntil = 0;
 let lastSettingsSig = "";
-let latestSettings = { s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5 };
+let latestSettings = {
+  s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
+  z1_0: 1000, z1_1: 500, z1_2: 0, z1_3: 0, z1_4: 0,
+  z2_0: 1000, z2_1: 500, z2_2: 0, z2_3: 0, z2_4: 0
+};
 const editing = new Set();
 
-SCHED_IDS.forEach(id => {
+ALL_INPUT_IDS.forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener("input", () => editing.add(id));
@@ -218,24 +251,33 @@ function formatSchedChip(s) {
   return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
 }
 
-function applySettingsToUi(s, forceFill = false) {
-  latestSettings = {
-    s1h: Number(s.s1h ?? latestSettings.s1h),
-    s1m: Number(s.s1m ?? latestSettings.s1m),
-    s2h: Number(s.s2h ?? latestSettings.s2h),
-    s2m: Number(s.s2m ?? latestSettings.s2m),
-    c1: Number(s.c1 ?? latestSettings.c1),
-    c2: Number(s.c2 ?? latestSettings.c2)
-  };
+function normalizeSettingsObj(src) {
+  const out = { ...latestSettings };
+  SCHED_IDS.forEach(k => {
+    if (src[k] !== undefined && src[k] !== null) out[k] = Number(src[k]);
+  });
+  for (let i = 0; i < 5; i++) {
+    const k1 = `z1_${i}`;
+    const k2 = `z2_${i}`;
+    if (src[k1] !== undefined && src[k1] !== null) out[k1] = Number(src[k1]);
+    else if (Array.isArray(src.z1) && src.z1[i] !== undefined) out[k1] = Number(src.z1[i]);
 
+    if (src[k2] !== undefined && src[k2] !== null) out[k2] = Number(src[k2]);
+    else if (Array.isArray(src.z2) && src.z2[i] !== undefined) out[k2] = Number(src.z2[i]);
+  }
+  return out;
+}
+
+function applySettingsToUi(src, forceFill = false) {
+  latestSettings = normalizeSettingsObj(src);
   document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
 
-  const sig = SCHED_IDS.map(k => latestSettings[k]).join(",") + "|" + (s.updatedAt ?? "");
+  const sig = ALL_INPUT_IDS.map(k => latestSettings[k]).join(",") + "|" + (src.updatedAt ?? "");
   if (!forceFill && sig === lastSettingsSig) return;
 
-  SCHED_IDS.forEach(id => {
+  ALL_INPUT_IDS.forEach(id => {
     const inp = document.getElementById(id);
-    if (latestSettings[id] === undefined || latestSettings[id] === null) return;
+    if (!inp || latestSettings[id] === undefined || latestSettings[id] === null) return;
     if (forceFill) {
       inp.value = latestSettings[id];
       editing.delete(id);
@@ -245,7 +287,7 @@ function applySettingsToUi(s, forceFill = false) {
   });
 
   lastSettingsSig = sig;
-  setDiag(`Sync -> s1=${latestSettings.s1h}:${latestSettings.s1m}, s2=${latestSettings.s2h}:${latestSettings.s2m}, c1=${latestSettings.c1}, c2=${latestSettings.c2}`);
+  setDiag(`Sync -> s1=${latestSettings.s1h}:${latestSettings.s1m}, s2=${latestSettings.s2h}:${latestSettings.s2m}, z1_0=${latestSettings.z1_0}, z2_0=${latestSettings.z2_0}`);
 }
 
 async function sendCmd(cmd) {
@@ -302,7 +344,7 @@ async function fetchStatus() {
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
     if (d.status) document.getElementById("modeChip").innerText = String(d.status);
 
-    if (d.s1h !== undefined || d.s1m !== undefined || d.s2h !== undefined || d.s2m !== undefined) {
+    if (d.s1h !== undefined || d.s1m !== undefined || Array.isArray(d.z1)) {
       applySettingsToUi(d, false);
     }
 
@@ -339,25 +381,17 @@ function readNumOrFallback(id, fallbackVal) {
   return Number.isFinite(n) ? n : fallbackVal;
 }
 
-async function saveSchedule() {
-  const btn = document.getElementById("saveBtn");
-  btn.disabled = true;
-  showMsg("Saving schedule...");
+async function patchSettings(payload, btnId, okText) {
+  const btn = document.getElementById(btnId);
+  if (btn) btn.disabled = true;
+  showMsg("Saving...");
 
-  SCHED_IDS.forEach(id => {
+  ALL_INPUT_IDS.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.blur();
   });
 
-  const payload = {
-    s1h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s1h", latestSettings.s1h)))),
-    s1m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s1m", latestSettings.s1m)))),
-    s2h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s2h", latestSettings.s2h)))),
-    s2m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s2m", latestSettings.s2m)))),
-    c1: Math.max(0.5, Math.min(30, readNumOrFallback("c1", latestSettings.c1))),
-    c2: Math.max(0.5, Math.min(30, readNumOrFallback("c2", latestSettings.c2))),
-    updatedAt: Date.now()
-  };
+  payload.updatedAt = Date.now();
 
   try {
     const res = await fetch(`${DB_URL}/settings.json`, {
@@ -373,9 +407,9 @@ async function saveSchedule() {
     }
 
     justSavedUntil = Date.now() + 2500;
-    SCHED_IDS.forEach(id => editing.delete(id));
+    ALL_INPUT_IDS.forEach(id => editing.delete(id));
     lastSettingsSig = "";
-    showMsg("Schedule saved to /settings!");
+    showMsg(okText);
 
     await new Promise(r => setTimeout(r, 300));
     await fetchSettings(true);
@@ -383,8 +417,27 @@ async function saveSchedule() {
     showMsg(`Error: ${e.message}`, true);
     setDiag(`PATCH error: ${e.message}`);
   } finally {
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
   }
+}
+
+async function saveSchedule() {
+  await patchSettings({
+    s1h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s1h", latestSettings.s1h)))),
+    s1m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s1m", latestSettings.s1m)))),
+    s2h: Math.max(0, Math.min(23, Math.trunc(readNumOrFallback("s2h", latestSettings.s2h)))),
+    s2m: Math.max(0, Math.min(59, Math.trunc(readNumOrFallback("s2m", latestSettings.s2m)))),
+    c1: Math.max(0.5, Math.min(30, readNumOrFallback("c1", latestSettings.c1))),
+    c2: Math.max(0.5, Math.min(30, readNumOrFallback("c2", latestSettings.c2)))
+  }, "saveSchedBtn", "Schedule & Cal saved!");
+}
+
+async function saveBands() {
+  const payload = {};
+  BAND_IDS.forEach(id => {
+    payload[id] = Math.max(0, Math.min(100000, Math.trunc(readNumOrFallback(id, latestSettings[id]))));
+  });
+  await patchSettings(payload, "saveBandsBtn", "Moisture water targets saved!");
 }
 
 setInterval(updatePill, 1000);
