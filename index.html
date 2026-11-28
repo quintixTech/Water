@@ -218,6 +218,36 @@ function formatSchedChip(s) {
   return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
 }
 
+function applySettingsToUi(s, forceFill = false) {
+  latestSettings = {
+    s1h: Number(s.s1h ?? latestSettings.s1h),
+    s1m: Number(s.s1m ?? latestSettings.s1m),
+    s2h: Number(s.s2h ?? latestSettings.s2h),
+    s2m: Number(s.s2m ?? latestSettings.s2m),
+    c1: Number(s.c1 ?? latestSettings.c1),
+    c2: Number(s.c2 ?? latestSettings.c2)
+  };
+
+  document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
+
+  const sig = SCHED_IDS.map(k => latestSettings[k]).join(",") + "|" + (s.updatedAt ?? "");
+  if (!forceFill && sig === lastSettingsSig) return;
+
+  SCHED_IDS.forEach(id => {
+    const inp = document.getElementById(id);
+    if (latestSettings[id] === undefined || latestSettings[id] === null) return;
+    if (forceFill) {
+      inp.value = latestSettings[id];
+      editing.delete(id);
+    } else if (document.activeElement !== inp && !editing.has(id) && Date.now() > justSavedUntil) {
+      inp.value = latestSettings[id];
+    }
+  });
+
+  lastSettingsSig = sig;
+  setDiag(`Sync -> s1=${latestSettings.s1h}:${latestSettings.s1m}, s2=${latestSettings.s2h}:${latestSettings.s2m}, c1=${latestSettings.c1}, c2=${latestSettings.c2}`);
+}
+
 async function sendCmd(cmd) {
   if (!isOnline()) {
     showMsg("ESP is OFFLINE", true);
@@ -272,6 +302,10 @@ async function fetchStatus() {
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
     if (d.status) document.getElementById("modeChip").innerText = String(d.status);
 
+    if (d.s1h !== undefined || d.s1m !== undefined || d.s2h !== undefined || d.s2m !== undefined) {
+      applySettingsToUi(d, false);
+    }
+
     updatePill();
   } catch (e) {
     updatePill();
@@ -290,34 +324,7 @@ async function fetchSettings(forceFill = false) {
       setDiag("/settings is null in RTDB");
       return null;
     }
-
-    latestSettings = {
-      s1h: Number(s.s1h ?? latestSettings.s1h),
-      s1m: Number(s.s1m ?? latestSettings.s1m),
-      s2h: Number(s.s2h ?? latestSettings.s2h),
-      s2m: Number(s.s2m ?? latestSettings.s2m),
-      c1: Number(s.c1 ?? latestSettings.c1),
-      c2: Number(s.c2 ?? latestSettings.c2)
-    };
-
-    document.getElementById("savedSchedChip").innerText = formatSchedChip(latestSettings);
-
-    const sig = SCHED_IDS.map(k => latestSettings[k]).join(",") + "|" + (s.updatedAt ?? "");
-    if (!forceFill && sig === lastSettingsSig) return s;
-
-    SCHED_IDS.forEach(id => {
-      const inp = document.getElementById(id);
-      if (latestSettings[id] === undefined || latestSettings[id] === null) return;
-      if (forceFill) {
-        inp.value = latestSettings[id];
-        editing.delete(id);
-      } else if (document.activeElement !== inp && !editing.has(id) && Date.now() > justSavedUntil) {
-        inp.value = latestSettings[id];
-      }
-    });
-
-    lastSettingsSig = sig;
-    setDiag(`DB /settings -> s1=${latestSettings.s1h}:${latestSettings.s1m}, s2=${latestSettings.s2h}:${latestSettings.s2m}, c1=${latestSettings.c1}, c2=${latestSettings.c2}`);
+    applySettingsToUi(s, forceFill);
     return s;
   } catch (e) {
     setDiag(`settings GET error: ${e.message}`);
