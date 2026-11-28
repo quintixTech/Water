@@ -687,7 +687,7 @@
 
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-const STALE_MS = 12000;
+const STALE_MS = 8000;
 const DRY_VISUAL_MS = 5000;
 const DRY_AUTO_STOP_MS = 5000;
 const DRY_STATUS_TIMEOUT_MS = 10000;
@@ -1263,7 +1263,7 @@ function updatePill() {
   pill.className = online ? "pill on" : "pill";
   if (online) {
     const ageSec = Math.max(0, Math.floor((Date.now() - lastSeenAt) / 1000));
-    pill.innerText = ageSec <= 3 ? "ONLINE" : `ONLINE (${ageSec}s)`;
+    pill.innerText = ageSec <= 2 ? "ONLINE" : `ONLINE (${ageSec}s)`;
   } else {
     pill.innerText = "OFFLINE";
   }
@@ -1370,11 +1370,10 @@ async function fetchStatus() {
       return;
     }
 
-    const key = `${d.uptimeMs ?? ""}|${d.time ?? ""}|${d.m1 ?? ""}|${d.m2 ?? ""}|${d.l1 ?? ""}|${d.l2 ?? ""}|${d.status ?? ""}|${d.staIP ?? ""}|${d.ts ?? ""}|${d.lastSeen ?? ""}`;
-    const now = Date.now();
-    if (key !== lastSeenKey || lastSeenAt === 0 || (now - lastSeenAt) <= STALE_MS) {
-      lastSeenKey = key;
-      lastSeenAt = now;
+    const heartbeatKey = `${d.uptimeMs ?? ""}|${d.ts ?? ""}|${d.lastSeen ?? ""}|${d.time ?? ""}|${d.m1 ?? ""}|${d.m2 ?? ""}|${d.l1 ?? ""}|${d.l2 ?? ""}|${d.status ?? ""}|${d.staIP ?? ""}`;
+    if (heartbeatKey !== lastSeenKey) {
+      lastSeenKey = heartbeatKey;
+      lastSeenAt = Date.now();
     }
 
     const m1 = Math.max(0, Math.min(100, Number(d.m1 ?? 0)));
@@ -1613,7 +1612,7 @@ applyPageLockState("bands");
 applyPageLockState("rtc");
 applyPageLockState("wifi");
 setInterval(updatePill, 1000);
-setInterval(fetchStatus, 2500);
+setInterval(fetchStatus, 2000);
 setInterval(() => fetchSettings(false), 3000);
 fetchStatus();
 fetchSettings(true);
