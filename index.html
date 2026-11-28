@@ -1518,6 +1518,7 @@ const dirtyInputs = new Set();
 let manualRunStartedAt = 0;
 let manualRunMode = "";
 let manualRunGraceUntil = 0;
+let manualStopCooldownUntil = 0;
 let manualTimerInterval = null;
 let beepLoopInterval = null;
 let audioCtx = null;
@@ -1648,6 +1649,10 @@ function updateManualTimerUi() {
 
 function syncTimerWithHardwareRun(isRunningNow, modeHint = "auto") {
   if (isRunningNow) {
+    if (!manualRunStartedAt && Date.now() < manualStopCooldownUntil) {
+      updateManualTimerUi();
+      return;
+    }
     manualRunGraceUntil = 0;
     if (!manualRunStartedAt) {
       manualRunStartedAt = Date.now();
@@ -1799,6 +1804,7 @@ function startManualSession(cmd) {
   manualRunStartedAt = Date.now();
   manualRunMode = cmd;
   manualRunGraceUntil = Date.now() + 8000;
+  manualStopCooldownUntil = 0;
   saveManualSessionToStorage();
   requestAlertNotificationPermission();
   if (!manualTimerInterval) {
@@ -1814,6 +1820,7 @@ function stopManualSession(reasonText = "Manually stopped") {
   manualRunStartedAt = 0;
   manualRunMode = "";
   manualRunGraceUntil = 0;
+  manualStopCooldownUntil = Date.now() + 5000;
   saveManualSessionToStorage();
   if (manualTimerInterval) {
     clearInterval(manualTimerInterval);
