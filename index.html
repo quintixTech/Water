@@ -1289,16 +1289,14 @@ const editing = new Set();
 function applyTileLayerToMap() {
   if (!leafletMap || typeof L === "undefined") return;
 
-  if (currentBaseTileLayer) {
-    leafletMap.removeLayer(currentBaseTileLayer);
-    currentBaseTileLayer = null;
-  }
-  if (currentLabelTileLayer) {
-    leafletMap.removeLayer(currentLabelTileLayer);
-    currentLabelTileLayer = null;
-  }
+  leafletMap.eachLayer(layer => {
+    if (layer && typeof layer.setUrl === "function") {
+      leafletMap.removeLayer(layer);
+    }
+  });
+  currentBaseTileLayer = null;
+  currentLabelTileLayer = null;
 
-  // Google tile types: 's' = Satellite, 'y' = Hybrid, 'm' = Street
   const gType = mapLayerStyle === "street" ? "m" : (mapLayerStyle === "hybrid" ? "y" : "s");
 
   currentBaseTileLayer = L.tileLayer(
@@ -1319,6 +1317,10 @@ function applyTileLayerToMap() {
       ).addTo(leafletMap);
     }
   });
+
+  if (leafletMarker && leafletMap.hasLayer && !leafletMap.hasLayer(leafletMarker)) {
+    leafletMarker.addTo(leafletMap);
+  }
 }
 
 function setMapLayerStyle(style) {
@@ -1410,6 +1412,44 @@ function initControllerMap() {
   }, 120);
 }
 
+async function queryPhotonPlaces(query) {
+  const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("Photon HTTP " + res.status);
+  const data = await res.json();
+  const feats = Array.isArray(data?.features) ? data.features : [];
+  return feats
+    .map(f => {
+      const coords = f?.geometry?.coordinates || [];
+      const lon = Number(coords[0]);
+      const lat = Number(coords[1]);
+      const p = f?.properties || {};
+      const title = p.name || p.street || p.city || query;
+      const subParts = [p.city, p.district, p.state, p.country, p.postcode].filter(Boolean);
+      const subtitle = subParts.filter((v, i, a) => v !== title && a.indexOf(v) === i).join(", ");
+      return { lat, lon, title, subtitle };
+    })
+    .filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
+}
+
+async function queryOpenMeteoPlaces(query) {
+  const cleanQ = query.replace(/\b\d{6}\b/g, "").trim() || query;
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQ)}&count=5&language=en&format=json`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("Geo HTTP " + res.status);
+  const data = await res.json();
+  const list = Array.isArray(data?.results) ? data.results : [];
+  return list
+    .map(r => {
+      const lat = Number(r.latitude);
+      const lon = Number(r.longitude);
+      const title = r.name || cleanQ;
+      const subtitle = [r.admin2, r.admin1, r.country].filter(Boolean).join(", ");
+      return { lat, lon, title, subtitle };
+    })
+    .filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
+}
+
 async function searchPlaceOnMap() {
   if (!pageUnlocked.location) {
     showMsg("LOCATION is LOCKED", true);
@@ -1431,35 +1471,39 @@ async function searchPlaceOnMap() {
   }
 
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`;
-    const res = await fetch(url, { headers: { "Accept": "application/json" } });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const list = await res.json();
+    let list = [];
+    try {
+      list = await queryPhotonPlaces(query);
+    } catch (e1) {
+      list = await queryOpenMeteoPlaces(query);
+    }
+    if (!list.length) {
+      try {
+        list = await queryOpenMeteoPlaces(query);
+      } catch (e2) {}
+    }
 
-    if (!Array.isArray(list) || !list.length) {
+    if (!list.length) {
       if (resultsEl) resultsEl.innerHTML = `<div class="search-item">No matching place found</div>`;
       return;
     }
 
     if (resultsEl) {
-      resultsEl.innerHTML = list.map((item, idx) => {
-        const parts = (item.display_name || "").split(",");
-        const mainTitle = parts.slice(0, 2).join(",").trim() || item.display_name;
-        const subTitle = parts.slice(2, 5).join(",").trim();
-        return `<div class="search-item" data-idx="${idx}">
-          <b>${mainTitle}</b>
-          <span>${subTitle} · Lon ${Number(item.lon).toFixed(4)}, Lat ${Number(item.lat).toFixed(4)}</span>
-        </div>`;
-      }).join("");
+      resultsEl.innerHTML = list.map((item, idx) => `
+        <div class="search-item" data-idx="${idx}">
+          <b>${item.title}</b>
+          <span>${item.subtitle ? item.subtitle + " · " : ""}Lon ${item.lon.toFixed(4)}, Lat ${item.lat.toFixed(4)}</span>
+        </div>
+      `).join("");
 
       resultsEl.querySelectorAll(".search-item").forEach(row => {
         row.addEventListener("click", () => {
           const item = list[Number(row.dataset.idx)];
           if (!item) return;
           initControllerMap();
-          placePinOnMap(Number(item.lat), Number(item.lon), true);
+          placePinOnMap(item.lat, item.lon, true);
           resultsEl.classList.remove("show");
-          showMsg(`Pinned: ${(item.display_name || "").split(",")[0]} — tap Save Pin to DB`);
+          showMsg(`Pinned: ${item.title} — tap Save Pin to DB`);
         });
       });
     }
