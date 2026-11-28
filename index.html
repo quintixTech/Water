@@ -2,142 +2,121 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#060a12">
-<title>QUANTIX TECH Smart Irrigation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUANTIX TECH — Irrigation Controller</title>
 <style>
   :root{
     --bg:#060a12;
-    --card:#101827;
-    --card2:#162238;
-    --line:#1f2f4a;
-    --cyan:#00e5ff;
-    --mag:#e879f9;
-    --green:#00e676;
-    --amber:#ffab00;
-    --blue:#38bdf8;
-    --teal:#2dd4bf;
-    --coral:#fb7185;
-    --red:#ff5252;
-    --text:#f8fafc;
+    --card:#0e1626;
+    --card2:#142036;
+    --line:#1e2f4d;
+    --text:#f1f5f9;
     --sub:#94a3b8;
-    --rail-base:46px;
+    --cyan:#00e5ff;
+    --green:#00e676;
+    --red:#ff5252;
+    --amber:#ffab00;
+    --mag:#e879f9;
+    --blue:#38bdf8;
   }
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   body{
-    margin:0;
-    background:radial-gradient(circle at 60% -10%,#11223d 0%,var(--bg) 58%);
+    background:var(--bg);
     color:var(--text);
     min-height:100vh;
-    padding:10px 10px 24px calc(var(--rail-base) + 10px);
     overflow-x:hidden;
-    transition:background .25s ease;
   }
   body.dry-active{
-    background:radial-gradient(circle at 60% -10%,#38111b 0%,var(--bg) 62%);
+    background:radial-gradient(circle at top,#2a0912 0%,var(--bg) 62%);
   }
+
   .rail-backdrop{
-    position:fixed;inset:0;background:rgba(2,6,14,.55);
-    z-index:75;display:none;backdrop-filter:blur(2px);
+    position:fixed;inset:0;background:rgba(2,6,14,.58);
+    z-index:88;display:none;backdrop-filter:blur(2px);
   }
-  body.rail-open .rail-backdrop{
-    display:block;
-  }
+  body.rail-open .rail-backdrop{display:block}
+
   .side-rail{
-    position:fixed;top:0;left:0;bottom:0;width:var(--rail-base);
-    background:rgba(11,18,32,.98);border-right:1px solid var(--line);
-    z-index:80;padding:8px 4px;display:flex;flex-direction:column;
-    align-items:center;gap:4px;transition:width .2s ease;
-    overflow-y:auto;overflow-x:hidden;
+    position:fixed;top:0;left:0;bottom:0;width:66px;
+    background:#09101d;border-right:1px solid var(--line);
+    z-index:95;display:flex;flex-direction:column;align-items:center;
+    padding:10px 6px;gap:6px;overflow-y:auto;
+    transition:width .2s ease;
   }
   body.rail-open .side-rail{
-    width:154px;align-items:stretch;padding:10px 8px;
-    box-shadow:8px 0 28px rgba(0,0,0,.55);
+    width:176px;align-items:stretch;padding:10px;
   }
   .rail-top{
-    width:100%;display:flex;align-items:center;justify-content:center;
-    gap:7px;margin-bottom:2px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:4px 2px 8px;border-bottom:1px solid var(--line);margin-bottom:2px;
   }
-  body.rail-open .rail-top{
-    justify-content:space-between;
-  }
+  body.rail-open .rail-top{justify-content:flex-start;padding-left:6px}
   .rail-logo{
-    width:34px;height:34px;border-radius:10px;
-    background:linear-gradient(145deg,#132947,#0b1322);
+    width:36px;height:36px;border-radius:11px;
+    background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(0,230,118,.12));
     border:1px solid rgba(0,229,255,.35);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
   .rail-brand-txt{
-    display:none;font-size:12px;font-weight:900;letter-spacing:.4px;
-    color:#fff;white-space:nowrap;
+    display:none;font-size:12px;font-weight:900;letter-spacing:.5px;color:#fff;white-space:nowrap;
   }
   .rail-brand-txt span{color:var(--cyan)}
-  body.rail-open .rail-brand-txt{
-    display:inline;
-  }
+  body.rail-open .rail-brand-txt{display:inline}
+
   .rail-toggle{
-    width:34px;height:25px;border-radius:8px;
-    background:var(--card2);border:1px solid var(--line);
-    color:var(--cyan);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;padding:0;flex-shrink:0;
+    width:100%;padding:7px 8px;border-radius:10px;
+    background:var(--card);border:1px solid var(--line);color:var(--cyan);
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:10.5px;font-weight:800;cursor:pointer;margin-bottom:2px;
   }
-  body.rail-open .rail-toggle{
-    width:auto;padding:0 8px;gap:4px;
-  }
-  .rail-toggle span{
-    display:none;font-size:10px;font-weight:800;color:var(--sub);
-  }
-  body.rail-open .rail-toggle span{
-    display:inline;
-  }
+  body.rail-open .rail-toggle{justify-content:flex-start;padding-left:10px}
+  .rail-toggle span{display:none}
+  body.rail-open .rail-toggle span{display:inline}
+
   .rail-btn{
-    width:36px;min-height:37px;padding:3px 0;border-radius:10px;
+    width:100%;padding:8px 4px;border-radius:11px;
     background:transparent;border:1px solid transparent;
-    color:var(--sub);display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:2px;
-    cursor:pointer;transition:all .15s ease;flex-shrink:0;
+    color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:9px;font-weight:800;letter-spacing:.3px;cursor:pointer;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
   }
   body.rail-open .rail-btn{
-    width:100%;flex-direction:row;justify-content:flex-start;
-    min-height:36px;padding:5px 10px;gap:9px;
+    flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px;font-size:11px;
   }
-  .rail-btn svg{
-    width:16px;height:16px;flex-shrink:0;
-    color:var(--ico-col, var(--cyan));
-  }
-  .rail-btn span{
-    font-size:7.5px;font-weight:800;letter-spacing:.1px;line-height:1;
-    white-space:nowrap;
-  }
-  body.rail-open .rail-btn span{
-    font-size:11px;
-  }
-  .rail-btn:hover{
-    background:var(--card2);color:#fff;border-color:var(--line);
-  }
+  .rail-btn svg{width:19px;height:19px;flex-shrink:0;color:var(--ico-col,var(--cyan))}
   .rail-btn.active{
-    background:rgba(255,255,255,.07);
+    background:var(--card2);
+    border-color:color-mix(in srgb, var(--ico-col, var(--cyan)) 55%, transparent);
     color:#fff;
-    border-color:var(--ico-col, var(--cyan));
   }
-  .wrap{max-width:720px;margin:0 auto;min-width:0}
+
+  .wrap{
+    margin-left:66px;
+    max-width:640px;
+    padding:12px 12px 32px;
+  }
+
   .appbar{
     display:flex;justify-content:space-between;align-items:center;gap:8px;
-    padding:10px 12px;background:var(--card);border-radius:14px;
-    border:1px solid var(--line);margin-bottom:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:10px 12px;margin-bottom:10px;
   }
-  .brand{font-weight:900;font-size:15px;letter-spacing:.3px;white-space:nowrap}
+  .brand{font-size:15px;font-weight:900;letter-spacing:.5px}
   .brand span{color:var(--cyan)}
-  .sub{font-size:11px;color:var(--sub);margin-top:2px;white-space:nowrap}
+  .sub{font-size:11px;color:var(--sub);margin-top:2px}
   .pill{
-    padding:5px 10px;border-radius:999px;font-size:10.5px;font-weight:900;
-    background:#2a0d12;color:var(--red);border:1px solid rgba(255,82,82,.4);
+    font-size:10.5px;font-weight:800;padding:5px 10px;border-radius:999px;
+    background:rgba(255,82,82,.14);color:#ff8a80;border:1px solid rgba(255,82,82,.4);
     white-space:nowrap;flex-shrink:0;
   }
-  .pill.on{background:#092533;color:var(--green);border-color:rgba(0,230,118,.35)}
-  .page-view{display:none;animation:fadeIn .16s ease}
-  .page-view.active{display:block}
-  @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+  .pill.on{
+    background:rgba(0,230,118,.14);color:var(--green);border:1px solid rgba(0,230,118,.4);
+  }
+
+  .page-view{display:none}
+  .page-view.active{display:block;animation:fadeIn .16s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
   .page-head{
     display:flex;justify-content:space-between;align-items:center;gap:8px;
     margin-bottom:10px;padding:0 2px;
@@ -155,7 +134,6 @@
     border:1px solid rgba(0,230,118,.45);
   }
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
   .grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:0}
   @media(min-width:520px){
     .grid4{grid-template-columns:repeat(4,1fr)}
@@ -226,7 +204,6 @@
     border:1px solid #1b2a44;border-radius:10px;padding:8px 10px;margin-bottom:10px;
   }
 
-  /* Weather Card on Home */
   .weather-main{
     display:flex;justify-content:space-between;align-items:center;gap:10px;
     margin-bottom:8px;
@@ -252,7 +229,6 @@
   }
   .coord-box b{color:#fff}
 
-  /* Control Graphical Animation Stage */
   .anim-stage{
     background:linear-gradient(180deg,#080f1c 0%,#0b1426 100%);
     border:1px solid #1c2e4a;border-radius:13px;
@@ -346,7 +322,6 @@
     border-radius:12px;padding:10px;line-height:1.5;word-break:break-word;
   }
 
-  /* Insight Graph & Controls */
   .mode-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
   .mode-btn{
     padding:7px 6px;border-radius:9px;background:var(--card2);
@@ -381,7 +356,6 @@
   .kpi-mini span{display:block;font-size:9px;color:var(--sub);font-weight:700}
   .kpi-mini b{display:block;font-size:12.5px;font-weight:900;margin-top:2px;color:#fff}
 
-  /* Theme-matched DRY popup modal */
   .dry-modal-backdrop{
     position:fixed;inset:0;background:rgba(4,8,16,.72);
     z-index:120;display:none;align-items:center;justify-content:center;
@@ -547,20 +521,6 @@
       <span class="page-head-title" style="color:#00e5ff">HOME MONITOR</span>
       <span class="chip" id="zonePageChip">LIVE</span>
     </div>
-    <div class="grid2">
-      <div class="card z1" id="cardZ1" style="margin:0">
-        <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
-        <div class="val" id="m1Val">--%</div>
-        <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
-        <div class="stat"><span>Used</span><b id="l1Val">0.00 L</b></div>
-      </div>
-      <div class="card z2" id="cardZ2" style="margin:0">
-        <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
-        <div class="val" id="m2Val">--%</div>
-        <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
-        <div class="stat"><span>Used</span><b id="l2Val">0.00 L</b></div>
-      </div>
-    </div>
 
     <div class="card weather-card" id="homeWeatherCard">
       <div class="title">
@@ -592,36 +552,49 @@
         </div>
       </div>
     </div>
+
+    <div class="grid2">
+      <div class="card z1" id="cardZ1" style="margin:0">
+        <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+        <div class="val" id="m1Val">--%</div>
+        <div class="meter"><div class="meter-fill" id="b1Fill"></div></div>
+        <div class="stat"><span>Used</span><b id="l1Val">0.00 L</b></div>
+      </div>
+      <div class="card z2" id="cardZ2" style="margin:0">
+        <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+        <div class="val" id="m2Val">--%</div>
+        <div class="meter"><div class="meter-fill" id="b2Fill"></div></div>
+        <div class="stat"><span>Used</span><b id="l2Val">0.00 L</b></div>
+      </div>
+    </div>
   </section>
 
   <!-- PAGE 2: CONTROL -->
   <section class="page-view" id="pageControl">
     <div class="page-head">
       <span class="page-head-title" style="color:#00e676">QUICK CONTROL</span>
-      <span class="chip" id="modeChip">IDLE</span>
+      <div class="page-head-right">
+        <span class="chip" id="modeChip">IDLE</span>
+        <button type="button" class="lock-btn" id="lockBtnControl" onclick="togglePageLock('control')">LOCKED</button>
+      </div>
     </div>
     <div class="card" id="secControl">
       <div class="title"><span>Live Pump &amp; Valve Animation</span><span class="chip" id="animStateChip">ALL OFF</span></div>
 
       <div class="anim-stage" id="animStage">
         <svg class="anim-svg" viewBox="0 0 360 152">
-          <!-- Main Header Pipe from Pump to Manifold -->
           <path d="M94 76 L185 76" stroke="#1e3150" stroke-width="8" stroke-linecap="round" fill="none"/>
           <path id="pipeMainFlow" d="M94 76 L185 76" stroke="#00e5ff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0"/>
 
-          <!-- Vertical Manifold -->
           <path d="M185 40 L185 112" stroke="#1e3150" stroke-width="8" stroke-linecap="round" fill="none"/>
           <path id="pipeManifoldFlow" d="M185 40 L185 112" stroke="#00e5ff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0"/>
 
-          <!-- Z1 Branch Pipe -->
           <path d="M185 40 L238 40 L264 40 L336 40" stroke="#1e3150" stroke-width="7" stroke-linecap="round" fill="none"/>
           <path id="pipeZ1Flow" d="M185 40 L238 40 L264 40 L336 40" stroke="#00e676" stroke-width="3.6" stroke-linecap="round" fill="none" opacity="0"/>
 
-          <!-- Z2 Branch Pipe -->
           <path d="M185 112 L238 112 L264 112 L336 112" stroke="#1e3150" stroke-width="7" stroke-linecap="round" fill="none"/>
           <path id="pipeZ2Flow" d="M185 112 L238 112 L264 112 L336 112" stroke="#e879f9" stroke-width="3.6" stroke-linecap="round" fill="none" opacity="0"/>
 
-          <!-- PUMP UNIT (x=68, y=76) -->
           <circle id="pumpGlowCircle" cx="68" cy="76" r="34" fill="rgba(0,229,255,.16)" opacity="0"/>
           <rect x="34" y="104" width="68" height="7" rx="3.5" fill="#1e2f4a"/>
           <circle id="pumpBodyCircle" cx="68" cy="76" r="24" fill="#0d1729" stroke="#334155" stroke-width="3"/>
@@ -635,7 +608,6 @@
           <text x="68" y="20" fill="#cbd5e1" font-size="10.5" font-weight="900" text-anchor="middle">WATER PUMP</text>
           <text id="pumpSvgLabel" x="68" y="130" fill="#64748b" font-size="10" font-weight="900" text-anchor="middle">OFF</text>
 
-          <!-- Z1 VALVE (x=250, y=40) -->
           <g id="z1ValveGroup">
             <circle id="z1GlowCircle" cx="250" cy="40" r="20" fill="rgba(0,230,118,.18)" opacity="0"/>
             <rect x="237" y="28" width="26" height="24" rx="6" fill="#0d1729" stroke="#334155" stroke-width="2.5"/>
@@ -646,7 +618,6 @@
           <text x="298" y="22" fill="#00e676" font-size="10" font-weight="900" text-anchor="middle">Z1 VALVE</text>
           <text id="z1SvgLabel" x="298" y="58" fill="#64748b" font-size="9.5" font-weight="900" text-anchor="middle">CLOSED</text>
 
-          <!-- Z2 VALVE (x=250, y=112) -->
           <g id="z2ValveGroup">
             <circle id="z2GlowCircle" cx="250" cy="112" r="20" fill="rgba(232,121,249,.18)" opacity="0"/>
             <rect x="237" y="100" width="26" height="24" rx="6" fill="#0d1729" stroke="#334155" stroke-width="2.5"/>
@@ -676,14 +647,14 @@
 
       <div class="title"><span>Manual &amp; Counter Control</span></div>
       <div class="grid2" style="margin:0">
-        <button class="b-green cmd-btn" onclick="sendCmd('start')">START BOTH</button>
-        <button class="b-red cmd-btn" onclick="sendCmd('stop')">STOP ALL</button>
+        <button class="b-green cmd-btn lockable-control" onclick="sendCmd('start')" disabled>START BOTH</button>
+        <button class="b-red cmd-btn lockable-control" onclick="sendCmd('stop')" disabled>STOP ALL</button>
       </div>
       <div class="grid2" style="margin-top:8px;margin-bottom:0">
-        <button class="b-z1 cmd-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
-        <button class="b-z2 cmd-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
+        <button class="b-z1 cmd-btn lockable-control" onclick="sendCmd('z1')" disabled>RUN ZONE 1</button>
+        <button class="b-z2 cmd-btn lockable-control" onclick="sendCmd('z2')" disabled>RUN ZONE 2</button>
       </div>
-      <button class="b-ghost cmd-btn" onclick="sendCmd('resetL')">Reset Total Litres</button>
+      <button class="b-ghost cmd-btn lockable-control" onclick="sendCmd('resetL')" disabled>Reset Total Litres</button>
 
       <div class="run-banner" id="manualRunBanner">
         <div>
@@ -816,11 +787,14 @@
     </div>
   </section>
 
-  <!-- PAGE 7: CONTROLLER LOCATION (DB ONLY, NO LOCAL STORAGE) -->
+  <!-- PAGE 7: CONTROLLER LOCATION -->
   <section class="page-view" id="pageLocation">
     <div class="page-head">
       <span class="page-head-title" style="color:#34d399">CONTROLLER LOCATION</span>
-      <span class="chip" id="locDbChip">DB ONLY</span>
+      <div class="page-head-right">
+        <span class="chip" id="locDbChip">DB ONLY</span>
+        <button type="button" class="lock-btn" id="lockBtnLocation" onclick="togglePageLock('location')">LOCKED</button>
+      </div>
     </div>
     <div class="card" style="border-top:3px solid #34d399">
       <div class="title"><span>Controller GPS / Coordinates (Database)</span></div>
@@ -828,7 +802,7 @@
         Controller Lon / Lat: <b>Not set in DB</b><br>
         Accuracy: <b>--</b> · Updated: <b>--</b>
       </div>
-      <button type="button" class="b-green" id="fetchLocBtn" onclick="fetchAndSaveControllerLocation()" style="margin-top:10px">
+      <button type="button" class="b-green lockable-location" id="fetchLocBtn" onclick="fetchAndSaveControllerLocation()" style="margin-top:10px" disabled>
         Fetch Location (GPS + Network Fallback)
       </button>
       <div style="font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.45">
@@ -840,19 +814,19 @@
       <div class="title"><span>Manual Lat / Lon Save to DB</span></div>
       <div class="row" style="margin:6px 0">
         <label>Latitude</label>
-        <input id="manualLatInput" type="number" step="0.000001" placeholder="22.7520" style="width:120px">
+        <input id="manualLatInput" class="lockable-location" type="number" step="0.000001" placeholder="22.7520" style="width:120px" disabled>
       </div>
       <div class="row" style="margin:6px 0">
         <label>Longitude</label>
-        <input id="manualLonInput" type="number" step="0.000001" placeholder="88.3426" style="width:120px">
+        <input id="manualLonInput" class="lockable-location" type="number" step="0.000001" placeholder="88.3426" style="width:120px" disabled>
       </div>
-      <button type="button" class="b-cyan" id="saveManualLocBtn" onclick="saveManualCoordinatesToDb()">
+      <button type="button" class="b-cyan lockable-location" id="saveManualLocBtn" onclick="saveManualCoordinatesToDb()" disabled>
         Save Manual Lon / Lat to DB
       </button>
     </div>
   </section>
 
-  <!-- PAGE 8: INSIGHT (CUSTOM DATE + MANUAL/AUTO TIME + BAR / LINE / POINT GRAPH) -->
+  <!-- PAGE 8: INSIGHT -->
   <section class="page-view" id="pageInsight">
     <div class="page-head">
       <span class="page-head-title" style="color:#a78bfa">INSIGHT ANALYTICS</span>
@@ -998,10 +972,12 @@ let insightMetric = "runtime";
 let selectedInsightIdx = -1;
 
 const pageUnlocked = {
+  control: false,
   schedule: false,
   bands: false,
   rtc: false,
-  wifi: false
+  wifi: false,
+  location: false
 };
 let latestSettings = {
   s1h: 6, s1m: 15, s2h: 16, s2m: 5, c1: 7.5, c2: 7.5,
@@ -1187,6 +1163,7 @@ async function tryIpLocationFallback() {
 }
 
 async function fetchAndSaveControllerLocation() {
+  if (!pageUnlocked.location) return;
   const btn = document.getElementById("fetchLocBtn");
   if (btn) btn.disabled = true;
   showMsg("Fetching location...");
@@ -1209,11 +1186,12 @@ async function fetchAndSaveControllerLocation() {
     showMsg("Location failed: " + (err.message || "Try manual Lat/Lon below"), true);
     setDiag("Location fallback failed: " + (err.message || "unknown"));
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn && pageUnlocked.location) btn.disabled = false;
   }
 }
 
 async function saveManualCoordinatesToDb() {
+  if (!pageUnlocked.location) return;
   const latRaw = document.getElementById("manualLatInput")?.value;
   const lonRaw = document.getElementById("manualLonInput")?.value;
   const lat = Number(latRaw);
@@ -1229,7 +1207,7 @@ async function saveManualCoordinatesToDb() {
   } catch (e) {
     showMsg("Save failed: " + e.message, true);
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn && pageUnlocked.location) btn.disabled = false;
   }
 }
 
@@ -2071,13 +2049,19 @@ function handleDryStatusSeen() {
 function applyPageLockState(key) {
   const unlocked = Boolean(pageUnlocked[key]);
   document.querySelectorAll(`.lockable-${key}`).forEach(el => {
-    el.disabled = !unlocked;
+    if (key === "control" && el.classList.contains("cmd-btn")) {
+      el.disabled = !unlocked || !isOnline();
+    } else {
+      el.disabled = !unlocked;
+    }
   });
   const mapBtn = {
+    control: "lockBtnControl",
     schedule: "lockBtnSchedule",
     bands: "lockBtnBands",
     rtc: "lockBtnRtc",
-    wifi: "lockBtnWifi"
+    wifi: "lockBtnWifi",
+    location: "lockBtnLocation"
   };
   const btn = document.getElementById(mapBtn[key]);
   if (btn) {
@@ -2192,7 +2176,9 @@ function updatePill() {
   } else {
     pill.innerText = "OFFLINE";
   }
-  document.querySelectorAll(".cmd-btn").forEach(btn => { btn.disabled = !online; });
+  document.querySelectorAll(".cmd-btn").forEach(btn => {
+    btn.disabled = !online || !pageUnlocked.control;
+  });
 }
 
 function formatSchedChip(s) {
@@ -2259,6 +2245,10 @@ function applySettingsToUi(src, forceFill = false) {
 }
 
 async function sendCmd(cmd) {
+  if (!pageUnlocked.control) {
+    showMsg("Control is LOCKED", true);
+    return;
+  }
   if (!isOnline()) {
     showMsg("ESP is OFFLINE", true);
     return;
@@ -2609,10 +2599,12 @@ renderLocationDisplay();
 renderEquipmentAnimation();
 updateManualUiBanner();
 initInsightDates();
+applyPageLockState("control");
 applyPageLockState("schedule");
 applyPageLockState("bands");
 applyPageLockState("rtc");
 applyPageLockState("wifi");
+applyPageLockState("location");
 setInterval(updatePill, 1000);
 setInterval(fetchStatus, 2000);
 setInterval(() => fetchSettings(false), 3000);
