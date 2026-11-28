@@ -89,133 +89,17 @@
     box-shadow:0 4px 14px rgba(0,229,255,.12);
   }
 
-  .rail-footer-btns{
-    width:100%;
-    margin-top:auto;
-    padding-top:8px;
-    border-top:1px solid var(--line);
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-  }
-  .rail-meta-btn{
-    width:100%;
-    background:var(--card2);
-    color:var(--sub);
-    border:1px solid var(--line);
-    border-radius:11px;
-    padding:7px 4px;
-    font-size:9.5px;
-    font-weight:800;
-    cursor:pointer;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:2px;
-    transition:all .15s ease;
-  }
-  .rail-meta-btn:hover{
-    color:var(--cyan);
-    border-color:rgba(0,229,255,.35);
-  }
-
-  .info-modal-backdrop{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(3,7,14,.82);
-    backdrop-filter:blur(7px);
-    z-index:999;
-    align-items:center;
-    justify-content:center;
-    padding:14px;
-  }
-  .info-modal-backdrop.open{
-    display:flex;
-    animation:modalFade .15s ease;
-  }
-  @keyframes modalFade{
-    from{opacity:0;transform:scale(.96)}
-    to{opacity:1;transform:scale(1)}
-  }
-  .info-modal-card{
-    width:100%;
-    max-width:440px;
-    background:linear-gradient(155deg,#132036 0%,#0d1524 100%);
-    border:1px solid rgba(0,229,255,.28);
-    border-radius:20px;
-    padding:16px;
-    box-shadow:0 22px 48px rgba(0,0,0,.72),0 0 24px rgba(0,229,255,.08);
-  }
-  .info-modal-card.danger-modal{
-    max-width:360px;
-    border-color:rgba(255,82,82,.42);
-    box-shadow:0 22px 48px rgba(0,0,0,.75),0 0 24px rgba(255,82,82,.14);
-  }
-  .info-modal-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    padding-bottom:10px;
-    border-bottom:1px solid var(--line);
-    margin-bottom:12px;
-  }
-  .info-modal-title{
-    font-size:14px;
-    font-weight:900;
-    color:var(--cyan);
-  }
-  .danger-modal .info-modal-title{
-    color:#ff8a80;
-  }
-  .info-modal-close{
-    width:auto;
-    padding:5px 10px;
-    border-radius:9px;
-    font-size:11px;
-    background:var(--card2);
-    color:#fff;
-    border:1px solid var(--line);
-  }
-  .info-modal-body{
-    font-size:12.5px;
-    line-height:1.65;
-    color:#cbd5e1;
-  }
-  .info-modal-body p{margin:0 0 9px}
-  .info-modal-body p:last-child{margin-bottom:0}
-  .info-modal-body b{color:#fff}
-  .confirm-actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:14px;
-  }
-  .confirm-cancel-btn{
-    background:var(--card2);
-    color:#e2e8f0;
-    border:1px solid var(--line);
-  }
-  .confirm-stop-btn{
-    background:linear-gradient(135deg,#ff5252 0%,#d32f2f 100%);
-    color:#fff;
-    box-shadow:0 6px 18px rgba(255,82,82,.28);
-  }
-
   .main-area{
     flex:1;
     min-width:0;
     padding:12px;
-    display:flex;
-    flex-direction:column;
   }
 
   .appbar{
     display:flex;justify-content:space-between;align-items:center;gap:8px;
-    padding:10px 14px;background:rgba(13,20,34,.97);backdrop-filter:blur(10px);
-    border-radius:16px;border:1px solid var(--line);margin-bottom:8px;
-    position:sticky;top:8px;z-index:20;box-shadow:0 8px 22px rgba(0,0,0,.45)
+    padding:11px 14px;background:rgba(16,24,39,.92);backdrop-filter:blur(10px);
+    border-radius:16px;border:1px solid var(--line);margin-bottom:10px;
+    position:sticky;top:10px;z-index:20;box-shadow:0 8px 22px rgba(0,0,0,.35)
   }
   .brand-row{display:flex;align-items:center;gap:9px;min-width:0}
   .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);flex-shrink:0}
@@ -230,7 +114,7 @@
   }
   .status-pill.offline{background:#2a0d12;color:var(--red);border-color:rgba(255,82,82,.4)}
 
-  .banner{display:none;padding:10px 12px;border-radius:13px;margin-bottom:8px;font-size:12.5px;font-weight:700;align-items:center;justify-content:space-between;gap:8px}
+  .banner{display:none;padding:10px 12px;border-radius:13px;margin-bottom:10px;font-size:12.5px;font-weight:700;align-items:center;justify-content:space-between;gap:8px}
   .banner.dry{display:flex;background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.5);color:#ff8a80}
   .banner.run{display:flex;background:rgba(0,230,118,.13);border:1px solid rgba(0,230,118,.45);color:#69f0ae}
 
@@ -282,8 +166,6 @@
     align-items:center;
     text-align:center;
     gap:5px;
-    position:relative;
-    overflow:hidden;
   }
   .rig-unit.active-pump{
     border-color:rgba(0,230,118,.65);
@@ -306,8 +188,8 @@
     background:radial-gradient(circle at 50% 20%,rgba(255,82,82,.16),#080f1c 75%);
   }
   .rig-svg-box{
-    width:46px;
-    height:46px;
+    width:44px;
+    height:44px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -377,45 +259,6 @@
   .tab-panel.active{display:block}
   @keyframes fadeIn{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
-  .page-lock-strip{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    padding:8px 12px;
-    margin-bottom:10px;
-    border-radius:14px;
-    background:#0c1424;
-    border:1px solid #1e2f4b;
-  }
-  .page-lock-label{
-    font-size:11px;
-    font-weight:800;
-    color:var(--sub);
-  }
-  .page-lock-label.locked{color:var(--amber)}
-  .page-lock-btn{
-    width:auto;
-    padding:6px 11px;
-    border-radius:10px;
-    font-size:11px;
-    font-weight:800;
-    cursor:pointer;
-    background:var(--card2);
-    color:#e2e8f0;
-    border:1px solid var(--line);
-  }
-  .page-lock-btn.locked{
-    background:rgba(251,191,36,.16);
-    color:var(--amber);
-    border-color:rgba(251,191,36,.5);
-  }
-  .tab-panel.page-locked .page-body{
-    opacity:.62;
-    pointer-events:none;
-    user-select:none;
-  }
-
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   .card{background:var(--card);border-radius:16px;padding:13px;border:1px solid var(--line);margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .z1{border-top:3px solid var(--cyan)}.z2{border-top:3px solid var(--mag)}
@@ -428,22 +271,18 @@
   .stat-line{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
   .stat-line b{color:#fff}
 
+  /* WEATHER CARD STYLES */
   .wx-card{
-    position:sticky;
-    top:66px;
-    z-index:15;
-    background:linear-gradient(135deg,#122642 0%,#0d1729 58%,#13223a 100%);
-    border:1px solid rgba(0,229,255,.32);
+    background:linear-gradient(135deg,#11243e 0%,#0f1a2e 55%,#14233b 100%);
+    border:1px solid rgba(0,229,255,.28);
+    position:relative;
     overflow:hidden;
-    padding:10px 12px;
-    margin-bottom:8px;
-    box-shadow:0 10px 26px rgba(0,0,0,.55);
   }
   .wx-card::after{
     content:"";
     position:absolute;
     right:-28px;top:-28px;
-    width:110px;height:110px;
+    width:120px;height:120px;
     border-radius:50%;
     background:radial-gradient(circle,rgba(0,229,255,.16) 0%,transparent 70%);
     pointer-events:none;
@@ -452,47 +291,41 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:8px;
-    margin-bottom:6px;
-  }
-  .wx-title{
-    font-size:10.5px;
-    font-weight:800;
-    color:var(--cyan);
-    letter-spacing:.3px;
-    text-transform:uppercase;
-  }
-  .wx-main{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
+    gap:10px;
   }
   .wx-left{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:12px;
     min-width:0;
   }
   .wx-art{
-    width:46px;
-    height:46px;
+    width:62px;
+    height:62px;
     flex-shrink:0;
-    border-radius:12px;
-    background:rgba(9,16,30,.75);
+    border-radius:16px;
+    background:rgba(9,16,30,.65);
     border:1px solid rgba(0,229,255,.22);
     display:flex;
     align-items:center;
     justify-content:center;
-    box-shadow:inset 0 0 12px rgba(0,229,255,.08);
+    box-shadow:inset 0 0 14px rgba(0,229,255,.08);
   }
-  .wx-temp{font-size:22px;font-weight:900;line-height:1.05;color:#fff}
-  .wx-desc{font-size:11.5px;font-weight:700;color:var(--cyan);margin-top:1px}
+  .wx-temp{
+    font-size:28px;
+    font-weight:900;
+    line-height:1.05;
+    color:#fff;
+  }
+  .wx-desc{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--cyan);
+    margin-top:2px;
+  }
   .wx-loc{
     font-size:11px;
-    font-weight:700;
-    color:#e2e8f0;
+    color:var(--sub);
     margin-top:2px;
     white-space:nowrap;
     overflow:hidden;
@@ -501,19 +334,28 @@
   .wx-metrics{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:6px;
-    flex:1;
-    min-width:185px;
+    gap:8px;
+    margin-top:11px;
+    padding-top:10px;
+    border-top:1px solid rgba(31,47,74,.85);
   }
   .wx-pill{
-    background:rgba(9,15,27,.75);
+    background:rgba(9,15,27,.65);
     border:1px solid #1d2d47;
-    border-radius:10px;
-    padding:5px 7px;
+    border-radius:11px;
+    padding:7px 8px;
     text-align:center;
   }
-  .wx-pill span{display:block;font-size:9.5px;color:var(--sub);line-height:1.1}
-  .wx-pill b{font-size:11.5px;color:#fff;line-height:1.25}
+  .wx-pill span{
+    display:block;
+    font-size:10px;
+    color:var(--sub);
+    margin-bottom:2px;
+  }
+  .wx-pill b{
+    font-size:12.5px;
+    color:#fff;
+  }
   @keyframes wxFloat{
     0%,100%{transform:translateY(0)}
     50%{transform:translateY(-2.5px)}
@@ -525,6 +367,7 @@
   .wx-svg-float{animation:wxFloat 3.4s ease-in-out infinite}
   .wx-sun-rays{transform-origin:32px 32px;animation:wxSpin 18s linear infinite}
 
+  /* INSIGHTS STYLES */
   .dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
   .dt-box{display:flex;flex-direction:column;gap:4px}
   .dt-box label{font-size:10.5px;font-weight:700;color:var(--sub)}
@@ -691,33 +534,7 @@
   .legend-row{display:flex;gap:14px;font-size:11px;color:var(--sub);margin-top:8px;flex-wrap:wrap}
   .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
 
-  .sec-title{font-size:13px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
-  button{border:none;border-radius:12px;padding:11px 12px;font-weight:800;font-size:12.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
-  button:active:not(:disabled){transform:scale(.97);opacity:.92}
-  button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.45)}
-  .b-green{background:var(--green);color:#03140b}
-  .b-red{background:var(--red);color:#fff}
-  .b-z1{background:#0284c7;color:#fff}
-  .b-z2{background:#a21caf;color:#fff}
-  .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
-  .b-ghost{background:var(--card2);color:#e2e8f0;border:1px solid var(--line);margin-top:8px}
-
-  .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0}
-  .field-col{margin:10px 0}
-  label{font-size:12.5px;color:var(--sub);display:block}
-  .field-col label{margin-bottom:5px}
-  input{background:#090f1b;border:1px solid #293954;color:#fff;padding:7px 9px;border-radius:10px;font-size:13.5px;font-weight:700}
-  input.full{width:100%}
-  input:focus{outline:none;border-color:var(--cyan)}
-
-  table{width:100%;border-collapse:collapse;font-size:12.5px}
-  th{color:var(--sub);font-size:10.5px;text-transform:uppercase;padding:7px 3px;border-bottom:1px solid #20304a}
-  td{padding:7px 3px;text-align:center;border-bottom:1px solid #162236}
-  td input{width:68px;text-align:center}
-
-  .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
-  .info-list b{color:#fff}
-
+  /* COORDS & MAP STYLES */
   .lock-bar{
     display:flex;
     justify-content:space-between;
@@ -747,7 +564,6 @@
     color:var(--amber);
     border-color:rgba(251,191,36,.45);
   }
-
   .map-search-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
   .map-search-btn{
     width:auto;
@@ -803,20 +619,34 @@
     border:1px solid #293954;
   }
 
-  .app-footer{
-    text-align:center;
-    font-size:9.5px;
-    line-height:1.4;
-    color:var(--sub);
-    opacity:.65;
-    padding:10px 6px 6px;
-    margin-top:auto;
-  }
-  .app-footer b{color:#cbd5e1;font-weight:700}
+  .sec-title{font-size:13px;font-weight:800;color:var(--cyan);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+  button{border:none;border-radius:12px;padding:11px 12px;font-weight:800;font-size:12.5px;cursor:pointer;width:100%;transition:transform .08s ease,opacity .2s ease}
+  button:active:not(:disabled){transform:scale(.97);opacity:.92}
+  button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.45)}
+  .b-green{background:var(--green);color:#03140b}
+  .b-red{background:var(--red);color:#fff}
+  .b-z1{background:#0284c7;color:#fff}
+  .b-z2{background:#a21caf;color:#fff}
+  .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
+  .b-ghost{background:var(--card2);color:#e2e8f0;border:1px solid var(--line);margin-top:8px}
+
+  .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .field-col{margin:10px 0}
+  label{font-size:12.5px;color:var(--sub);display:block}
+  .field-col label{margin-bottom:5px}
+  input{background:#090f1b;border:1px solid #293954;color:#fff;padding:7px 9px;border-radius:10px;font-size:13.5px;font-weight:700}
+  input.full{width:100%}
+  input:focus{outline:none;border-color:var(--cyan)}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{color:var(--sub);font-size:10.5px;text-transform:uppercase;padding:7px 3px;border-bottom:1px solid #20304a}
+  td{padding:7px 3px;text-align:center;border-bottom:1px solid #162236}
+  td input{width:68px;text-align:center}
+
+  .info-list{font-size:12.5px;color:var(--sub);line-height:1.75}
+  .info-list b{color:#fff}
 
   @media (max-width:520px){
-    .wx-main{flex-direction:column;align-items:stretch}
-    .wx-metrics{width:100%}
     .dt-grid{grid-template-columns:1fr}
     .style-bar{grid-template-columns:repeat(2,1fr)}
     .rig-grid{gap:6px}
@@ -825,7 +655,7 @@
     .grid2{grid-template-columns:1fr}
     .side-rail{width:74px;padding:10px 6px}
     .moist-val{font-size:25px}
-    .wx-temp{font-size:21px}
+    .wx-temp{font-size:24px}
     .vbar{width:8px}
     .vbar-chart{gap:4px;padding:8px 3px 5px}
   }
@@ -872,17 +702,6 @@
       <span class="ico">🕒</span>
       <span>RTC</span>
     </button>
-
-    <div class="rail-footer-btns">
-      <button type="button" class="rail-meta-btn" onclick="openInfoModal('about')">
-        <span>ℹ️</span>
-        <span>About Us</span>
-      </button>
-      <button type="button" class="rail-meta-btn" onclick="openInfoModal('disclaimer')">
-        <span>⚠️</span>
-        <span>Disclaimer</span>
-      </button>
-    </div>
   </aside>
 
   <div class="main-area">
@@ -897,710 +716,498 @@
       <div class="status-pill offline" id="stBadge">OFFLINE</div>
     </header>
 
-    <div class="card wx-card" id="pinnedWeather">
-      <div class="wx-top">
-        <span class="wx-title">Controller Area Weather</span>
-        <span class="chip" id="wxAdvice">Offline</span>
-      </div>
-      <div class="wx-main">
-        <div class="wx-left">
-          <div class="wx-art" id="wxIcon">
-            <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
-              <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
-              <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
-                <line x1="32" y1="7" x2="32" y2="13"/><line x1="32" y1="51" x2="32" y2="57"/>
-                <line x1="7" y1="32" x2="13" y2="32"/><line x1="51" y1="32" x2="57" y2="32"/>
-                <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/><line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
-                <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/><line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
-              </g>
-            </svg>
-          </div>
-          <div style="min-width:0">
-            <div class="wx-temp" id="wxTemp">--°C</div>
-            <div class="wx-desc" id="wxCond">Weather info not found</div>
-            <div class="wx-loc" id="wxLoc">📍 Controller offline</div>
-          </div>
-        </div>
-
-        <div class="wx-metrics">
-          <div class="wx-pill"><span>Humidity</span><b id="wxHum">--%</b></div>
-          <div class="wx-pill"><span>Wind</span><b id="wxWind">-- km/h</b></div>
-          <div class="wx-pill"><span>Rain</span><b id="wxRain">-- mm</b></div>
-        </div>
-      </div>
-    </div>
-
     <div id="alertBanner" class="banner"></div>
     <div class="toast" id="msg"></div>
 
     <!-- TAB 1: HOME -->
-    <section id="tab-home" class="tab-panel active" data-page-name="Home">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-home">🔓 Home Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-home" onclick="togglePageLock('tab-home')">🔒 Lock Page</button>
+    <section id="tab-home" class="tab-panel active">
+      <div class="card wx-card">
+        <div class="sec-title" style="margin-bottom:8px">
+          <span>Controller Area Weather</span>
+          <span class="chip" id="wxAdvice">Detecting area...</span>
+        </div>
+        <div class="wx-top">
+          <div class="wx-left">
+            <div class="wx-art" id="wxIcon">
+              <svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
+                <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
+                  <line x1="32" y1="7" x2="32" y2="13"/>
+                  <line x1="32" y1="51" x2="32" y2="57"/>
+                  <line x1="7" y1="32" x2="13" y2="32"/>
+                  <line x1="51" y1="32" x2="57" y2="32"/>
+                  <line x1="14.3" y1="14.3" x2="18.6" y2="18.6"/>
+                  <line x1="45.4" y1="45.4" x2="49.7" y2="49.7"/>
+                  <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/>
+                  <line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
+                </g>
+              </svg>
+            </div>
+            <div style="min-width:0">
+              <div class="wx-temp" id="wxTemp">--°C</div>
+              <div class="wx-desc" id="wxCond">Loading weather...</div>
+              <div class="wx-loc" id="wxLoc">📍 Detecting controller location...</div>
+            </div>
+          </div>
+        </div>
+        <div class="wx-metrics">
+          <div class="wx-pill"><span>Humidity</span><b id="wxHum">--%</b></div>
+          <div class="wx-pill"><span>Wind</span><b id="wxWind">-- km/h</b></div>
+          <div class="wx-pill"><span>Rain / Precip</span><b id="wxRain">-- mm</b></div>
+        </div>
       </div>
-      <div class="page-body">
-        <div class="grid2">
-          <div class="card z1" style="margin:0">
-            <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
-            <div class="moist-val" id="m1">--%</div>
-            <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
-            <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
+
+      <div class="grid2">
+        <div class="card z1" style="margin:0">
+          <div class="z-head"><span>ZONE 1</span><span class="chip" id="band1">--</span></div>
+          <div class="moist-val" id="m1">--%</div>
+          <div class="meter"><div class="meter-fill" id="b1" style="width:0%"></div></div>
+          <div class="stat-line"><span>Total Used</span><b id="l1">0.00 L</b></div>
+        </div>
+        <div class="card z2" style="margin:0">
+          <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
+          <div class="moist-val" id="m2">--%</div>
+          <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
+          <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
+        </div>
+      </div>
+
+      <div class="card rig-card">
+        <div class="sec-title"><span>Pump &amp; Valves Live Status</span><span class="chip" id="homeRigMode">STANDBY</span></div>
+        <div class="ctrl-timer-box" style="margin-bottom:8px">
+          <span>Run Timer:</span>
+          <b class="home-manual-timer-val">00:00 (Idle)</b>
+        </div>
+        <div class="rig-grid">
+          <div class="rig-unit" id="homePumpUnit">
+            <div class="rig-svg-box">
+              <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="22" stroke="#2c4366" stroke-width="4" fill="#0d1729"/>
+                <g class="rig-impeller" id="homePumpImpeller">
+                  <circle cx="32" cy="32" r="6" fill="#94a3b8"/>
+                  <path d="M32 12v10M32 42v10M12 32h10M42 32h10" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="rig-name">Main Pump</div>
+            <span class="rig-state-badge" id="homePumpBadge">OFF</span>
           </div>
-          <div class="card z2" style="margin:0">
-            <div class="z-head"><span>ZONE 2</span><span class="chip" id="band2">--</span></div>
-            <div class="moist-val" id="m2">--%</div>
-            <div class="meter"><div class="meter-fill" id="b2" style="width:0%"></div></div>
-            <div class="stat-line"><span>Total Used</span><b id="l2">0.00 L</b></div>
+
+          <div class="rig-unit" id="homeValve1Unit">
+            <div class="rig-svg-box">
+              <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
+                <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
+                <g class="rig-flow-wave" id="homeValve1Wave">
+                  <path d="M13 25h8M43 25h8" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="rig-name">Valve Z1</div>
+            <span class="rig-state-badge" id="homeValve1Badge">CLOSED</span>
+          </div>
+
+          <div class="rig-unit" id="homeValve2Unit">
+            <div class="rig-svg-box">
+              <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
+                <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
+                <g class="rig-flow-wave" id="homeValve2Wave">
+                  <path d="M13 25h8M43 25h8" stroke="#e879f9" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="rig-name">Valve Z2</div>
+            <span class="rig-state-badge" id="homeValve2Badge">CLOSED</span>
           </div>
         </div>
+      </div>
 
-        <div class="card rig-card">
-          <div class="sec-title"><span>Pump &amp; Valves Live Status</span><span class="chip" id="homeRigMode">STANDBY</span></div>
-          <div class="ctrl-timer-box" style="margin-bottom:8px">
-            <span>Run Timer:</span>
-            <b class="home-manual-timer-val">00:00 (Idle)</b>
-          </div>
-          <div class="rig-grid">
-            <div class="rig-unit" id="homePumpUnit">
-              <div class="rig-svg-box">
-                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
-                  <circle cx="32" cy="32" r="22" stroke="#2c4366" stroke-width="4" fill="#0d1729"/>
-                  <g class="rig-impeller" id="homePumpImpeller">
-                    <circle cx="32" cy="32" r="6" fill="#94a3b8"/>
-                    <path d="M32 12v10M32 42v10M12 32h10M42 32h10" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="rig-name">Main Pump</div>
-              <span class="rig-state-badge" id="homePumpBadge">OFF</span>
-            </div>
-
-            <div class="rig-unit" id="homeValve1Unit">
-              <div class="rig-svg-box">
-                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
-                  <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
-                  <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
-                  <g class="rig-flow-wave" id="homeValve1Wave">
-                    <path d="M13 25h8M43 25h8" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="rig-name">Valve Z1</div>
-              <span class="rig-state-badge" id="homeValve1Badge">CLOSED</span>
-            </div>
-
-            <div class="rig-unit" id="homeValve2Unit">
-              <div class="rig-svg-box">
-                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
-                  <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
-                  <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
-                  <g class="rig-flow-wave" id="homeValve2Wave">
-                    <path d="M13 25h8M43 25h8" stroke="#e879f9" stroke-width="2.5" stroke-linecap="round"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="rig-name">Valve Z2</div>
-              <span class="rig-state-badge" id="homeValve2Badge">CLOSED</span>
-            </div>
-          </div>
+      <div class="card">
+        <div class="sec-title"><span>Quick Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
+        <div class="grid2" style="margin:0">
+          <button class="b-green ctrl-btn" onclick="sendCmd('start')">START BOTH</button>
+          <button class="b-red ctrl-btn" onclick="confirmStop()">STOP ALL</button>
         </div>
-
-        <div class="card">
-          <div class="sec-title"><span>Quick Control</span><span class="chip" id="syncAgo">ESP Offline</span></div>
-          <div class="grid2" style="margin:0">
-            <button class="b-green ctrl-btn" onclick="sendCmd('start')">START BOTH</button>
-            <button class="b-red ctrl-btn" onclick="confirmStop()">STOP ALL</button>
-          </div>
-          <div class="grid2" style="margin-top:8px;margin-bottom:0">
-            <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
-            <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
-          </div>
+        <div class="grid2" style="margin-top:8px;margin-bottom:0">
+          <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">RUN ZONE 1</button>
+          <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">RUN ZONE 2</button>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="sec-title">Controller Telemetry</div>
-          <div class="info-list">
-            <div>Wi-Fi Router: <b id="wifiState">--</b></div>
-            <div>Local IP: <b id="ipState">--</b></div>
-            <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
-          </div>
+      <div class="card">
+        <div class="sec-title">Controller Telemetry</div>
+        <div class="info-list">
+          <div>Wi-Fi Router: <b id="wifiState">--</b></div>
+          <div>Local IP: <b id="ipState">--</b></div>
+          <div>Last Heartbeat Age: <b id="hbAge">--</b></div>
         </div>
       </div>
     </section>
 
     <!-- TAB 2: INSIGHTS -->
-    <section id="tab-insights" class="tab-panel" data-page-name="Insights">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-insights">🔓 Insights Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-insights" onclick="togglePageLock('tab-insights')">🔒 Lock Page</button>
+    <section id="tab-insights" class="tab-panel">
+      <div class="card">
+        <div class="sec-title"><span>Date &amp; Time Range</span><span class="chip" id="insRangeInfo">All / Live</span></div>
+        <div class="dt-grid">
+          <div class="dt-box">
+            <label for="insFromDt">From Date &amp; Time</label>
+            <input id="insFromDt" class="dt-input" type="datetime-local">
+          </div>
+          <div class="dt-box">
+            <label for="insToDt">To Date &amp; Time</label>
+            <input id="insToDt" class="dt-input" type="datetime-local">
+          </div>
+        </div>
+        <div class="dt-actions">
+          <button class="mini-btn b-cyan" style="margin:0" onclick="applyDateRangeFilter()">Show Range Insights</button>
+          <button class="mini-btn b-ghost" style="margin:0" onclick="resetDateRangeFilter()">All / Latest</button>
+        </div>
       </div>
-      <div class="page-body">
-        <div class="card">
-          <div class="sec-title"><span>Date &amp; Time Range</span><span class="chip" id="insRangeInfo">All / Live</span></div>
-          <div class="dt-grid">
-            <div class="dt-box">
-              <label for="insFromDt">From Date &amp; Time</label>
-              <input id="insFromDt" class="dt-input" type="datetime-local">
-            </div>
-            <div class="dt-box">
-              <label for="insToDt">To Date &amp; Time</label>
-              <input id="insToDt" class="dt-input" type="datetime-local">
-            </div>
-          </div>
-          <div class="dt-actions">
-            <button class="mini-btn b-cyan" style="margin:0" onclick="applyDateRangeFilter()">Show Range Insights</button>
-            <button class="mini-btn b-ghost" style="margin:0" onclick="resetDateRangeFilter()">All / Latest</button>
-          </div>
-        </div>
 
-        <div class="card">
-          <div class="sec-title"><span>Graph Style</span><span class="chip" id="activeStyleChip">BAR</span></div>
-          <div class="style-bar">
-            <button class="style-btn active" data-gstyle="bar" onclick="setGraphStyle('bar')">📊 Bar</button>
-            <button class="style-btn" data-gstyle="line" onclick="setGraphStyle('line')">📈 Line</button>
-            <button class="style-btn" data-gstyle="point" onclick="setGraphStyle('point')">⚫ Point</button>
-            <button class="style-btn" data-gstyle="circle" onclick="setGraphStyle('circle')">⭕ Circle</button>
-          </div>
+      <div class="card">
+        <div class="sec-title"><span>Graph Style</span><span class="chip" id="activeStyleChip">BAR</span></div>
+        <div class="style-bar">
+          <button class="style-btn active" data-gstyle="bar" onclick="setGraphStyle('bar')">📊 Bar</button>
+          <button class="style-btn" data-gstyle="line" onclick="setGraphStyle('line')">📈 Line</button>
+          <button class="style-btn" data-gstyle="point" onclick="setGraphStyle('point')">⚫ Point</button>
+          <button class="style-btn" data-gstyle="circle" onclick="setGraphStyle('circle')">⭕ Circle</button>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="sec-title"><span>Soil Moisture</span><span class="chip" id="insMoistAvg">Avg: --%</span></div>
-          <div id="insMoistViz"></div>
-        </div>
+      <div class="card">
+        <div class="sec-title"><span>Soil Moisture</span><span class="chip" id="insMoistAvg">Avg: --%</span></div>
+        <div id="insMoistViz"></div>
+      </div>
 
-        <div class="card">
-          <div class="sec-title"><span>Water Usage (Litres)</span><span class="chip" id="insTotalLitres">Total: 0.00 L</span></div>
-          <div id="insWaterViz"></div>
-        </div>
+      <div class="card">
+        <div class="sec-title"><span>Water Usage (Litres)</span><span class="chip" id="insTotalLitres">Total: 0.00 L</span></div>
+        <div id="insWaterViz"></div>
+      </div>
 
-        <div class="card">
-          <div class="sec-title"><span>Moisture Band Targets (ml)</span><span class="chip">Z1 vs Z2</span></div>
-          <div id="insTargetViz"></div>
-          <div class="legend-row">
-            <span><i class="legend-dot" style="background:var(--cyan)"></i>Zone 1 (ml)</span>
-            <span><i class="legend-dot" style="background:var(--mag)"></i>Zone 2 (ml)</span>
-          </div>
+      <div class="card">
+        <div class="sec-title"><span>Moisture Band Targets (ml)</span><span class="chip">Z1 vs Z2</span></div>
+        <div id="insTargetViz"></div>
+        <div class="legend-row">
+          <span><i class="legend-dot" style="background:var(--cyan)"></i>Zone 1 (ml)</span>
+          <span><i class="legend-dot" style="background:var(--mag)"></i>Zone 2 (ml)</span>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="sec-title"><span>Area Weather Metrics</span><span class="chip" id="insWxTag">Weather info not found</span></div>
-          <div id="insWeatherViz"></div>
-        </div>
+      <div class="card">
+        <div class="sec-title"><span>Area Weather Metrics</span><span class="chip" id="insWxTag">Loading...</span></div>
+        <div id="insWeatherViz"></div>
       </div>
     </section>
 
     <!-- TAB 3: CONTROL -->
-    <section id="tab-ctrl" class="tab-panel" data-page-name="Control">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-ctrl">🔓 Control Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-ctrl" onclick="togglePageLock('tab-ctrl')">🔒 Lock Page</button>
-      </div>
-      <div class="page-body">
-        <div class="card rig-card">
-          <div class="sec-title"><span>Pump &amp; Solenoid Valves</span><span class="chip" id="ctrlRigMode">STANDBY</span></div>
-          <div class="ctrl-timer-box">
-            <span>Run Timer:</span>
-            <b id="ctrlManualTimer">00:00 (Idle)</b>
-          </div>
-
-          <div class="rig-grid" style="margin-bottom:12px">
-            <div class="rig-unit" id="ctrlPumpUnit">
-              <div class="rig-svg-box">
-                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
-                  <circle cx="32" cy="32" r="22" stroke="#2c4366" stroke-width="4" fill="#0d1729"/>
-                  <g class="rig-impeller" id="ctrlPumpImpeller">
-                    <circle cx="32" cy="32" r="6" fill="#94a3b8"/>
-                    <path d="M32 12v10M32 42v10M12 32h10M42 32h10" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="rig-name">Main Pump</div>
-              <span class="rig-state-badge" id="ctrlPumpBadge">OFF</span>
-            </div>
-
-            <div class="rig-unit" id="ctrlValve1Unit">
-              <div class="rig-svg-box">
-                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
-                  <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
-                  <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
-                  <g class="rig-flow-wave" id="ctrlValve1Wave">
-                    <path d="M13 25h8M43 25h8" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="rig-name">Valve Z1</div>
-              <span class="rig-state-badge" id="ctrlValve1Badge">CLOSED</span>
-            </div>
-
-            <div class="rig-unit" id="ctrlValve2Unit">
-              <div class="rig-svg-box">
-                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
-                  <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
-                  <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
-                  <g class="rig-flow-wave" id="ctrlValve2Wave">
-                    <path d="M13 25h8M43 25h8" stroke="#e879f9" stroke-width="2.5" stroke-linecap="round"/>
-                  </g>
-                </svg>
-              </div>
-              <div class="rig-name">Valve Z2</div>
-              <span class="rig-state-badge" id="ctrlValve2Badge">CLOSED</span>
-            </div>
-          </div>
-
-          <button class="b-green ctrl-btn" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
-          <div class="grid2" style="margin-top:8px">
-            <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">Zone 1 Only</button>
-            <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">Zone 2 Only</button>
-          </div>
-          <button class="b-red ctrl-btn" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
-          <button class="b-ghost ctrl-btn" onclick="confirmReset()">Reset Total Litres Counter</button>
+    <section id="tab-ctrl" class="tab-panel">
+      <div class="card rig-card">
+        <div class="sec-title"><span>Pump &amp; Solenoid Valves</span><span class="chip" id="ctrlRigMode">STANDBY</span></div>
+        <div class="ctrl-timer-box">
+          <span>Run Timer:</span>
+          <b id="ctrlManualTimer">00:00 (Idle)</b>
         </div>
+
+        <div class="rig-grid" style="margin-bottom:12px">
+          <div class="rig-unit" id="ctrlPumpUnit">
+            <div class="rig-svg-box">
+              <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="22" stroke="#2c4366" stroke-width="4" fill="#0d1729"/>
+                <g class="rig-impeller" id="ctrlPumpImpeller">
+                  <circle cx="32" cy="32" r="6" fill="#94a3b8"/>
+                  <path d="M32 12v10M32 42v10M12 32h10M42 32h10" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="rig-name">Main Pump</div>
+            <span class="rig-state-badge" id="ctrlPumpBadge">OFF</span>
+          </div>
+
+          <div class="rig-unit" id="ctrlValve1Unit">
+            <div class="rig-svg-box">
+              <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
+                <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
+                <g class="rig-flow-wave" id="ctrlValve1Wave">
+                  <path d="M13 25h8M43 25h8" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="rig-name">Valve Z1</div>
+            <span class="rig-state-badge" id="ctrlValve1Badge">CLOSED</span>
+          </div>
+
+          <div class="rig-unit" id="ctrlValve2Unit">
+            <div class="rig-svg-box">
+              <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                <path d="M10 32h12m20 0h12" stroke="#334c73" stroke-width="5" stroke-linecap="round"/>
+                <polygon points="22,22 42,42 42,22 22,42" fill="#132238" stroke="#64748b" stroke-width="2.5"/>
+                <g class="rig-flow-wave" id="ctrlValve2Wave">
+                  <path d="M13 25h8M43 25h8" stroke="#e879f9" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="rig-name">Valve Z2</div>
+            <span class="rig-state-badge" id="ctrlValve2Badge">CLOSED</span>
+          </div>
+        </div>
+
+        <button class="b-green ctrl-btn" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
+        <div class="grid2" style="margin-top:8px">
+          <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">Zone 1 Only</button>
+          <button class="b-z2 ctrl-btn" onclick="sendCmd('z2')">Zone 2 Only</button>
+        </div>
+        <button class="b-red ctrl-btn" onclick="confirmStop()">Emergency Stop / Clear Alert</button>
+        <button class="b-ghost ctrl-btn" onclick="confirmReset()">Reset Total Litres Counter</button>
       </div>
     </section>
 
     <!-- TAB 4: SCHEDULE -->
-    <section id="tab-sched" class="tab-panel" data-page-name="Schedule">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-sched">🔓 Schedule Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-sched" onclick="togglePageLock('tab-sched')">🔒 Lock Page</button>
-      </div>
-      <div class="page-body">
-        <div class="card">
-          <div class="sec-title"><span>Daily Irrigation Schedules &amp; Flow</span><span class="chip" id="schedSyncTag">Cloud Ready</span></div>
-          <div class="row">
-            <label>Morning Sch 1 (HH:MM)</label>
-            <div>
-              <input id="s1h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
-              <input id="s1m" type="number" min="0" max="59" style="width:54px;text-align:center">
-            </div>
+    <section id="tab-sched" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Daily Irrigation Schedules &amp; Flow</div>
+        <div class="row">
+          <label>Morning Sch 1 (HH:MM)</label>
+          <div>
+            <input id="s1h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
+            <input id="s1m" type="number" min="0" max="59" style="width:54px;text-align:center">
           </div>
-          <div class="row">
-            <label>Evening Sch 2 (HH:MM)</label>
-            <div>
-              <input id="s2h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
-              <input id="s2m" type="number" min="0" max="59" style="width:54px;text-align:center">
-            </div>
-          </div>
-          <div class="row">
-            <label>Flow Cal Z1 / Z2</label>
-            <div>
-              <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
-              <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
-            </div>
-          </div>
-          <button class="b-cyan" id="btnSaveSched" onclick="saveScheduleAndFlow()">Save Schedule &amp; Flow Cal</button>
         </div>
+        <div class="row">
+          <label>Evening Sch 2 (HH:MM)</label>
+          <div>
+            <input id="s2h" type="number" min="0" max="23" style="width:54px;text-align:center"> :
+            <input id="s2m" type="number" min="0" max="59" style="width:54px;text-align:center">
+          </div>
+        </div>
+        <div class="row">
+          <label>Flow Cal Z1 / Z2</label>
+          <div>
+            <input id="c1" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+            <input id="c2" type="number" step="0.1" min="0.5" max="30" style="width:62px;text-align:center">
+          </div>
+        </div>
+        <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Schedule &amp; Flow Cal</button>
       </div>
     </section>
 
     <!-- TAB 5: TARGETS -->
-    <section id="tab-cfg" class="tab-panel" data-page-name="Targets">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-cfg">🔓 Targets Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-cfg" onclick="togglePageLock('tab-cfg')">🔒 Lock Page</button>
-      </div>
-      <div class="page-body">
-        <div class="card">
-          <div class="sec-title"><span>Moisture Band Water Targets (ml)</span><span class="chip" id="targetsSyncTag">Cloud Ready</span></div>
-          <table>
-            <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
-            <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
-            <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
-            <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
-            <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
-            <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
-          </table>
-          <button class="b-cyan" id="btnSaveTargets" onclick="saveTargets()">Save Moisture Targets</button>
-        </div>
+    <section id="tab-cfg" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Moisture Band Water Targets (ml)</div>
+        <table>
+          <tr><th>Moisture</th><th>Zone 1</th><th>Zone 2</th></tr>
+          <tr><td>&lt; 20%</td><td><input id="z1_0" type="number" step="100" min="0" max="100000"></td><td><input id="z2_0" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>20 - 39%</td><td><input id="z1_1" type="number" step="100" min="0" max="100000"></td><td><input id="z2_1" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>40 - 59%</td><td><input id="z1_2" type="number" step="100" min="0" max="100000"></td><td><input id="z2_2" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>60 - 79%</td><td><input id="z1_3" type="number" step="100" min="0" max="100000"></td><td><input id="z2_3" type="number" step="100" min="0" max="100000"></td></tr>
+          <tr><td>80 - 100%</td><td><input id="z1_4" type="number" step="100" min="0" max="100000"></td><td><input id="z2_4" type="number" step="100" min="0" max="100000"></td></tr>
+        </table>
+        <button class="b-cyan ctrl-btn" onclick="saveSettings()">Save Moisture Targets</button>
       </div>
     </section>
 
-    <!-- TAB 6: CONTROLLER COORDINATES -->
-    <section id="tab-coord" class="tab-panel" data-page-name="Coords">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-coord">🔓 Coords Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-coord" onclick="togglePageLock('tab-coord')">🔒 Lock Page</button>
-      </div>
-      <div class="page-body">
-        <div class="card">
-          <div class="sec-title"><span>Controller Coordinates</span><span class="chip" id="coordStatusChip">Not Set</span></div>
-          <div class="info-list" style="margin-bottom:8px">
-            <div>Saved Lat / Lon: <b id="savedCoordText">--</b></div>
-            <div>Resolved Place: <b id="savedCoordPlace">--</b></div>
-            <div>Coordinate Source: <b id="coordSourceText">--</b></div>
+    <!-- TAB 6: CONTROLLER COORDINATES & MAP -->
+    <section id="tab-coord" class="tab-panel">
+      <div class="card">
+        <div class="sec-title"><span>Controller Coordinates &amp; Map</span><span class="chip" id="coordStatusChip">Not Set</span></div>
+        <div class="info-list" style="margin-bottom:8px">
+          <div>Saved Lat / Lon: <b id="savedCoordText">--</b></div>
+          <div>Resolved Place: <b id="savedCoordPlace">--</b></div>
+          <div>Coordinate Source: <b id="coordSourceText">--</b></div>
+        </div>
+        <div class="grid2" style="margin:8px 0">
+          <button type="button" class="b-ghost" style="margin:0" id="getCoordBtn" onclick="getDeviceCoordinates()">Get Coordinates</button>
+          <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()">Add Controller Coordinate</button>
+        </div>
+        <div class="dt-grid">
+          <div class="dt-box">
+            <label for="manLat">Latitude</label>
+            <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat">
           </div>
-          <div class="grid2" style="margin:8px 0">
-            <button type="button" class="b-ghost" style="margin:0" id="getCoordBtn" onclick="getDeviceCoordinates()">Get Coordinates</button>
-            <button type="button" class="b-cyan" style="margin:0" id="addCoordBtn" onclick="addControllerCoordinate()">Add Controller Coordinate</button>
+          <div class="dt-box">
+            <label for="manLon">Longitude</label>
+            <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon">
           </div>
-          <div class="dt-grid">
-            <div class="dt-box">
-              <label for="manLat">Latitude</label>
-              <input id="manLat" class="dt-input" type="text" placeholder="Auto or enter lat">
-            </div>
-            <div class="dt-box">
-              <label for="manLon">Longitude</label>
-              <input id="manLon" class="dt-input" type="text" placeholder="Auto or enter lon">
-            </div>
-          </div>
-          <button type="button" class="b-ghost" id="clearCoordBtn" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
+        </div>
+        <button type="button" class="b-ghost" id="clearCoordBtn" onclick="clearControllerCoordinate()">Clear Saved Coordinate</button>
 
-          <div class="lock-bar">
-            <span class="lock-status" id="coordLockStatus">🔓 Unlocked (Editable)</span>
-            <button type="button" class="lock-toggle-btn" id="coordLockBtn" onclick="toggleCoordLock()">🔒 Lock Pin</button>
-          </div>
+        <div class="lock-bar">
+          <span class="lock-status" id="coordLockStatus">🔓 Unlocked (Editable)</span>
+          <button type="button" class="lock-toggle-btn" id="coordLockBtn" onclick="toggleCoordLock()">🔒 Lock Pin</button>
+        </div>
 
-          <div class="map-search-row">
-            <input id="mapSearchInput" class="dt-input" type="text" placeholder="Search area, village, town or road..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapArea();}">
-            <button type="button" class="map-search-btn" id="mapSearchBtn" onclick="searchMapArea()">🔍 Search</button>
-          </div>
+        <div class="map-search-row">
+          <input id="mapSearchInput" class="dt-input" type="text" placeholder="Search area, village, town or road..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapArea();}">
+          <button type="button" class="map-search-btn" id="mapSearchBtn" onclick="searchMapArea()">🔍 Search</button>
+        </div>
 
-          <div class="map-toolbar">
-            <button type="button" class="map-mode-btn active" id="btnMapStreet" onclick="setControllerMapMode('street')">🗺 Map View</button>
-            <button type="button" class="map-mode-btn" id="btnMapSat" onclick="setControllerMapMode('satellite')">🛰 Satellite View</button>
-          </div>
-          <div id="coordMap" class="map-box"></div>
-          <div class="map-caption">
-            <span>Controller Pin: <b id="mapCoordLabel">Not set</b></span>
-            <span id="mapTileStatus">Tap map to pick</span>
-          </div>
+        <div class="map-toolbar">
+          <button type="button" class="map-mode-btn active" id="btnMapStreet" onclick="setControllerMapMode('street')">🗺 Map View</button>
+          <button type="button" class="map-mode-btn" id="btnMapSat" onclick="setControllerMapMode('satellite')">🛰 Satellite View</button>
+        </div>
+        <div id="coordMap" class="map-box"></div>
+        <div class="map-caption">
+          <span>Controller Pin: <b id="mapCoordLabel">Not set</b></span>
+          <span id="mapTileStatus">Tap map to pick</span>
         </div>
       </div>
     </section>
 
     <!-- TAB 7: WI-FI SETUP -->
-    <section id="tab-wifi" class="tab-panel" data-page-name="Wi-Fi">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-wifi">🔓 Wi-Fi Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-wifi" onclick="togglePageLock('tab-wifi')">🔒 Lock Page</button>
-      </div>
-      <div class="page-body">
-        <div class="card">
-          <div class="sec-title"><span>Router Wi-Fi Setup</span><span class="chip" id="wifiSyncTag">Cloud Ready</span></div>
-          <div class="info-list" style="margin-bottom:8px">
-            <div>Current SSID: <b id="curSsid">--</b></div>
-            <div>Current IP: <b id="curIp">--</b></div>
-          </div>
-          <div class="field-col">
-            <label for="wifiSsid">Wi-Fi User ID / SSID</label>
-            <input id="wifiSsid" class="full" type="text" placeholder="Enter router SSID">
-          </div>
-          <div class="field-col">
-            <label for="wifiPass">Wi-Fi Password</label>
-            <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
-          </div>
-          <button class="b-cyan" id="btnSaveWifi" onclick="saveWifi()">Save Wi-Fi Credentials</button>
+    <section id="tab-wifi" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">Router Wi-Fi Setup</div>
+        <div class="info-list" style="margin-bottom:8px">
+          <div>Current SSID: <b id="curSsid">--</b></div>
+          <div>Current IP: <b id="curIp">--</b></div>
         </div>
+        <div class="field-col">
+          <label for="wifiSsid">Wi-Fi User ID / SSID</label>
+          <input id="wifiSsid" class="full" type="text" placeholder="Enter router SSID">
+        </div>
+        <div class="field-col">
+          <label for="wifiPass">Wi-Fi Password</label>
+          <input id="wifiPass" class="full" type="password" placeholder="Enter router password">
+        </div>
+        <button class="b-cyan ctrl-btn" onclick="saveWifi()">Save Wi-Fi Credentials</button>
       </div>
     </section>
 
     <!-- TAB 8: RTC DATE & TIME -->
-    <section id="tab-rtc" class="tab-panel" data-page-name="RTC">
-      <div class="page-lock-strip">
-        <span class="page-lock-label" id="pageLockLabel_tab-rtc">🔓 RTC Unlocked</span>
-        <button type="button" class="page-lock-btn" id="pageLockBtn_tab-rtc" onclick="togglePageLock('tab-rtc')">🔒 Lock Page</button>
-      </div>
-      <div class="page-body">
-        <div class="card">
-          <div class="sec-title"><span>DS3231 Date &amp; Time</span><span class="chip" id="rtcSyncTag">Cloud Ready</span></div>
-          <div class="row">
-            <label>Date (YYYY/MM/DD)</label>
-            <div>
-              <input id="rtcY" type="number" min="2025" max="2099" style="width:68px;text-align:center"> /
-              <input id="rtcMo" type="number" min="1" max="12" style="width:48px;text-align:center"> /
-              <input id="rtcD" type="number" min="1" max="31" style="width:48px;text-align:center">
-            </div>
+    <section id="tab-rtc" class="tab-panel">
+      <div class="card">
+        <div class="sec-title">DS3231 Date &amp; Time</div>
+        <div class="row">
+          <label>Date (YYYY/MM/DD)</label>
+          <div>
+            <input id="rtcY" type="number" min="2020" max="2099" style="width:68px;text-align:center"> /
+            <input id="rtcMo" type="number" min="1" max="12" style="width:48px;text-align:center"> /
+            <input id="rtcD" type="number" min="1" max="31" style="width:48px;text-align:center">
           </div>
-          <div class="row">
-            <label>Time (HH:MM:SS)</label>
-            <div>
-              <input id="rtcH" type="number" min="0" max="23" style="width:48px;text-align:center"> :
-              <input id="rtcMi" type="number" min="0" max="59" style="width:48px;text-align:center"> :
-              <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
-            </div>
-          </div>
-          <button class="b-cyan" id="btnSaveRtc" onclick="saveRtc(false)">Set Date &amp; Time</button>
-          <button class="b-ghost" id="btnSyncPhoneRtc" onclick="saveRtc(true)">Sync Phone Current Date &amp; Time</button>
         </div>
+        <div class="row">
+          <label>Time (HH:MM:SS)</label>
+          <div>
+            <input id="rtcH" type="number" min="0" max="23" style="width:48px;text-align:center"> :
+            <input id="rtcMi" type="number" min="0" max="59" style="width:48px;text-align:center"> :
+            <input id="rtcS" type="number" min="0" max="59" style="width:48px;text-align:center">
+          </div>
+        </div>
+        <button class="b-cyan ctrl-btn" onclick="saveRtc(false)">Set Date &amp; Time</button>
+        <button class="b-ghost ctrl-btn" onclick="saveRtc(true)">Sync Phone Current Date &amp; Time</button>
       </div>
     </section>
-
-    <footer class="app-footer">
-      app development by <b>Abhishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
-    </footer>
-  </div>
-</div>
-
-<!-- DARK CONFIRMATION POPUP -->
-<div id="stopModalBackdrop" class="info-modal-backdrop" onclick="if(event.target===this)closeStopModal()">
-  <div class="info-modal-card danger-modal" role="dialog" aria-modal="true" aria-labelledby="stopModalTitle">
-    <div class="info-modal-head">
-      <span class="info-modal-title" id="stopModalTitle">🛑 Stop Irrigation?</span>
-      <button type="button" class="info-modal-close" onclick="closeStopModal()">✕</button>
-    </div>
-    <div class="info-modal-body">
-      <p>Stop the <b>Main Pump</b> and close active <b>solenoid valves</b> right now?</p>
-    </div>
-    <div class="confirm-actions">
-      <button type="button" class="confirm-cancel-btn" onclick="closeStopModal()">Cancel</button>
-      <button type="button" class="confirm-stop-btn" onclick="executeConfirmedStop()">Stop Now</button>
-    </div>
-  </div>
-</div>
-
-<!-- ABOUT US & DISCLAIMER MODAL -->
-<div id="infoModalBackdrop" class="info-modal-backdrop" onclick="if(event.target===this)closeInfoModal()">
-  <div class="info-modal-card" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
-    <div class="info-modal-head">
-      <span class="info-modal-title" id="infoModalTitle">About Us</span>
-      <button type="button" class="info-modal-close" onclick="closeInfoModal()">✕ Close</button>
-    </div>
-    <div class="info-modal-body" id="infoModalBody"></div>
   </div>
 </div>
 
 <script>
-"use strict";
-
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
-
 const ESP_STALE_MS = 15000;
-const STATUS_POLL_MS = 2500;
-const SETTINGS_POLL_MS = 5000;
-const WEATHER_REFRESH_MS = 600000;
+const WEATHER_REFRESH_MS = 600000; // 10 min
 const MAX_INSIGHT_LOGS = 500;
 
 const STORAGE_KEYS = {
-  INSIGHT_LOGS: "quantix_insight_logs_v5",
-  COORD: "quantix_controller_coord_v5",
-  COORD_LOCK: "quantix_coord_locked_v5",
-  PAGE_LOCKS: "quantix_page_locks_v5",
-  MANUAL_RUN: "quantix_manual_run_v5"
+  INSIGHT_LOGS: "quantix_insight_logs_v1",
+  COORD: "quantix_controller_coord_v1",
+  COORD_LOCK: "quantix_coord_locked_v1",
+  MANUAL_RUN: "quantix_manual_run_v1"
 };
 
-const SCHED_FLOW_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
-const TARGET_IDS = [
-  "z1_0", "z1_1", "z1_2", "z1_3", "z1_4",
-  "z2_0", "z2_1", "z2_2", "z2_3", "z2_4"
-];
+let settingsLoaded = false;
+let lastSeenMillis = null;
+let lastSeenChangeAt = 0;
+let lastPayloadSig = "";
+let latestStatusData = null;
+let cachedGeo = null;
+let latestWeatherData = null;
+let lastWeatherFetchAt = 0;
+const dirtyInputs = new Set();
 
-const INFO_MODAL_CONTENT = {
-  about: {
-    title: "About Us — Quantix Tech",
-    html: `
-      <p><b>Quantix Tech</b> is a Kolkata-based automation company building smart IoT, embedded hardware, and precision irrigation solutions.</p>
-      <p><b>Founders:</b><br>
-      • <b>Abhishek Mukhopadhyay</b> — Founder &amp; Chief Engineer<br>
-      • <b>Surojit Paul</b> — Founder &amp; Creative Head</p>
-      <p><b>Sister Concern:</b> <b>PixelCraft</b></p>
-      <p style="font-size:11.5px;color:#94a3b8">App development by Abhishek Mukhopadhyay · Product of Quantix Tech</p>
-    `
-  },
-  disclaimer: {
-    title: "Disclaimer",
-    html: `
-      <p><b>Hardware &amp; Water Safety:</b> Always verify pump, solenoid valve, dry-run protection, and electrical wiring physically before starting irrigation. Do not rely solely on remote alerts during critical operations.</p>
-      <p><b>Audio &amp; Background Limits:</b> Warning beeps and run timers depend on active browser/WebView session, device volume/mute settings, and OS background policies; completely force-closing the app may stop web audio.</p>
-      <p><b>Telemetry, Weather &amp; Map Data:</b> Weather, map tiles, geocoding, and cloud sync rely on third-party services and network connectivity, so minor delays or inaccuracies may occur.</p>
-    `
-  }
-};
+let graphStyle = "bar";
+let rangeFilter = null;
 
-const AppState = {
-  status: null,
-  settings: null,
-  lastSettingsSig: "",
-  isSavingCloud: false,
-  dirtyFields: new Set(),
+let coordLocked = localStorage.getItem(STORAGE_KEYS.COORD_LOCK) === "1";
+let pendingCoord = null;
+let mapInstance = null;
+let mapMarker = null;
+let mapCircle = null;
+let streetLayer = null;
+let satLayer = null;
+let labelsLayer = null;
+let mapMode = "street";
 
-  lastSeenHeartbeatVal: null,
-  lastHeartbeatAt: 0,
-  lastFallbackSig: "",
+let runStartedAt = 0;
+let runMode = "";
+let runGraceUntil = 0;
+let stopCooldownUntil = 0;
+let timerInterval = null;
+let beepInterval = null;
+let audioCtx = null;
 
-  weather: null,
-  geo: null,
-  lastWeatherFetchAt: 0,
-
-  graphStyle: "bar",
-  rangeFilter: null,
-
-  coordLocked: localStorage.getItem(STORAGE_KEYS.COORD_LOCK) === "1",
-  pendingCoord: null,
-  map: null,
-  mapMarker: null,
-  mapCircle: null,
-  streetLayer: null,
-  satLayer: null,
-  labelsLayer: null,
-  mapMode: "street",
-
-  pageLocks: {},
-
-  runStartedAt: 0,
-  runMode: "",
-  runGraceUntil: 0,
-  stopCooldownUntil: 0,
-  timerInterval: null,
-  beepInterval: null,
-  audioCtx: null
-};
-
-function $(id) {
-  return document.getElementById(id);
-}
-
-function setText(id, value) {
-  const el = $(id);
-  if (el) el.innerText = value;
-}
-
-function showToast(text, isError = false) {
-  const el = $("msg");
-  if (!el) return;
-  el.style.color = isError ? "#ff8a80" : "#00e676";
-  el.innerText = text;
-  setTimeout(() => {
-    if (el.innerText === text) el.innerText = "";
-  }, 3500);
-}
-
-async function apiRequest(url, options = {}, retries = 2) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      const response = await fetch(url, { cache: "no-store", ...options });
-      if (response.ok) {
-        return await response.json();
+function bindInputEditGuards() {
+  document.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      if (inp.id) dirtyInputs.add(inp.id);
+      if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
+        refreshInsightsGraphs();
       }
-      if (response.status >= 500 && attempt < retries) {
-        await new Promise(r => setTimeout(r, 250 * (attempt + 1)));
-        continue;
+      if (!coordLocked && (inp.id === "manLat" || inp.id === "manLon")) {
+        const lat = Number(document.getElementById("manLat")?.value);
+        const lon = Number(document.getElementById("manLon")?.value);
+        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+          syncMapMarker(lat, lon, "Preview Coordinate");
+        }
       }
-      throw new Error(`HTTP ${response.status}`);
-    } catch (err) {
-      if (attempt === retries) throw err;
-      await new Promise(r => setTimeout(r, 250 * (attempt + 1)));
-    }
-  }
-}
-
-function isControllerOnline() {
-  if (AppState.lastHeartbeatAt <= 0) return false;
-  return (Date.now() - AppState.lastHeartbeatAt) <= ESP_STALE_MS;
-}
-
-function readNumberInput(id, fallback) {
-  const el = $(id);
-  if (!el) return fallback;
-  const raw = String(el.value ?? "").trim();
-  if (raw === "") return fallback;
-  const num = Number(raw);
-  return Number.isFinite(num) ? num : fallback;
-}
-
-function fillInputIfClean(id, value) {
-  if (value === undefined || value === null || value === "") return;
-  const el = $(id);
-  if (!el) return;
-  if (document.activeElement === el) return;
-  if (AppState.dirtyFields.has(id)) return;
-  if (String(el.value) !== String(value)) {
-    el.value = value;
-  }
-}
-
-/* Modals & Page Locks */
-function openInfoModal(type) {
-  const item = INFO_MODAL_CONTENT[type] || INFO_MODAL_CONTENT.about;
-  setText("infoModalTitle", item.title);
-  const body = $("infoModalBody");
-  if (body) body.innerHTML = item.html;
-  $("infoModalBackdrop")?.classList.add("open");
-}
-
-function closeInfoModal() {
-  $("infoModalBackdrop")?.classList.remove("open");
-}
-
-function openStopModal() {
-  $("stopModalBackdrop")?.classList.add("open");
-}
-
-function closeStopModal() {
-  $("stopModalBackdrop")?.classList.remove("open");
-}
-
-function executeConfirmedStop() {
-  closeStopModal();
-  sendCmd("stop");
-}
-
-function loadPageLocks() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PAGE_LOCKS);
-    const parsed = raw ? JSON.parse(raw) : {};
-    AppState.pageLocks = (parsed && typeof parsed === "object") ? parsed : {};
-  } catch (e) {
-    AppState.pageLocks = {};
-  }
-}
-
-function savePageLocks() {
-  try {
-    localStorage.setItem(STORAGE_KEYS.PAGE_LOCKS, JSON.stringify(AppState.pageLocks));
-  } catch (e) {}
-}
-
-function isPageLocked(tabId) {
-  return Boolean(AppState.pageLocks[tabId]);
-}
-
-function applyPageLockUi(tabId) {
-  const panel = $(tabId);
-  if (!panel) return;
-  const locked = isPageLocked(tabId);
-  const pageName = panel.dataset.pageName || "Page";
-  const lbl = $("pageLockLabel_" + tabId);
-  const btn = $("pageLockBtn_" + tabId);
-
-  panel.classList.toggle("page-locked", locked);
-  if (lbl) {
-    lbl.innerText = locked ? `🔒 ${pageName} Locked` : `🔓 ${pageName} Unlocked`;
-    lbl.classList.toggle("locked", locked);
-  }
-  if (btn) {
-    btn.innerText = locked ? "🔓 Unlock Page" : "🔒 Lock Page";
-    btn.classList.toggle("locked", locked);
-  }
-}
-
-function applyAllPageLocks() {
-  document.querySelectorAll(".tab-panel").forEach(p => {
-    if (p.id) applyPageLockUi(p.id);
+    });
   });
 }
 
-function togglePageLock(tabId) {
-  const panel = $(tabId);
-  const pageName = panel?.dataset?.pageName || "Page";
-  const next = !isPageLocked(tabId);
-  AppState.pageLocks[tabId] = next;
-  savePageLocks();
-  applyPageLockUi(tabId);
-  showToast(next ? `${pageName} page locked` : `${pageName} page unlocked`);
+function clearDirtyGroup(ids) {
+  ids.forEach(id => dirtyInputs.delete(id));
 }
 
-function ensurePageUnlocked(tabId) {
-  if (!tabId) return true;
-  if (isPageLocked(tabId)) {
-    const pageName = $(tabId)?.dataset?.pageName || "Page";
-    showToast(`${pageName} is locked. Unlock page first`, true);
-    return false;
-  }
+function canAutoFill(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return false;
+  if (document.activeElement === el) return false;
+  if (dirtyInputs.has(inputId)) return false;
   return true;
 }
 
-/* Run Timer & Warning Beep */
+function setControlsEnabled(enabled) {
+  document.querySelectorAll(".ctrl-btn").forEach(btn => {
+    btn.disabled = !enabled;
+  });
+}
+
+function switchTab(btn) {
+  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(btn.dataset.tab).classList.add("active");
+  updateRunTimerDisplay();
+
+  if (btn.dataset.tab === "tab-insights") {
+    initDefaultDateRangeInputs();
+    refreshInsightsGraphs();
+  } else if (btn.dataset.tab === "tab-coord") {
+    renderSavedCoordSummary();
+    setCoordLock(coordLocked, false);
+    initControllerMap();
+  }
+}
+
+function bandLabel(m) {
+  if (m < 20) return "<20%";
+  if (m < 40) return "20-39%";
+  if (m < 60) return "40-59%";
+  if (m < 80) return "60-79%";
+  return "80-100%";
+}
+
+/* RUN TIMER & WARNING BEEP */
 function formatClock(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
   const hrs = Math.floor(totalSec / 3600);
@@ -1614,11 +1221,11 @@ function unlockAudio() {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
-    if (!AppState.audioCtx) AppState.audioCtx = new Ctx();
-    if (AppState.audioCtx.state === "suspended") {
-      AppState.audioCtx.resume().catch(() => {});
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
     }
-    return AppState.audioCtx;
+    return audioCtx;
   } catch (e) {
     return null;
   }
@@ -1652,8 +1259,8 @@ function playBeepOnce() {
 function startBeepLoop() {
   stopBeepLoop();
   playBeepOnce();
-  AppState.beepInterval = setInterval(() => {
-    if (!AppState.runStartedAt) {
+  beepInterval = setInterval(() => {
+    if (!runStartedAt) {
       stopBeepLoop();
       return;
     }
@@ -1662,18 +1269,18 @@ function startBeepLoop() {
 }
 
 function stopBeepLoop() {
-  if (AppState.beepInterval) {
-    clearInterval(AppState.beepInterval);
-    AppState.beepInterval = null;
+  if (beepInterval) {
+    clearInterval(beepInterval);
+    beepInterval = null;
   }
 }
 
 function persistRunSession() {
   try {
-    if (AppState.runStartedAt > 0 && AppState.runMode) {
+    if (runStartedAt > 0 && runMode) {
       localStorage.setItem(STORAGE_KEYS.MANUAL_RUN, JSON.stringify({
-        startedAt: AppState.runStartedAt,
-        mode: AppState.runMode
+        startedAt: runStartedAt,
+        mode: runMode
       }));
     } else {
       localStorage.removeItem(STORAGE_KEYS.MANUAL_RUN);
@@ -1682,11 +1289,11 @@ function persistRunSession() {
 }
 
 function updateRunTimerDisplay() {
-  const ctrlEl = $("ctrlManualTimer");
-  const liveEl = $("liveManualTimer");
+  const ctrlEl = document.getElementById("ctrlManualTimer");
+  const liveEl = document.getElementById("liveManualTimer");
   const homeEls = document.querySelectorAll(".home-manual-timer-val");
 
-  if (!AppState.runStartedAt) {
+  if (!runStartedAt) {
     if (ctrlEl) ctrlEl.innerText = "00:00 (Idle)";
     if (liveEl) liveEl.innerText = "00:00";
     homeEls.forEach(el => { el.innerText = "00:00 (Idle)"; });
@@ -1694,8 +1301,8 @@ function updateRunTimerDisplay() {
     return;
   }
 
-  const elapsed = formatClock(Date.now() - AppState.runStartedAt);
-  const label = (AppState.runMode || "RUN").toUpperCase();
+  const elapsed = formatClock(Date.now() - runStartedAt);
+  const label = (runMode || "RUN").toUpperCase();
   if (ctrlEl) ctrlEl.innerText = `${elapsed} (${label})`;
   if (liveEl) liveEl.innerText = elapsed;
   homeEls.forEach(el => { el.innerText = `${elapsed} (${label})`; });
@@ -1704,70 +1311,67 @@ function updateRunTimerDisplay() {
 
 function startRunSession(mode) {
   unlockAudio();
-  AppState.runStartedAt = Date.now();
-  AppState.runMode = mode;
-  AppState.runGraceUntil = Date.now() + 8000;
-  AppState.stopCooldownUntil = 0;
+  runStartedAt = Date.now();
+  runMode = mode;
+  runGraceUntil = Date.now() + 8000;
+  stopCooldownUntil = 0;
   persistRunSession();
 
-  if ("Notification" in window && Notification.permission === "default") {
-    Notification.requestPermission().catch(() => {});
-  }
-  if (!AppState.timerInterval) {
-    AppState.timerInterval = setInterval(updateRunTimerDisplay, 500);
+  if (!timerInterval) {
+    timerInterval = setInterval(updateRunTimerDisplay, 500);
   }
   updateRunTimerDisplay();
   startBeepLoop();
 }
 
 function stopRunSession(reason = "Stopped") {
-  const wasRunning = AppState.runStartedAt > 0;
-  const duration = wasRunning ? formatClock(Date.now() - AppState.runStartedAt) : "00:00";
+  const wasRunning = runStartedAt > 0;
+  const duration = wasRunning ? formatClock(Date.now() - runStartedAt) : "00:00";
 
-  AppState.runStartedAt = 0;
-  AppState.runMode = "";
-  AppState.runGraceUntil = 0;
-  AppState.stopCooldownUntil = Date.now() + 5000;
+  runStartedAt = 0;
+  runMode = "";
+  runGraceUntil = 0;
+  stopCooldownUntil = Date.now() + 5000;
   persistRunSession();
 
-  if (AppState.timerInterval) {
-    clearInterval(AppState.timerInterval);
-    AppState.timerInterval = null;
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
   }
   stopBeepLoop();
   updateRunTimerDisplay();
 
   if (wasRunning) {
-    showToast(`${reason} · Ran ${duration}`);
+    showMsg(`${reason} · Ran ${duration}`);
   }
 }
 
 function syncRunTimerWithHardware(isRunning, modeHint = "auto") {
   if (isRunning) {
-    if (!AppState.runStartedAt && Date.now() < AppState.stopCooldownUntil) {
+    if (!runStartedAt && Date.now() < stopCooldownUntil) {
       updateRunTimerDisplay();
       return;
     }
-    AppState.runGraceUntil = 0;
-    if (!AppState.runStartedAt) {
-      AppState.runStartedAt = Date.now();
-      AppState.runMode = modeHint || "auto";
+    runGraceUntil = 0;
+    if (!runStartedAt) {
+      runStartedAt = Date.now();
+      runMode = modeHint || "auto";
       persistRunSession();
-      if (!AppState.timerInterval) {
-        AppState.timerInterval = setInterval(updateRunTimerDisplay, 500);
+      if (!timerInterval) {
+        timerInterval = setInterval(updateRunTimerDisplay, 500);
       }
-      if (!AppState.beepInterval) startBeepLoop();
-    } else if ((!AppState.runMode || AppState.runMode === "auto") && modeHint && modeHint !== "auto") {
-      AppState.runMode = modeHint;
+      if (!beepInterval) startBeepLoop();
+    } else if ((!runMode || runMode === "auto") && modeHint && modeHint !== "auto") {
+      runMode = modeHint;
       persistRunSession();
     }
     updateRunTimerDisplay();
   } else {
-    if (AppState.runStartedAt > 0 && Date.now() < AppState.runGraceUntil) {
+    if (runStartedAt > 0 && Date.now() < runGraceUntil) {
       updateRunTimerDisplay();
       return;
     }
-    if (AppState.runStartedAt > 0) {
+    if (runStartedAt > 0) {
       stopRunSession("Stopped");
     }
   }
@@ -1780,10 +1384,10 @@ function restoreRunSession() {
     const saved = JSON.parse(raw);
     const ts = Number(saved?.startedAt || 0);
     if (ts > 0 && (Date.now() - ts) < 86400000) {
-      AppState.runStartedAt = ts;
-      AppState.runMode = String(saved?.mode || "start");
-      if (!AppState.timerInterval) {
-        AppState.timerInterval = setInterval(updateRunTimerDisplay, 500);
+      runStartedAt = ts;
+      runMode = String(saved?.mode || "start");
+      if (!timerInterval) {
+        timerInterval = setInterval(updateRunTimerDisplay, 500);
       }
       updateRunTimerDisplay();
     } else {
@@ -1792,13 +1396,13 @@ function restoreRunSession() {
   } catch (e) {}
 }
 
-/* Pump & Valves Visuals */
+/* PUMP & VALVES LIVE VISUALS */
 function computeRigState() {
-  const online = isControllerOnline();
-  const d = AppState.status || {};
+  const online = isEspAliveNow();
+  const d = latestStatusData || {};
   const st = String(d.status || "").toUpperCase();
   const isDry = online && (Boolean(d.dryAlert) || st === "DRY!");
-  const isWatering = online && (Boolean(d.watering) || st === "RUN" || AppState.runStartedAt > 0);
+  const isWatering = online && (Boolean(d.watering) || st === "RUN" || runStartedAt > 0);
 
   let pumpOn = false;
   let v1Open = false;
@@ -1817,9 +1421,9 @@ function computeRigState() {
     }
 
     if (!v1Open && !v2Open) {
-      if (AppState.runStartedAt > 0) {
-        if (AppState.runMode === "z1") v1Open = true;
-        else if (AppState.runMode === "z2") v2Open = true;
+      if (runStartedAt > 0) {
+        if (runMode === "z1") v1Open = true;
+        else if (runMode === "z2") v2Open = true;
         else { v1Open = true; v2Open = true; }
       } else if (isWatering) {
         const az = String(d.activeZone || d.zone || "").toLowerCase();
@@ -1834,10 +1438,10 @@ function computeRigState() {
 }
 
 function setRigUnit(unitId, badgeId, impId, waveId, kind, active, isDry, activeLbl, idleLbl) {
-  const unit = $(unitId);
-  const badge = $(badgeId);
-  const imp = impId ? $(impId) : null;
-  const wave = waveId ? $(waveId) : null;
+  const unit = document.getElementById(unitId);
+  const badge = document.getElementById(badgeId);
+  const imp = impId ? document.getElementById(impId) : null;
+  const wave = waveId ? document.getElementById(waveId) : null;
 
   if (unit) {
     unit.classList.remove("active-pump", "active-v1", "active-v2", "alert-dry");
@@ -1865,8 +1469,10 @@ function updateRigVisuals() {
         ? (v1Open && v2Open ? "BOTH ACTIVE" : v1Open ? "ZONE 1 RUN" : v2Open ? "ZONE 2 RUN" : "PUMP RUN")
         : "STANDBY";
 
-  setText("homeRigMode", modeText);
-  setText("ctrlRigMode", modeText);
+  const hMode = document.getElementById("homeRigMode");
+  const cMode = document.getElementById("ctrlRigMode");
+  if (hMode) hMode.innerText = modeText;
+  if (cMode) cMode.innerText = modeText;
 
   setRigUnit("homePumpUnit", "homePumpBadge", "homePumpImpeller", null, "pump", pumpOn, isDry, "RUNNING", "OFF");
   setRigUnit("homeValve1Unit", "homeValve1Badge", null, "homeValve1Wave", "v1", v1Open, false, "OPEN", "CLOSED");
@@ -1877,463 +1483,7 @@ function updateRigVisuals() {
   setRigUnit("ctrlValve2Unit", "ctrlValve2Badge", null, "ctrlValve2Wave", "v2", v2Open, false, "OPEN", "CLOSED");
 }
 
-/* Firebase /settings Sync */
-function extractZoneList(sourceObj, zoneKey, prefixKey) {
-  if (!sourceObj || typeof sourceObj !== "object") return [null, null, null, null, null];
-  const out = [null, null, null, null, null];
-  const arr = sourceObj[zoneKey];
-
-  if (Array.isArray(arr)) {
-    for (let i = 0; i < 5; i++) {
-      if (arr[i] !== undefined && arr[i] !== null) out[i] = arr[i];
-    }
-  } else if (arr && typeof arr === "object") {
-    for (let i = 0; i < 5; i++) {
-      if (arr[String(i)] !== undefined && arr[String(i)] !== null) out[i] = arr[String(i)];
-    }
-  }
-
-  for (let i = 0; i < 5; i++) {
-    const flatKey = `${prefixKey}_${i}`;
-    if (sourceObj[flatKey] !== undefined && sourceObj[flatKey] !== null) {
-      out[i] = sourceObj[flatKey];
-    }
-  }
-  return out;
-}
-
-function applyCloudSettingsToInputs(s, st) {
-  const src = (s && typeof s === "object") ? s : {};
-
-  SCHED_FLOW_IDS.forEach(id => {
-    const val = (src[id] !== undefined && src[id] !== null) ? src[id] : st?.[id];
-    if (val !== undefined && val !== null) {
-      fillInputIfClean(id, val);
-    }
-  });
-
-  const ssidVal = src.wifiSsid || st?.staSsid;
-  if (ssidVal) {
-    fillInputIfClean("wifiSsid", ssidVal);
-  }
-
-  const z1FromSettings = extractZoneList(src, "z1", "z1");
-  const z2FromSettings = extractZoneList(src, "z2", "z2");
-  const z1FromStatus = extractZoneList(st, "z1", "z1");
-  const z2FromStatus = extractZoneList(st, "z2", "z2");
-
-  for (let i = 0; i < 5; i++) {
-    const v1 = z1FromSettings[i] !== null ? z1FromSettings[i] : z1FromStatus[i];
-    const v2 = z2FromSettings[i] !== null ? z2FromSettings[i] : z2FromStatus[i];
-    if (v1 !== null) fillInputIfClean(`z1_${i}`, v1);
-    if (v2 !== null) fillInputIfClean(`z2_${i}`, v2);
-  }
-
-  const coordObj = src.controllerCoord || st?.controllerCoord;
-  if (coordObj && coordObj.lat !== undefined && coordObj.lon !== undefined) {
-    const lat = Number(coordObj.lat);
-    const lon = Number(coordObj.lon);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      localStorage.setItem(STORAGE_KEYS.COORD, JSON.stringify({
-        lat,
-        lon,
-        place: coordObj.place ? String(coordObj.place).trim() : "",
-        method: coordObj.method ? String(coordObj.method).trim() : "Cloud Sync",
-        updatedAt: Number(coordObj.updatedAt || Date.now())
-      }));
-      renderSavedCoordSummary();
-    }
-  }
-
-  refreshInsightsGraphs();
-}
-
-async function pullSettingsFromCloud(force = false) {
-  if (AppState.isSavingCloud && !force) return;
-  try {
-    const s = await apiRequest(`${DB_URL}/settings.json`, {}, 1);
-    const sig = JSON.stringify(s || {});
-    if (!force && sig === AppState.lastSettingsSig) return;
-    AppState.lastSettingsSig = sig;
-    AppState.settings = (s && typeof s === "object") ? s : {};
-    applyCloudSettingsToInputs(AppState.settings, AppState.status);
-
-    setText("schedSyncTag", "Synced");
-    setText("targetsSyncTag", "Synced");
-    setText("wifiSyncTag", "Synced");
-    setText("rtcSyncTag", "Synced");
-  } catch (e) {}
-}
-
-async function patchSettingsCloud(fields) {
-  AppState.isSavingCloud = true;
-  const nowTs = Date.now();
-  const payload = { ...fields, updatedAt: nowTs };
-  try {
-    let savedData = null;
-    try {
-      savedData = await apiRequest(`${DB_URL}/settings.json`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }, 2);
-    } catch (patchErr) {
-      const existing = await apiRequest(`${DB_URL}/settings.json`, {}, 1).catch(() => ({}));
-      const mergedBody = { ...(existing && typeof existing === "object" ? existing : {}), ...payload };
-      savedData = await apiRequest(`${DB_URL}/settings.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(mergedBody)
-      }, 2);
-    }
-
-    AppState.settings = {
-      ...(AppState.settings && typeof AppState.settings === "object" ? AppState.settings : {}),
-      ...payload,
-      ...(savedData && typeof savedData === "object" ? savedData : {})
-    };
-    AppState.lastSettingsSig = JSON.stringify(AppState.settings);
-    return AppState.settings;
-  } finally {
-    AppState.isSavingCloud = false;
-  }
-}
-
-async function saveScheduleAndFlow() {
-  if (!ensurePageUnlocked("tab-sched")) return;
-  const btn = $("btnSaveSched");
-  if (btn) btn.disabled = true;
-
-  const payload = {
-    s1h: readNumberInput("s1h", 6),
-    s1m: readNumberInput("s1m", 15),
-    s2h: readNumberInput("s2h", 16),
-    s2m: readNumberInput("s2m", 5),
-    c1: readNumberInput("c1", 7.5),
-    c2: readNumberInput("c2", 7.5)
-  };
-
-  try {
-    const merged = await patchSettingsCloud(payload);
-    SCHED_FLOW_IDS.forEach(id => AppState.dirtyFields.delete(id));
-    applyCloudSettingsToInputs(merged, AppState.status);
-    setText("schedSyncTag", "Saved ✓");
-    showToast("Schedule & Flow Cal saved!");
-  } catch (e) {
-    showToast("Save failed: " + e.message, true);
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function saveTargets() {
-  if (!ensurePageUnlocked("tab-cfg")) return;
-  const btn = $("btnSaveTargets");
-  if (btn) btn.disabled = true;
-
-  const flatMap = {};
-  for (let i = 0; i < 5; i++) {
-    flatMap[`z1_${i}`] = readNumberInput(`z1_${i}`, 0);
-    flatMap[`z2_${i}`] = readNumberInput(`z2_${i}`, 0);
-  }
-
-  try {
-    const merged = await patchSettingsCloud(flatMap);
-    TARGET_IDS.forEach(id => AppState.dirtyFields.delete(id));
-    applyCloudSettingsToInputs(merged, AppState.status);
-    setText("targetsSyncTag", "Saved ✓");
-    showToast("Moisture targets saved!");
-  } catch (e) {
-    showToast("Targets save failed: " + e.message, true);
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function saveWifi() {
-  if (!ensurePageUnlocked("tab-wifi")) return;
-  const ssid = ($("wifiSsid")?.value || "").trim();
-  const pass = $("wifiPass")?.value || "";
-  if (!ssid) {
-    showToast("Enter Wi-Fi SSID first", true);
-    return;
-  }
-
-  const btn = $("btnSaveWifi");
-  if (btn) btn.disabled = true;
-
-  try {
-    const merged = await patchSettingsCloud({
-      wifiSsid: ssid,
-      wifiPass: pass
-    });
-    AppState.dirtyFields.delete("wifiSsid");
-    AppState.dirtyFields.delete("wifiPass");
-    applyCloudSettingsToInputs(merged, AppState.status);
-    setText("wifiSyncTag", "Saved ✓");
-    showToast("Wi-Fi credentials saved!");
-  } catch (e) {
-    showToast("Wi-Fi save failed: " + e.message, true);
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function saveRtc(usePhoneNow) {
-  if (!ensurePageUnlocked("tab-rtc")) return;
-
-  let y, mo, d, h, mi, s;
-  if (usePhoneNow) {
-    const now = new Date();
-    y = now.getFullYear();
-    mo = now.getMonth() + 1;
-    d = now.getDate();
-    h = now.getHours();
-    mi = now.getMinutes();
-    s = now.getSeconds();
-
-    if ($("rtcY")) $("rtcY").value = y;
-    if ($("rtcMo")) $("rtcMo").value = mo;
-    if ($("rtcD")) $("rtcD").value = d;
-    if ($("rtcH")) $("rtcH").value = h;
-    if ($("rtcMi")) $("rtcMi").value = mi;
-    if ($("rtcS")) $("rtcS").value = s;
-  } else {
-    y = readNumberInput("rtcY", 2026);
-    mo = readNumberInput("rtcMo", 1);
-    d = readNumberInput("rtcD", 1);
-    h = readNumberInput("rtcH", 0);
-    mi = readNumberInput("rtcMi", 0);
-    s = readNumberInput("rtcS", 0);
-  }
-
-  const b1 = $("btnSaveRtc");
-  const b2 = $("btnSyncPhoneRtc");
-  if (b1) b1.disabled = true;
-  if (b2) b2.disabled = true;
-
-  try {
-    await patchSettingsCloud({
-      setRtc: true,
-      rtcY: y,
-      rtcMo: mo,
-      rtcD: d,
-      rtcH: h,
-      rtcMi: mi,
-      rtcS: s
-    });
-    ["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"].forEach(id => AppState.dirtyFields.delete(id));
-    setText("rtcSyncTag", "Saved ✓");
-    showToast("RTC Date & Time sent!");
-  } catch (e) {
-    showToast("RTC save failed: " + e.message, true);
-  } finally {
-    if (b1) b1.disabled = false;
-    if (b2) b2.disabled = false;
-  }
-}
-
-function initRtcInputs() {
-  const now = new Date();
-  fillInputIfClean("rtcY", now.getFullYear());
-  fillInputIfClean("rtcMo", now.getMonth() + 1);
-  fillInputIfClean("rtcD", now.getDate());
-  fillInputIfClean("rtcH", now.getHours());
-  fillInputIfClean("rtcMi", now.getMinutes());
-  fillInputIfClean("rtcS", now.getSeconds());
-}
-
-/* Control Commands */
-function setControlButtonsEnabled(enabled) {
-  document.querySelectorAll(".ctrl-btn").forEach(btn => {
-    btn.disabled = !enabled;
-  });
-}
-
-function confirmStop() {
-  const activeTab = document.querySelector(".tab-panel.active")?.id;
-  if (!ensurePageUnlocked(activeTab)) return;
-  if (!isControllerOnline()) {
-    showToast("ESP is OFFLINE", true);
-    return;
-  }
-  openStopModal();
-}
-
-function confirmReset() {
-  if (!ensurePageUnlocked("tab-ctrl")) return;
-  if (!isControllerOnline()) {
-    showToast("ESP is OFFLINE", true);
-    return;
-  }
-  sendCmd("resetL");
-}
-
-async function sendCmd(cmd) {
-  const activeTab = document.querySelector(".tab-panel.active")?.id;
-  if (!ensurePageUnlocked(activeTab)) return;
-  if (!isControllerOnline()) {
-    showToast("ESP is OFFLINE — command blocked", true);
-    return;
-  }
-  try {
-    await apiRequest(`${DB_URL}/control/cmd.json`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cmd)
-    }, 2);
-
-    if (cmd === "start" || cmd === "z1" || cmd === "z2") {
-      startRunSession(cmd);
-    } else if (cmd === "stop") {
-      stopRunSession("Force stopped");
-    } else if (cmd === "resetL") {
-      showToast("Total litres counter reset command sent");
-      return;
-    }
-    showToast("Command sent: " + cmd.toUpperCase());
-  } catch (e) {
-    showToast("Command failed: " + e.message, true);
-  }
-}
-
-/* Telemetry & Polling */
-function bandLabel(m) {
-  if (m < 20) return "<20%";
-  if (m < 40) return "20-39%";
-  if (m < 60) return "40-59%";
-  if (m < 80) return "60-79%";
-  return "80-100%";
-}
-
-function renderAlertBanner(st, dryAlert, watering, online) {
-  const box = $("alertBanner");
-  if (!box) return;
-  if (!online) {
-    box.style.display = "none";
-    return;
-  }
-  if (dryAlert || st === "DRY!") {
-    box.className = "banner dry";
-    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
-  } else if (watering || st === "RUN" || AppState.runStartedAt > 0) {
-    const dur = AppState.runStartedAt ? formatClock(Date.now() - AppState.runStartedAt) : "00:00";
-    box.className = "banner run";
-    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${dur}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
-  } else {
-    if (AppState.runStartedAt > 0 && Date.now() >= AppState.runGraceUntil) {
-      stopRunSession("Stopped");
-    }
-    box.style.display = "none";
-  }
-}
-
-function updateOnlineState() {
-  const dot = $("netDot");
-  const badge = $("stBadge");
-  const online = isControllerOnline();
-
-  setText("hbAge", AppState.lastHeartbeatAt > 0
-    ? `${Math.max(0, Math.floor((Date.now() - AppState.lastHeartbeatAt) / 1000))}s ago`
-    : "--");
-
-  if (online) {
-    setControlButtonsEnabled(true);
-    if (dot) dot.className = "pulse-dot";
-    setText("syncAgo", "ESP Online");
-
-    const d = AppState.status || {};
-    const st = d.status || "RDY";
-    const stUpper = String(st).toUpperCase();
-
-    if (badge) {
-      badge.className = "status-pill";
-      badge.innerText = st === "RDY" ? "ONLINE" : st;
-      badge.style.color = stUpper === "DRY!" ? "#ff5252" : "#00e676";
-    }
-
-    const isDry = Boolean(d.dryAlert) || stUpper === "DRY!";
-    const isRunning = !isDry && (Boolean(d.watering) || stUpper === "RUN");
-    const modeHint = AppState.runMode
-      ? AppState.runMode
-      : (d.activeZone ? String(d.activeZone).toLowerCase() : "auto");
-
-    syncRunTimerWithHardware(isRunning, modeHint);
-    renderAlertBanner(st, Boolean(d.dryAlert), Boolean(d.watering), true);
-  } else {
-    setControlButtonsEnabled(false);
-    if (dot) dot.className = "pulse-dot off";
-    if (badge) {
-      badge.className = "status-pill offline";
-      badge.innerText = "OFFLINE";
-      badge.style.color = "";
-    }
-    setText("syncAgo", "ESP Offline");
-    AppState.geo = null;
-    syncRunTimerWithHardware(false);
-    renderAlertBanner("OFFLINE", false, false, false);
-    renderWeatherNotFound("📍 Controller offline");
-    refreshInsightsGraphs();
-  }
-
-  updateRigVisuals();
-}
-
-async function pollStatus() {
-  try {
-    const d = await apiRequest(`${DB_URL}/status.json`, {}, 2);
-    if (!d || typeof d !== "object") return;
-    AppState.status = d;
-
-    const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
-    if (rawSeen !== undefined && rawSeen !== null) {
-      const numSeen = Number(rawSeen);
-      if (numSeen !== AppState.lastSeenHeartbeatVal) {
-        AppState.lastSeenHeartbeatVal = numSeen;
-        AppState.lastHeartbeatAt = Date.now();
-      }
-    } else {
-      const sig = `${d.time}|${d.status}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`;
-      if (sig !== AppState.lastFallbackSig) {
-        AppState.lastFallbackSig = sig;
-        AppState.lastHeartbeatAt = Date.now();
-      }
-    }
-
-    const m1 = Math.max(0, Math.min(100, Number(d.m1 ?? 0)));
-    const m2 = Math.max(0, Math.min(100, Number(d.m2 ?? 0)));
-    const l1 = Math.max(0, Number(d.l1 ?? 0));
-    const l2 = Math.max(0, Number(d.l2 ?? 0));
-
-    setText("rtc", "RTC: " + (d.time || "--/--/---- --:--"));
-    setText("m1", m1 + "%");
-    setText("m2", m2 + "%");
-    setText("band1", bandLabel(m1));
-    setText("band2", bandLabel(m2));
-    if ($("b1")) $("b1").style.width = m1 + "%";
-    if ($("b2")) $("b2").style.width = m2 + "%";
-    setText("l1", l1.toFixed(2) + " L");
-    setText("l2", l2.toFixed(2) + " L");
-    setText("wifiState", d.staSsid || AppState.settings?.wifiSsid || "Not set");
-    setText("ipState", d.staIP || "--");
-    setText("curSsid", d.staSsid || AppState.settings?.wifiSsid || "Not set");
-    setText("curIp", d.staIP || "--");
-
-    applyCloudSettingsToInputs(AppState.settings, AppState.status);
-
-    if (isControllerOnline()) {
-      recordInsightPoint(m1, m2, l1, l2, AppState.weather);
-    }
-
-    refreshInsightsGraphs();
-    updateOnlineState();
-    updateWeather(false);
-  } catch (e) {
-    updateOnlineState();
-  }
-}
-
-/* Coordinates & Map */
+/* COORDINATES & MAP */
 function getSavedCoord() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.COORD);
@@ -2355,107 +1505,106 @@ function getSavedCoord() {
 }
 
 function setCoordLock(locked, notify = false) {
-  AppState.coordLocked = Boolean(locked);
+  coordLocked = Boolean(locked);
   try {
-    localStorage.setItem(STORAGE_KEYS.COORD_LOCK, AppState.coordLocked ? "1" : "0");
+    localStorage.setItem(STORAGE_KEYS.COORD_LOCK, coordLocked ? "1" : "0");
   } catch (e) {}
 
-  const st = $("coordLockStatus");
-  const btn = $("coordLockBtn");
+  const st = document.getElementById("coordLockStatus");
+  const btn = document.getElementById("coordLockBtn");
   if (st) {
-    st.innerText = AppState.coordLocked ? "🔒 Pin Locked (Protected)" : "🔓 Unlocked (Editable)";
-    st.classList.toggle("locked", AppState.coordLocked);
+    st.innerText = coordLocked ? "🔒 Pin Locked (Protected)" : "🔓 Unlocked (Editable)";
+    st.classList.toggle("locked", coordLocked);
   }
   if (btn) {
-    btn.innerText = AppState.coordLocked ? "🔓 Unlock Pin" : "🔒 Lock Pin";
-    btn.classList.toggle("is-locked", AppState.coordLocked);
+    btn.innerText = coordLocked ? "🔓 Unlock Pin" : "🔒 Lock Pin";
+    btn.classList.toggle("is-locked", coordLocked);
   }
 
-  if ($("manLat")) $("manLat").readOnly = AppState.coordLocked;
-  if ($("manLon")) $("manLon").readOnly = AppState.coordLocked;
-  if ($("mapSearchInput")) $("mapSearchInput").disabled = AppState.coordLocked;
-  if ($("mapSearchBtn")) $("mapSearchBtn").disabled = AppState.coordLocked;
-  if ($("addCoordBtn")) $("addCoordBtn").disabled = AppState.coordLocked;
-  if ($("clearCoordBtn")) $("clearCoordBtn").disabled = AppState.coordLocked;
-  if ($("getCoordBtn")) $("getCoordBtn").disabled = AppState.coordLocked;
+  const latEl = document.getElementById("manLat");
+  const lonEl = document.getElementById("manLon");
+  if (latEl) latEl.readOnly = coordLocked;
+  if (lonEl) lonEl.readOnly = coordLocked;
+  if (document.getElementById("mapSearchInput")) document.getElementById("mapSearchInput").disabled = coordLocked;
+  if (document.getElementById("mapSearchBtn")) document.getElementById("mapSearchBtn").disabled = coordLocked;
+  if (document.getElementById("addCoordBtn")) document.getElementById("addCoordBtn").disabled = coordLocked;
+  if (document.getElementById("clearCoordBtn")) document.getElementById("clearCoordBtn").disabled = coordLocked;
+  if (document.getElementById("getCoordBtn")) document.getElementById("getCoordBtn").disabled = coordLocked;
 
   if (notify) {
-    showToast(AppState.coordLocked ? "Controller pin locked" : "Controller pin unlocked for editing");
+    showMsg(coordLocked ? "Controller pin locked" : "Controller pin unlocked for editing");
   }
 }
 
 function toggleCoordLock() {
-  if (!ensurePageUnlocked("tab-coord")) return;
-  if (!AppState.coordLocked && !getSavedCoord()) {
-    showToast("Save a coordinate first before locking", true);
+  if (!coordLocked && !getSavedCoord()) {
+    showMsg("Save a coordinate first before locking", true);
     return;
   }
-  setCoordLock(!AppState.coordLocked, true);
+  setCoordLock(!coordLocked, true);
 }
 
 function setControllerMapMode(mode) {
-  if (!ensurePageUnlocked("tab-coord")) return;
-  AppState.mapMode = mode === "satellite" ? "satellite" : "street";
-  $("btnMapStreet")?.classList.toggle("active", AppState.mapMode === "street");
-  $("btnMapSat")?.classList.toggle("active", AppState.mapMode === "satellite");
+  mapMode = mode === "satellite" ? "satellite" : "street";
+  document.getElementById("btnMapStreet")?.classList.toggle("active", mapMode === "street");
+  document.getElementById("btnMapSat")?.classList.toggle("active", mapMode === "satellite");
 
-  if (!AppState.map || !AppState.streetLayer || !AppState.satLayer || !AppState.labelsLayer) return;
+  if (!mapInstance || !streetLayer || !satLayer || !labelsLayer) return;
 
-  if (AppState.mapMode === "satellite") {
-    if (AppState.map.hasLayer(AppState.streetLayer)) AppState.map.removeLayer(AppState.streetLayer);
-    if (!AppState.map.hasLayer(AppState.satLayer)) AppState.satLayer.addTo(AppState.map);
-    if (!AppState.map.hasLayer(AppState.labelsLayer)) AppState.labelsLayer.addTo(AppState.map);
+  if (mapMode === "satellite") {
+    if (mapInstance.hasLayer(streetLayer)) mapInstance.removeLayer(streetLayer);
+    if (!mapInstance.hasLayer(satLayer)) satLayer.addTo(mapInstance);
+    if (!mapInstance.hasLayer(labelsLayer)) labelsLayer.addTo(mapInstance);
   } else {
-    if (AppState.map.hasLayer(AppState.satLayer)) AppState.map.removeLayer(AppState.satLayer);
-    if (AppState.map.hasLayer(AppState.labelsLayer)) AppState.map.removeLayer(AppState.labelsLayer);
-    if (!AppState.map.hasLayer(AppState.streetLayer)) AppState.streetLayer.addTo(AppState.map);
+    if (mapInstance.hasLayer(satLayer)) mapInstance.removeLayer(satLayer);
+    if (mapInstance.hasLayer(labelsLayer)) mapInstance.removeLayer(labelsLayer);
+    if (!mapInstance.hasLayer(streetLayer)) streetLayer.addTo(mapInstance);
   }
 }
 
 function initControllerMap() {
-  const mapEl = $("coordMap");
+  const mapEl = document.getElementById("coordMap");
   if (!mapEl) return;
   if (typeof L === "undefined") {
-    setText("mapTileStatus", "Map library offline");
+    if (document.getElementById("mapTileStatus")) document.getElementById("mapTileStatus").innerText = "Map library offline";
     return;
   }
 
-  if (!AppState.map) {
+  if (!mapInstance) {
     const saved = getSavedCoord();
-    const startLat = saved ? saved.lat : 26.51667;
-    const startLon = saved ? saved.lon : 88.73333;
+    const startLat = saved ? saved.lat : 22.5726;
+    const startLon = saved ? saved.lon : 88.3639;
 
-    AppState.map = L.map("coordMap", {
+    mapInstance = L.map("coordMap", {
       center: [startLat, startLon],
-      zoom: saved ? 16 : 14,
+      zoom: saved ? 16 : 13,
       zoomControl: true,
       attributionControl: false
     });
 
-    AppState.streetLayer = L.tileLayer(
+    streetLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19 }
     );
-    AppState.satLayer = L.tileLayer(
+    satLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19 }
     );
-    AppState.labelsLayer = L.tileLayer(
+    labelsLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19 }
     );
 
-    if (AppState.mapMode === "satellite") {
-      AppState.satLayer.addTo(AppState.map);
-      AppState.labelsLayer.addTo(AppState.map);
+    if (mapMode === "satellite") {
+      satLayer.addTo(mapInstance);
+      labelsLayer.addTo(mapInstance);
     } else {
-      AppState.streetLayer.addTo(AppState.map);
+      streetLayer.addTo(mapInstance);
     }
 
-    AppState.map.on("click", e => {
-      if (!ensurePageUnlocked("tab-coord")) return;
-      if (AppState.coordLocked) {
-        showToast("Pin is locked. Unlock first to move pin", true);
+    mapInstance.on("click", e => {
+      if (coordLocked) {
+        showMsg("Pin is locked. Unlock first to move pin", true);
         return;
       }
       applyPendingCoord(
@@ -2468,7 +1617,7 @@ function initControllerMap() {
   }
 
   setTimeout(() => {
-    if (AppState.map) AppState.map.invalidateSize();
+    if (mapInstance) mapInstance.invalidateSize();
   }, 120);
 
   syncMapMarker();
@@ -2484,104 +1633,111 @@ function syncMapMarker(overrideLat = null, overrideLon = null, overrideTitle = n
     : (saved ? saved.lon : null);
 
   if (lat === null || lon === null || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-    setText("mapCoordLabel", "Not set");
-    if (AppState.map && AppState.mapMarker) {
-      AppState.map.removeLayer(AppState.mapMarker);
-      AppState.mapMarker = null;
+    if (document.getElementById("mapCoordLabel")) document.getElementById("mapCoordLabel").innerText = "Not set";
+    if (mapInstance && mapMarker) {
+      mapInstance.removeLayer(mapMarker);
+      mapMarker = null;
     }
-    if (AppState.map && AppState.mapCircle) {
-      AppState.map.removeLayer(AppState.mapCircle);
-      AppState.mapCircle = null;
+    if (mapInstance && mapCircle) {
+      mapInstance.removeLayer(mapCircle);
+      mapCircle = null;
     }
     return;
   }
 
   const title = overrideTitle || (saved && saved.place) || "Controller Location";
-  setText("mapCoordLabel", `${title} (${lat.toFixed(5)}, ${lon.toFixed(5)})`);
+  if (document.getElementById("mapCoordLabel")) {
+    document.getElementById("mapCoordLabel").innerText = `${title} (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+  }
 
-  if (!AppState.map || typeof L === "undefined") return;
+  if (!mapInstance || typeof L === "undefined") return;
 
-  if (!AppState.mapMarker) {
-    AppState.mapMarker = L.circleMarker([lat, lon], {
+  if (!mapMarker) {
+    mapMarker = L.circleMarker([lat, lon], {
       radius: 8,
       color: "#060a12",
       weight: 2.5,
       fillColor: "#00e5ff",
       fillOpacity: 1
-    }).addTo(AppState.map);
+    }).addTo(mapInstance);
   } else {
-    AppState.mapMarker.setLatLng([lat, lon]);
+    mapMarker.setLatLng([lat, lon]);
   }
 
-  if (!AppState.mapCircle) {
-    AppState.mapCircle = L.circle([lat, lon], {
+  if (!mapCircle) {
+    mapCircle = L.circle([lat, lon], {
       radius: 80,
       color: "#00e5ff",
       weight: 1.2,
       fillColor: "#00e5ff",
       fillOpacity: 0.14
-    }).addTo(AppState.map);
+    }).addTo(mapInstance);
   } else {
-    AppState.mapCircle.setLatLng([lat, lon]);
+    mapCircle.setLatLng([lat, lon]);
   }
 
-  AppState.mapMarker.bindPopup(`<b>${title}</b><br>${lat.toFixed(6)}, ${lon.toFixed(6)}`);
-  AppState.map.setView([lat, lon], 15, { animate: true });
+  mapMarker.bindPopup(`<b>${title}</b><br>${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+  mapInstance.setView([lat, lon], 15, { animate: true });
 }
 
 function renderSavedCoordSummary() {
   const saved = getSavedCoord();
-  const chip = $("coordStatusChip");
+  const chip = document.getElementById("coordStatusChip");
+  const txt = document.getElementById("savedCoordText");
+  const plc = document.getElementById("savedCoordPlace");
+  const src = document.getElementById("coordSourceText");
+
   if (saved) {
     if (chip) {
       chip.innerText = "Active";
       chip.style.color = "#00e676";
     }
-    setText("savedCoordText", `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`);
-    setText("savedCoordPlace", saved.place || "Resolving...");
-    setText("coordSourceText", saved.method || "Cloud Sync");
+    if (txt) txt.innerText = `${saved.lat.toFixed(6)}, ${saved.lon.toFixed(6)}`;
+    if (plc) plc.innerText = saved.place || "Resolving...";
+    if (src) src.innerText = saved.method || "App Location";
   } else {
     if (chip) {
       chip.innerText = "Not Set";
       chip.style.color = "#94a3b8";
     }
-    setText("savedCoordText", "--");
-    setText("savedCoordPlace", "--");
-    setText("coordSourceText", "--");
+    if (txt) txt.innerText = "--";
+    if (plc) plc.innerText = "--";
+    if (src) src.innerText = "--";
   }
   syncMapMarker();
 }
 
 function applyPendingCoord(lat, lon, method, toastMsg) {
-  AppState.pendingCoord = { lat, lon, method: method || "App Location" };
-  if ($("manLat")) {
-    $("manLat").value = lat.toFixed(6);
-    AppState.dirtyFields.add("manLat");
+  pendingCoord = { lat, lon, method: method || "App Location" };
+  const latInp = document.getElementById("manLat");
+  const lonInp = document.getElementById("manLon");
+  if (latInp) {
+    latInp.value = lat.toFixed(6);
+    dirtyInputs.add("manLat");
   }
-  if ($("manLon")) {
-    $("manLon").value = lon.toFixed(6);
-    AppState.dirtyFields.add("manLon");
+  if (lonInp) {
+    lonInp.value = lon.toFixed(6);
+    dirtyInputs.add("manLon");
   }
   syncMapMarker(lat, lon, "Selected Coordinate");
-  showToast(toastMsg || "Coordinates ready. Tap 'Add Controller Coordinate'");
+  showMsg(toastMsg || "Coordinates ready. Tap 'Add Controller Coordinate'");
 }
 
 async function searchMapArea() {
-  if (!ensurePageUnlocked("tab-coord")) return;
-  if (AppState.coordLocked) {
-    showToast("Pin is locked. Unlock first to search area", true);
+  if (coordLocked) {
+    showMsg("Pin is locked. Unlock first to search area", true);
     return;
   }
-
-  const query = ($("mapSearchInput")?.value || "").trim();
+  const query = (document.getElementById("mapSearchInput")?.value || "").trim();
   if (!query) {
-    showToast("Enter an area or place name to search", true);
+    showMsg("Enter an area or place name to search", true);
     return;
   }
 
-  const btn = $("mapSearchBtn");
+  const btn = document.getElementById("mapSearchBtn");
+  const st = document.getElementById("mapTileStatus");
   if (btn) btn.disabled = true;
-  setText("mapTileStatus", "Searching...");
+  if (st) st.innerText = "Searching...";
 
   try {
     let lat = NaN;
@@ -2590,7 +1746,7 @@ async function searchMapArea() {
 
     try {
       const arcUrl = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&SingleLine=${encodeURIComponent(query)}`;
-      const arc = await apiRequest(arcUrl, {}, 1);
+      const arc = await fetchJsonSafe(arcUrl, {}, 1);
       const cand = arc?.candidates?.[0];
       if (cand?.location) {
         lat = Number(cand.location.y);
@@ -2601,7 +1757,7 @@ async function searchMapArea() {
 
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
       const nomUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
-      const res = await apiRequest(nomUrl, {}, 1);
+      const res = await fetchJsonSafe(nomUrl, {}, 1);
       const best = Array.isArray(res) ? res[0] : null;
       if (best) {
         lat = Number(best.lat);
@@ -2611,41 +1767,39 @@ async function searchMapArea() {
     }
 
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-      setText("mapTileStatus", "Place not found");
-      showToast("Area not found. Try another name", true);
+      if (st) st.innerText = "Place not found";
+      showMsg("Area not found. Try another name", true);
       return;
     }
 
-    if (!AppState.map) initControllerMap();
+    if (!mapInstance) initControllerMap();
     applyPendingCoord(lat, lon, "Area Search", `Found: ${placeName}. Tap 'Add Controller Coordinate'`);
     syncMapMarker(lat, lon, placeName);
-    setText("mapTileStatus", placeName);
+    if (st) st.innerText = placeName;
   } catch (e) {
-    setText("mapTileStatus", "Search error");
-    showToast("Area search failed", true);
+    if (st) st.innerText = "Search error";
+    showMsg("Area search failed", true);
   } finally {
     if (btn) btn.disabled = false;
   }
 }
 
 function getDeviceCoordinates() {
-  if (!ensurePageUnlocked("tab-coord")) return;
-  if (AppState.coordLocked) {
-    showToast("Pin is locked. Unlock first to fetch coordinates", true);
+  if (coordLocked) {
+    showMsg("Pin is locked. Unlock first to fetch coordinates", true);
     return;
   }
-
-  showToast("Fetching coordinates...");
+  showMsg("Fetching coordinates...");
 
   const fallbackIp = async () => {
     try {
-      const g = await apiRequest("https://ipwho.is", {}, 1);
+      const g = await fetchJsonSafe("https://ipwho.is", {}, 1);
       if (g && g.success !== false && Number.isFinite(Number(g.latitude)) && Number.isFinite(Number(g.longitude))) {
         applyPendingCoord(Number(g.latitude), Number(g.longitude), "App Network Location", "Network coordinates ready");
         return;
       }
     } catch (e) {}
-    showToast("Auto coordinates unavailable. Type Lat/Lon manually", true);
+    showMsg("Auto coordinates unavailable. Type Lat/Lon manually", true);
   };
 
   if (!navigator.geolocation) {
@@ -2662,7 +1816,7 @@ function getDeviceCoordinates() {
 
 async function reverseGeocodePlace(lat, lon) {
   try {
-    const r = await apiRequest(
+    const r = await fetchJsonSafe(
       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=12`,
       {},
       0
@@ -2676,17 +1830,17 @@ async function reverseGeocodePlace(lat, lon) {
 }
 
 async function addControllerCoordinate() {
-  if (!ensurePageUnlocked("tab-coord")) return;
-  if (AppState.coordLocked) {
-    showToast("Pin is locked. Unlock first to update coordinate", true);
+  if (coordLocked) {
+    showMsg("Pin is locked. Unlock first to update coordinate", true);
     return;
   }
-
-  const latVal = readNumberInput("manLat", AppState.pendingCoord?.lat ?? NaN);
-  const lonVal = readNumberInput("manLon", AppState.pendingCoord?.lon ?? NaN);
+  const latRaw = (document.getElementById("manLat")?.value ?? "").trim();
+  const lonRaw = (document.getElementById("manLon")?.value ?? "").trim();
+  const latVal = latRaw !== "" ? Number(latRaw) : (pendingCoord?.lat ?? NaN);
+  const lonVal = lonRaw !== "" ? Number(lonRaw) : (pendingCoord?.lon ?? NaN);
 
   if (!Number.isFinite(latVal) || !Number.isFinite(lonVal) || latVal < -90 || latVal > 90 || lonVal < -180 || lonVal > 180) {
-    showToast("Enter valid Latitude and Longitude first", true);
+    showMsg("Enter valid Latitude and Longitude first", true);
     return;
   }
 
@@ -2695,58 +1849,51 @@ async function addControllerCoordinate() {
     lat: latVal,
     lon: lonVal,
     place,
-    method: AppState.pendingCoord?.method || "Manual App Coordinate",
+    method: pendingCoord?.method || "Manual App Coordinate",
     updatedAt: Date.now()
   };
 
   localStorage.setItem(STORAGE_KEYS.COORD, JSON.stringify(payload));
-  AppState.dirtyFields.delete("manLat");
-  AppState.dirtyFields.delete("manLon");
+  clearDirtyGroup(["manLat", "manLon"]);
 
-  let cloudOk = false;
   try {
-    await patchSettingsCloud({ controllerCoord: payload });
-    cloudOk = true;
+    await patchSettings({ controllerCoord: payload });
   } catch (e) {}
 
-  AppState.geo = { source: "controller_coord", lat: latVal, lon: lonVal, place };
-  AppState.lastWeatherFetchAt = 0;
+  cachedGeo = { lat: latVal, lon: lonVal, place };
+  lastWeatherFetchAt = 0;
   renderSavedCoordSummary();
   setCoordLock(true, false);
-  await updateWeather(true);
-
-  showToast(cloudOk ? `Saved & locked: ${place}` : `Saved locally: ${place}`);
+  await updateAreaWeather(true);
+  showMsg(`Saved & locked: ${place}`);
 }
 
 async function clearControllerCoordinate() {
-  if (!ensurePageUnlocked("tab-coord")) return;
-  if (AppState.coordLocked) {
-    showToast("Pin is locked. Unlock first to clear coordinate", true);
+  if (coordLocked) {
+    showMsg("Pin is locked. Unlock first to clear coordinate", true);
     return;
   }
-
   localStorage.removeItem(STORAGE_KEYS.COORD);
-  AppState.pendingCoord = null;
-  if ($("manLat")) $("manLat").value = "";
-  if ($("manLon")) $("manLon").value = "";
-  AppState.dirtyFields.delete("manLat");
-  AppState.dirtyFields.delete("manLon");
+  pendingCoord = null;
+  if (document.getElementById("manLat")) document.getElementById("manLat").value = "";
+  if (document.getElementById("manLon")) document.getElementById("manLon").value = "";
+  clearDirtyGroup(["manLat", "manLon"]);
 
   try {
-    await patchSettingsCloud({ controllerCoord: null });
+    await patchSettings({ controllerCoord: null });
   } catch (e) {}
 
-  AppState.geo = null;
-  AppState.lastWeatherFetchAt = 0;
+  cachedGeo = null;
+  lastWeatherFetchAt = 0;
   renderSavedCoordSummary();
   setCoordLock(false, false);
-  updateWeather(true);
-  showToast("Controller coordinate cleared");
+  updateAreaWeather(true);
+  showMsg("Controller coordinate cleared");
 }
 
-/* Weather Engine */
+/* WEATHER ENGINE */
 function getWeatherVisual(code, isDay = 1) {
-  const sunSvg = `<svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+  const sunSvg = `<svg width="46" height="46" viewBox="0 0 64 64" fill="none">
     <circle cx="32" cy="32" r="13" fill="#fbbf24"/>
     <g class="wx-sun-rays" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round">
       <line x1="32" y1="7" x2="32" y2="13"/><line x1="32" y1="51" x2="32" y2="57"/>
@@ -2755,22 +1902,22 @@ function getWeatherVisual(code, isDay = 1) {
       <line x1="49.7" y1="14.3" x2="45.4" y2="18.6"/><line x1="18.6" y1="45.4" x2="14.3" y2="49.7"/>
     </g></svg>`;
 
-  const moonSvg = `<svg class="wx-svg-float" width="36" height="36" viewBox="0 0 64 64" fill="none">
+  const moonSvg = `<svg class="wx-svg-float" width="46" height="46" viewBox="0 0 64 64" fill="none">
     <path d="M40 14a18 18 0 1 0 10 33 15 15 0 0 1-10-33z" fill="#fde68a"/>
     <circle cx="46" cy="18" r="2" fill="#00e5ff"/><circle cx="51" cy="26" r="1.5" fill="#fff"/>
   </svg>`;
 
-  const partlyCloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+  const partlyCloudSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
     <circle cx="24" cy="24" r="10" fill="${isDay ? "#fbbf24" : "#fde68a"}"/>
     <path d="M22 46h24a10 10 0 0 0 1.4-19.9A13 13 0 0 0 22.3 29 8.5 8.5 0 0 0 22 46z" fill="#e2e8f0"/>
   </svg>`;
 
-  const cloudSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+  const cloudSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
     <path d="M18 45h28a11 11 0 0 0 1.5-21.9A14.5 14.5 0 0 0 19.5 26 9.5 9.5 0 0 0 18 45z" fill="#94a3b8"/>
     <path d="M23 48h24a8 8 0 0 0 1-15.9A10.5 10.5 0 0 0 27.5 34 7 7 0 0 0 23 48z" fill="#cbd5e1"/>
   </svg>`;
 
-  const rainSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+  const rainSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
     <path d="M18 39h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 21 9 9 0 0 0 18 39z" fill="#cbd5e1"/>
     <g stroke="#00e5ff" stroke-width="3" stroke-linecap="round">
       <line x1="23" y1="44" x2="20" y2="52"/>
@@ -2779,7 +1926,7 @@ function getWeatherVisual(code, isDay = 1) {
     </g>
   </svg>`;
 
-  const stormSvg = `<svg class="wx-svg-float" width="38" height="38" viewBox="0 0 64 64" fill="none">
+  const stormSvg = `<svg class="wx-svg-float" width="48" height="48" viewBox="0 0 64 64" fill="none">
     <path d="M18 38h28a10.5 10.5 0 0 0 1.4-20.9A14 14 0 0 0 19.6 20 9 9 0 0 0 18 38z" fill="#94a3b8"/>
     <polygon points="33,38 25,49 32,49 29,58 41,45 34,45" fill="#fbbf24"/>
   </svg>`;
@@ -2793,96 +1940,63 @@ function getWeatherVisual(code, isDay = 1) {
   return { label: "Cloudy", svg: cloudSvg, rainRisk: false };
 }
 
-function renderWeatherNotFound(locText = "📍 Controller offline") {
-  AppState.weather = null;
-  setText("wxTemp", "--°C");
-  setText("wxCond", "Weather info not found");
-  setText("wxLoc", locText);
-  setText("wxHum", "--%");
-  setText("wxWind", "-- km/h");
-  setText("wxRain", "-- mm");
-
-  const adv = $("wxAdvice");
-  if (adv) {
-    adv.innerText = isControllerOnline() ? "Not Found" : "Offline";
-    adv.style.color = "#94a3b8";
-  }
-}
-
-async function resolveGeo() {
-  if (!isControllerOnline() || !AppState.status) return null;
-  const d = AppState.status;
-
-  if (d.lat !== undefined && d.lat !== null && d.lon !== undefined && d.lon !== null) {
-    const lat = Number(d.lat);
-    const lon = Number(d.lon);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      const explicit = d.city || d.area || d.locationName || d.place;
-      const place = explicit
-        ? String(explicit).trim()
-        : ((await reverseGeocodePlace(lat, lon)) || `${lat.toFixed(4)}, ${lon.toFixed(4)}`);
-      AppState.geo = { lat, lon, place };
-      return AppState.geo;
-    }
-  }
-
+async function resolveControllerGeo() {
   const saved = getSavedCoord();
   if (saved) {
-    const place = saved.place || (await reverseGeocodePlace(saved.lat, saved.lon)) || `${saved.lat.toFixed(4)}, ${saved.lon.toFixed(4)}`;
-    AppState.geo = { lat: saved.lat, lon: saved.lon, place };
-    return AppState.geo;
+    cachedGeo = {
+      lat: saved.lat,
+      lon: saved.lon,
+      place: saved.place || (await reverseGeocodePlace(saved.lat, saved.lon)) || `${saved.lat.toFixed(4)}, ${saved.lon.toFixed(4)}`
+    };
+    return cachedGeo;
   }
 
-  const ctrlIp = String(d.pubIP || d.publicIp || d.wanIp || "").trim();
-  if (ctrlIp) {
-    if (AppState.geo && AppState.geo.ip === ctrlIp) return AppState.geo;
-    try {
-      const g = await apiRequest(`https://ipwho.is/${encodeURIComponent(ctrlIp)}`, {}, 0);
-      if (g && g.success !== false && Number.isFinite(Number(g.latitude)) && Number.isFinite(Number(g.longitude))) {
-        AppState.geo = {
-          ip: ctrlIp,
-          lat: Number(g.latitude),
-          lon: Number(g.longitude),
-          place: String(g.city || g.region || g.country || ctrlIp).trim()
-        };
-        return AppState.geo;
-      }
-    } catch (e) {}
-  }
+  if (cachedGeo) return cachedGeo;
+  const pubIp = latestStatusData && (latestStatusData.pubIP || latestStatusData.publicIp || latestStatusData.wanIp);
+  const queryIp = pubIp ? `/${encodeURIComponent(pubIp)}` : "";
+  try {
+    const g = await fetchJsonSafe(`https://ipwho.is${queryIp}`, {}, 1);
+    if (g && g.success !== false && g.latitude && g.longitude) {
+      cachedGeo = {
+        lat: Number(g.latitude),
+        lon: Number(g.longitude),
+        place: [g.city, g.region].filter(Boolean).join(", ") || g.country || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  } catch (e) {}
+
+  try {
+    const g2 = await fetchJsonSafe(`https://ipapi.co${queryIp}/json/`, {}, 1);
+    if (g2 && g2.latitude && g2.longitude) {
+      cachedGeo = {
+        lat: Number(g2.latitude),
+        lon: Number(g2.longitude),
+        place: [g2.city, g2.region].filter(Boolean).join(", ") || g2.country_name || "Controller Area"
+      };
+      return cachedGeo;
+    }
+  } catch (e) {}
 
   return null;
 }
 
-async function updateWeather(force = false) {
-  if (!isControllerOnline()) {
-    AppState.geo = null;
-    renderWeatherNotFound("📍 Controller offline");
-    refreshInsightsGraphs();
-    return;
-  }
-
+async function updateAreaWeather(force = false) {
   const now = Date.now();
-  if (!force && AppState.lastWeatherFetchAt > 0 && (now - AppState.lastWeatherFetchAt) < WEATHER_REFRESH_MS && AppState.weather) {
-    return;
-  }
+  if (!force && lastWeatherFetchAt > 0 && (now - lastWeatherFetchAt) < WEATHER_REFRESH_MS) return;
 
   try {
-    const geo = await resolveGeo();
-    if (!geo || !geo.place) {
-      renderWeatherNotFound("📍 Location unavailable");
-      refreshInsightsGraphs();
+    const geo = await resolveControllerGeo();
+    if (!geo) {
+      if (document.getElementById("wxLoc")) document.getElementById("wxLoc").innerText = "📍 Area unavailable";
       return;
     }
 
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,is_day&timezone=auto`;
-    const w = await apiRequest(url, {}, 1);
-    if (!w || !w.current) {
-      renderWeatherNotFound(`📍 ${geo.place}`);
-      refreshInsightsGraphs();
-      return;
-    }
+    const w = await fetchJsonSafe(url, {}, 1);
+    if (!w || !w.current) return;
 
-    AppState.lastWeatherFetchAt = now;
+    lastWeatherFetchAt = now;
     const cur = w.current;
     const temp = Math.round(Number(cur.temperature_2m ?? 0));
     const hum = Math.round(Number(cur.relative_humidity_2m ?? 0));
@@ -2890,17 +2004,17 @@ async function updateWeather(force = false) {
     const precip = Number(cur.precipitation ?? 0);
     const vis = getWeatherVisual(Number(cur.weather_code ?? 0), Number(cur.is_day ?? 1));
 
-    AppState.weather = { temp, hum, wind, precip, label: vis.label, place: geo.place };
+    latestWeatherData = { temp, hum, wind, precip, label: vis.label, place: geo.place };
 
-    if ($("wxIcon")) $("wxIcon").innerHTML = vis.svg;
-    setText("wxTemp", `${temp}°C`);
-    setText("wxCond", vis.label);
-    setText("wxLoc", `📍 ${geo.place}`);
-    setText("wxHum", `${hum}%`);
-    setText("wxWind", `${wind} km/h`);
-    setText("wxRain", `${precip.toFixed(1)} mm`);
+    if (document.getElementById("wxIcon")) document.getElementById("wxIcon").innerHTML = vis.svg;
+    if (document.getElementById("wxTemp")) document.getElementById("wxTemp").innerText = `${temp}°C`;
+    if (document.getElementById("wxCond")) document.getElementById("wxCond").innerText = vis.label;
+    if (document.getElementById("wxLoc")) document.getElementById("wxLoc").innerText = `📍 ${geo.place}`;
+    if (document.getElementById("wxHum")) document.getElementById("wxHum").innerText = `${hum}%`;
+    if (document.getElementById("wxWind")) document.getElementById("wxWind").innerText = `${wind} km/h`;
+    if (document.getElementById("wxRain")) document.getElementById("wxRain").innerText = `${precip.toFixed(1)} mm`;
 
-    const adv = $("wxAdvice");
+    const adv = document.getElementById("wxAdvice");
     if (adv) {
       if (vis.rainRisk || precip > 0.2) {
         adv.innerText = "🌧 Rain Alert";
@@ -2916,12 +2030,11 @@ async function updateWeather(force = false) {
 
     refreshInsightsGraphs();
   } catch (e) {
-    renderWeatherNotFound("📍 Location unavailable");
-    refreshInsightsGraphs();
+    if (document.getElementById("wxCond")) document.getElementById("wxCond").innerText = "Weather unavailable";
   }
 }
 
-/* Insights & Graphs */
+/* INSIGHTS & GRAPHS */
 function loadInsightLogs() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.INSIGHT_LOGS);
@@ -2933,7 +2046,6 @@ function loadInsightLogs() {
 }
 
 function recordInsightPoint(m1, m2, l1, l2, wx) {
-  if (!isControllerOnline()) return;
   const logs = loadInsightLogs();
   const now = Date.now();
   const last = logs[logs.length - 1];
@@ -2968,43 +2080,44 @@ function toDatetimeLocalValue(ms) {
 
 function initDefaultDateRangeInputs() {
   const now = Date.now();
-  if ($("insFromDt") && !$("insFromDt").value) $("insFromDt").value = toDatetimeLocalValue(now - 24 * 3600 * 1000);
-  if ($("insToDt") && !$("insToDt").value) $("insToDt").value = toDatetimeLocalValue(now);
+  const fromEl = document.getElementById("insFromDt");
+  const toEl = document.getElementById("insToDt");
+  if (fromEl && !fromEl.value) fromEl.value = toDatetimeLocalValue(now - 24 * 3600 * 1000);
+  if (toEl && !toEl.value) toEl.value = toDatetimeLocalValue(now);
 }
 
 function applyDateRangeFilter() {
-  if (!ensurePageUnlocked("tab-insights")) return;
-  const fromVal = $("insFromDt")?.value;
-  const toVal = $("insToDt")?.value;
+  const fromVal = document.getElementById("insFromDt")?.value;
+  const toVal = document.getElementById("insToDt")?.value;
   if (!fromVal || !toVal) {
-    showToast("Select both From and To date-time", true);
+    showMsg("Select both From and To date-time", true);
     return;
   }
   const fromMs = new Date(fromVal).getTime();
   const toMs = new Date(toVal).getTime() + 59999;
   if (!Number.isFinite(fromMs) || !Number.isFinite(toMs) || fromMs > toMs) {
-    showToast("Invalid date-time range", true);
+    showMsg("Invalid date-time range", true);
     return;
   }
-  AppState.rangeFilter = { fromMs, toMs };
+  rangeFilter = { fromMs, toMs };
   refreshInsightsGraphs();
-  showToast("Insights filtered by selected date-time");
+  showMsg("Insights filtered by selected date-time");
 }
 
 function resetDateRangeFilter() {
-  if (!ensurePageUnlocked("tab-insights")) return;
-  AppState.rangeFilter = null;
+  rangeFilter = null;
   refreshInsightsGraphs();
-  showToast("Showing latest / all logged insights");
+  showMsg("Showing latest / all logged insights");
 }
 
 function setGraphStyle(style) {
-  if (!ensurePageUnlocked("tab-insights")) return;
-  AppState.graphStyle = style;
+  graphStyle = style;
   document.querySelectorAll(".style-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.gstyle === style);
   });
-  setText("activeStyleChip", style.toUpperCase());
+  if (document.getElementById("activeStyleChip")) {
+    document.getElementById("activeStyleChip").innerText = style.toUpperCase();
+  }
   refreshInsightsGraphs();
 }
 
@@ -3021,12 +2134,12 @@ function themeHex(theme) {
 }
 
 function renderEmptyBox(containerId, text) {
-  const box = $(containerId);
+  const box = document.getElementById(containerId);
   if (box) box.innerHTML = `<div class="empty-note">${text}</div>`;
 }
 
 function renderMetricSeries(containerId, items, style) {
-  const box = $(containerId);
+  const box = document.getElementById(containerId);
   if (!box) return;
 
   if (style === "circle") {
@@ -3081,14 +2194,14 @@ function renderMetricSeries(containerId, items, style) {
 }
 
 function renderTargetSeries(style) {
-  const box = $("insTargetViz");
+  const box = document.getElementById("insTargetViz");
   if (!box) return;
   const labels = ["<20%", "20-39%", "40-59%", "60-79%", "80-100%"];
   const z1Vals = [];
   const z2Vals = [];
   for (let i = 0; i < 5; i++) {
-    z1Vals.push(Math.max(0, Number($("z1_" + i)?.value || 0)));
-    z2Vals.push(Math.max(0, Number($("z2_" + i)?.value || 0)));
+    z1Vals.push(Math.max(0, Number(document.getElementById("z1_" + i)?.value || 0)));
+    z2Vals.push(Math.max(0, Number(document.getElementById("z2_" + i)?.value || 0)));
   }
   const maxVal = Math.max(1000, ...z1Vals, ...z2Vals);
 
@@ -3170,20 +2283,20 @@ function renderTargetSeries(style) {
 }
 
 function getInsightDataset() {
-  if (!AppState.rangeFilter) {
-    setText("insRangeInfo", "All / Live");
+  if (!rangeFilter) {
+    if (document.getElementById("insRangeInfo")) document.getElementById("insRangeInfo").innerText = "All / Live";
     return {
       empty: false,
-      m1: Math.max(0, Math.min(100, Number(AppState.status?.m1 ?? 0))),
-      m2: Math.max(0, Math.min(100, Number(AppState.status?.m2 ?? 0))),
-      l1: Math.max(0, Number(AppState.status?.l1 ?? 0)),
-      l2: Math.max(0, Number(AppState.status?.l2 ?? 0)),
-      wx: (AppState.weather && isControllerOnline()) ? AppState.weather : null
+      m1: Math.max(0, Math.min(100, Number(latestStatusData?.m1 ?? 0))),
+      m2: Math.max(0, Math.min(100, Number(latestStatusData?.m2 ?? 0))),
+      l1: Math.max(0, Number(latestStatusData?.l1 ?? 0)),
+      l2: Math.max(0, Number(latestStatusData?.l2 ?? 0)),
+      wx: latestWeatherData
     };
   }
 
-  const logs = loadInsightLogs().filter(item => item.ts >= AppState.rangeFilter.fromMs && item.ts <= AppState.rangeFilter.toMs);
-  setText("insRangeInfo", `${logs.length} pts`);
+  const logs = loadInsightLogs().filter(item => item.ts >= rangeFilter.fromMs && item.ts <= rangeFilter.toMs);
+  if (document.getElementById("insRangeInfo")) document.getElementById("insRangeInfo").innerText = `${logs.length} pts`;
   if (!logs.length) return { empty: true };
 
   const avgM1 = logs.reduce((acc, r) => acc + Number(r.m1 || 0), 0) / logs.length;
@@ -3213,13 +2326,13 @@ function getInsightDataset() {
 }
 
 function refreshInsightsGraphs() {
-  renderTargetSeries(AppState.graphStyle);
+  renderTargetSeries(graphStyle);
 
   const ds = getInsightDataset();
   if (ds.empty) {
-    setText("insMoistAvg", "Avg: --%");
-    setText("insTotalLitres", "Total: -- L");
-    setText("insWxTag", "No data");
+    if (document.getElementById("insMoistAvg")) document.getElementById("insMoistAvg").innerText = "Avg: --%";
+    if (document.getElementById("insTotalLitres")) document.getElementById("insTotalLitres").innerText = "Total: -- L";
+    if (document.getElementById("insWxTag")) document.getElementById("insWxTag").innerText = "No data";
     renderEmptyBox("insMoistViz", "No moisture records found in selected date-time range.");
     renderEmptyBox("insWaterViz", "No water usage records found in selected date-time range.");
     renderEmptyBox("insWeatherViz", "No weather records found in selected date-time range.");
@@ -3230,136 +2343,433 @@ function refreshInsightsGraphs() {
   const lComb = l1 + l2;
   const maxL = Math.max(10, l1, l2, lComb);
 
-  setText("insMoistAvg", `Avg: ${Math.round((m1 + m2) / 2)}%`);
+  if (document.getElementById("insMoistAvg")) {
+    document.getElementById("insMoistAvg").innerText = `Avg: ${Math.round((m1 + m2) / 2)}%`;
+  }
   renderMetricSeries("insMoistViz", [
-    { label: AppState.rangeFilter ? "Zone 1 Avg Moisture" : "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
-    { label: AppState.rangeFilter ? "Zone 2 Avg Moisture" : "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
-  ], AppState.graphStyle);
+    { label: rangeFilter ? "Zone 1 Avg Moisture" : "Zone 1 Moisture", valText: `${m1}%`, pct: m1, theme: "cyan" },
+    { label: rangeFilter ? "Zone 2 Avg Moisture" : "Zone 2 Moisture", valText: `${m2}%`, pct: m2, theme: "mag" }
+  ], graphStyle);
 
-  setText("insTotalLitres", `Total: ${lComb.toFixed(2)} L`);
+  if (document.getElementById("insTotalLitres")) {
+    document.getElementById("insTotalLitres").innerText = `Total: ${lComb.toFixed(2)} L`;
+  }
   renderMetricSeries("insWaterViz", [
-    { label: AppState.rangeFilter ? "Zone 1 Range Used" : "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
-    { label: AppState.rangeFilter ? "Zone 2 Range Used" : "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
+    { label: rangeFilter ? "Zone 1 Range Used" : "Zone 1 Used", valText: `${l1.toFixed(2)} L`, pct: (l1 / maxL) * 100, theme: "cyan" },
+    { label: rangeFilter ? "Zone 2 Range Used" : "Zone 2 Used", valText: `${l2.toFixed(2)} L`, pct: (l2 / maxL) * 100, theme: "mag" },
     { label: "Combined Flow", valText: `${lComb.toFixed(2)} L`, pct: (lComb / maxL) * 100, theme: "green" }
-  ], AppState.graphStyle);
+  ], graphStyle);
 
   if (wx) {
-    setText("insWxTag", wx.label);
+    if (document.getElementById("insWxTag")) document.getElementById("insWxTag").innerText = wx.label;
     renderMetricSeries("insWeatherViz", [
       { label: "Temperature (0–50°C)", valText: `${wx.temp}°C`, pct: (wx.temp / 50) * 100, theme: "amber" },
       { label: "Humidity (0–100%)", valText: `${wx.hum}%`, pct: wx.hum, theme: "cyan" },
       { label: "Wind Speed (0–60 km/h)", valText: `${wx.wind} km/h`, pct: (wx.wind / 60) * 100, theme: "green" },
       { label: "Rainfall (0–25 mm)", valText: `${wx.precip.toFixed(1)} mm`, pct: (wx.precip / 25) * 100, theme: "mag" }
-    ], AppState.graphStyle);
+    ], graphStyle);
   } else {
-    setText("insWxTag", "Weather info not found");
+    if (document.getElementById("insWxTag")) document.getElementById("insWxTag").innerText = "Loading...";
     renderMetricSeries("insWeatherViz", [
       { label: "Temperature (0–50°C)", valText: "--°C", pct: 0, theme: "amber" },
       { label: "Humidity (0–100%)", valText: "--%", pct: 0, theme: "cyan" },
       { label: "Wind Speed (0–60 km/h)", valText: "-- km/h", pct: 0, theme: "green" },
       { label: "Rainfall (0–25 mm)", valText: "-- mm", pct: 0, theme: "mag" }
-    ], AppState.graphStyle);
+    ], graphStyle);
   }
 }
 
-/* Navigation & Events */
-function switchTab(btn) {
-  if (!btn || !btn.dataset.tab) return;
-  document.querySelectorAll(".side-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-  btn.classList.add("active");
-  $(btn.dataset.tab)?.classList.add("active");
+/* CLOUD & COMMANDS */
+function showMsg(t, isErr=false) {
+  const m = document.getElementById("msg");
+  m.style.color = isErr ? "#ff8a80" : "#00e676";
+  m.innerText = t;
+  setTimeout(() => { if (m.innerText === t) m.innerText = ""; }, 3500);
+}
 
-  applyAllPageLocks();
-  updateRunTimerDisplay();
+function confirmStop() {
+  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
+  if (confirm("Stop pump and close active valves now?")) sendCmd("stop");
+}
 
-  const tab = btn.dataset.tab;
-  if (tab === "tab-insights") {
-    initDefaultDateRangeInputs();
+function confirmReset() {
+  if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
+  if (confirm("Reset total water counter (Litres) for both zones?")) sendCmd("resetL");
+}
+
+async function fetchJsonSafe(url, options = {}, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const res = await fetch(url, { cache: "no-store", ...options });
+      if (res.ok) return await res.json();
+      if (res.status >= 500 && i < retries) {
+        await new Promise(r => setTimeout(r, 250 * (i + 1)));
+        continue;
+      }
+      throw new Error("HTTP " + res.status);
+    } catch (err) {
+      if (i === retries) throw err;
+      await new Promise(r => setTimeout(r, 250 * (i + 1)));
+    }
+  }
+}
+
+async function patchSettings(fields) {
+  const payload = { ...fields, updatedAt: Date.now() };
+  return fetchJsonSafe(`${DB_URL}/settings.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }, 2);
+}
+
+async function sendCmd(cmd) {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — command blocked", true);
+    return;
+  }
+  try {
+    await fetchJsonSafe(`${DB_URL}/control/cmd.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cmd)
+    }, 2);
+    if (cmd === "start" || cmd === "z1" || cmd === "z2") {
+      startRunSession(cmd);
+    } else if (cmd === "stop") {
+      stopRunSession("Force stopped");
+    }
+    showMsg("Command sent: " + cmd.toUpperCase());
+  } catch (e) {
+    showMsg("Cmd failed: " + e.message, true);
+  }
+}
+
+async function saveSettings() {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot apply settings", true);
+    return;
+  }
+  const payload = {
+    s1h: Number(document.getElementById("s1h").value || 0),
+    s1m: Number(document.getElementById("s1m").value || 0),
+    s2h: Number(document.getElementById("s2h").value || 0),
+    s2m: Number(document.getElementById("s2m").value || 0),
+    c1: Number(document.getElementById("c1").value || 7.5),
+    c2: Number(document.getElementById("c2").value || 7.5),
+    z1_0: Number(document.getElementById("z1_0").value || 0),
+    z1_1: Number(document.getElementById("z1_1").value || 0),
+    z1_2: Number(document.getElementById("z1_2").value || 0),
+    z1_3: Number(document.getElementById("z1_3").value || 0),
+    z1_4: Number(document.getElementById("z1_4").value || 0),
+    z2_0: Number(document.getElementById("z2_0").value || 0),
+    z2_1: Number(document.getElementById("z2_1").value || 0),
+    z2_2: Number(document.getElementById("z2_2").value || 0),
+    z2_3: Number(document.getElementById("z2_3").value || 0),
+    z2_4: Number(document.getElementById("z2_4").value || 0)
+  };
+  try {
+    await patchSettings(payload);
+    clearDirtyGroup([
+      "s1h","s1m","s2h","s2m","c1","c2",
+      "z1_0","z1_1","z1_2","z1_3","z1_4",
+      "z2_0","z2_1","z2_2","z2_3","z2_4"
+    ]);
     refreshInsightsGraphs();
-  } else if (tab === "tab-coord") {
-    pullSettingsFromCloud(true);
-    renderSavedCoordSummary();
-    setCoordLock(AppState.coordLocked, false);
-    initControllerMap();
-  } else if (tab === "tab-sched" || tab === "tab-cfg" || tab === "tab-wifi" || tab === "tab-rtc") {
-    pullSettingsFromCloud(true);
+    showMsg("Settings saved to cloud!");
+  } catch (e) {
+    showMsg("Save failed: " + e.message, true);
   }
 }
 
-function bindInputTracking() {
-  document.querySelectorAll("input").forEach(inp => {
-    inp.addEventListener("input", () => {
-      if (inp.id) AppState.dirtyFields.add(inp.id);
-      if (inp.id && (inp.id.startsWith("z1_") || inp.id.startsWith("z2_"))) {
-        refreshInsightsGraphs();
-      }
-      if (!AppState.coordLocked && (inp.id === "manLat" || inp.id === "manLon")) {
-        const lat = Number($("manLat")?.value);
-        const lon = Number($("manLon")?.value);
-        if (Number.isFinite(lat) && Number.isFinite(lon)) {
-          syncMapMarker(lat, lon, "Preview Coordinate");
-        }
-      }
+async function saveWifi() {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot save Wi-Fi", true);
+    return;
+  }
+  const ssid = document.getElementById("wifiSsid").value.trim();
+  const pass = document.getElementById("wifiPass").value;
+  if (!ssid) {
+    showMsg("Enter Wi-Fi SSID first", true);
+    return;
+  }
+  try {
+    await patchSettings({ wifiSsid: ssid, wifiPass: pass });
+    clearDirtyGroup(["wifiSsid", "wifiPass"]);
+    showMsg("Wi-Fi saved to cloud!");
+  } catch (e) {
+    showMsg("Wi-Fi save failed: " + e.message, true);
+  }
+}
+
+async function saveRtc(usePhoneNow) {
+  if (!isEspAliveNow()) {
+    showMsg("ESP is OFFLINE — cannot sync RTC", true);
+    return;
+  }
+  let y, mo, d, h, mi, s;
+  if (usePhoneNow) {
+    const now = new Date();
+    y = now.getFullYear();
+    mo = now.getMonth() + 1;
+    d = now.getDate();
+    h = now.getHours();
+    mi = now.getMinutes();
+    s = now.getSeconds();
+  } else {
+    y = Number(document.getElementById("rtcY").value || 2026);
+    mo = Number(document.getElementById("rtcMo").value || 1);
+    d = Number(document.getElementById("rtcD").value || 1);
+    h = Number(document.getElementById("rtcH").value || 0);
+    mi = Number(document.getElementById("rtcMi").value || 0);
+    s = Number(document.getElementById("rtcS").value || 0);
+  }
+  try {
+    await patchSettings({
+      setRtc: true,
+      rtcY: y,
+      rtcMo: mo,
+      rtcD: d,
+      rtcH: h,
+      rtcMi: mi,
+      rtcS: s
     });
-  });
+    clearDirtyGroup(["rtcY", "rtcMo", "rtcD", "rtcH", "rtcMi", "rtcS"]);
+    showMsg("RTC time saved to cloud!");
+  } catch (e) {
+    showMsg("RTC save failed: " + e.message, true);
+  }
+}
+
+function initRtcInputs() {
+  const now = new Date();
+  if (canAutoFill("rtcY")) document.getElementById("rtcY").value = now.getFullYear();
+  if (canAutoFill("rtcMo")) document.getElementById("rtcMo").value = now.getMonth() + 1;
+  if (canAutoFill("rtcD")) document.getElementById("rtcD").value = now.getDate();
+  if (canAutoFill("rtcH")) document.getElementById("rtcH").value = now.getHours();
+  if (canAutoFill("rtcMi")) document.getElementById("rtcMi").value = now.getMinutes();
+  if (canAutoFill("rtcS")) document.getElementById("rtcS").value = now.getSeconds();
+}
+
+function populateInputsFromSettings(s) {
+  if (!s) return;
+  if (s.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = s.s1h;
+  if (s.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = s.s1m;
+  if (s.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = s.s2h;
+  if (s.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = s.s2m;
+  if (s.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = s.c1;
+  if (s.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = s.c2;
+  if (s.wifiSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = s.wifiSsid;
+  for (let i = 0; i < 5; i++) {
+    if (s["z1_" + i] !== undefined && canAutoFill("z1_" + i)) document.getElementById("z1_" + i).value = s["z1_" + i];
+    if (s["z2_" + i] !== undefined && canAutoFill("z2_" + i)) document.getElementById("z2_" + i).value = s["z2_" + i];
+  }
+  if (s.controllerCoord && s.controllerCoord.lat !== undefined && s.controllerCoord.lon !== undefined) {
+    const lat = Number(s.controllerCoord.lat);
+    const lon = Number(s.controllerCoord.lon);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      localStorage.setItem(STORAGE_KEYS.COORD, JSON.stringify({
+        lat,
+        lon,
+        place: s.controllerCoord.place ? String(s.controllerCoord.place).trim() : "",
+        method: s.controllerCoord.method ? String(s.controllerCoord.method).trim() : "Cloud Sync",
+        updatedAt: Number(s.controllerCoord.updatedAt || Date.now())
+      }));
+      renderSavedCoordSummary();
+    }
+  }
+  refreshInsightsGraphs();
+}
+
+function populateInputsFromStatus(d) {
+  if (!d) return;
+  if (d.s1h !== undefined && canAutoFill("s1h")) document.getElementById("s1h").value = d.s1h;
+  if (d.s1m !== undefined && canAutoFill("s1m")) document.getElementById("s1m").value = d.s1m;
+  if (d.s2h !== undefined && canAutoFill("s2h")) document.getElementById("s2h").value = d.s2h;
+  if (d.s2m !== undefined && canAutoFill("s2m")) document.getElementById("s2m").value = d.s2m;
+  if (d.c1 !== undefined && canAutoFill("c1")) document.getElementById("c1").value = d.c1;
+  if (d.c2 !== undefined && canAutoFill("c2")) document.getElementById("c2").value = d.c2;
+  if (d.staSsid && canAutoFill("wifiSsid")) document.getElementById("wifiSsid").value = d.staSsid;
+  for (let i = 0; i < 5; i++) {
+    if (Array.isArray(d.z1) && d.z1[i] !== undefined && canAutoFill("z1_" + i)) {
+      document.getElementById("z1_" + i).value = d.z1[i];
+    }
+    if (Array.isArray(d.z2) && d.z2[i] !== undefined && canAutoFill("z2_" + i)) {
+      document.getElementById("z2_" + i).value = d.z2[i];
+    }
+  }
+  refreshInsightsGraphs();
+}
+
+async function fetchSettingsOnce() {
+  if (settingsLoaded) return;
+  try {
+    const s = await fetchJsonSafe(`${DB_URL}/settings.json`, {}, 1);
+    if (s) {
+      populateInputsFromSettings(s);
+      settingsLoaded = true;
+    }
+  } catch (e) {}
+}
+
+function renderBanner(st, dryAlert, watering, espAlive) {
+  const box = document.getElementById("alertBanner");
+  if (!espAlive) { box.style.display = "none"; return; }
+  if (dryAlert || st === "DRY!") {
+    box.className = "banner dry";
+    box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
+  } else if (watering || st === "RUN" || runStartedAt > 0) {
+    const dur = runStartedAt ? formatClock(Date.now() - runStartedAt) : "00:00";
+    box.className = "banner run";
+    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${dur}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
+  } else {
+    if (runStartedAt > 0 && Date.now() >= runGraceUntil) {
+      stopRunSession("Stopped");
+    }
+    box.style.display = "none";
+  }
+}
+
+function isEspAliveNow() {
+  if (lastSeenChangeAt <= 0) return false;
+  return (Date.now() - lastSeenChangeAt) <= ESP_STALE_MS;
+}
+
+function updateEspLinkState() {
+  const dot = document.getElementById("netDot");
+  const badge = document.getElementById("stBadge");
+  const syncTag = document.getElementById("syncAgo");
+  const hbEl = document.getElementById("hbAge");
+  const alive = isEspAliveNow();
+
+  hbEl.innerText = lastSeenChangeAt > 0 ? Math.max(0, Math.floor((Date.now() - lastSeenChangeAt) / 1000)) + "s ago" : "--";
+
+  if (alive) {
+    setControlsEnabled(true);
+    dot.className = "pulse-dot";
+    syncTag.innerText = "ESP Online";
+    const st = (latestStatusData && latestStatusData.status) ? latestStatusData.status : "RDY";
+    badge.className = "status-pill";
+    badge.innerText = st === "RDY" ? "ONLINE" : st;
+    badge.style.color = st === "DRY!" ? "#ff5252" : "#00e676";
+
+    const isDry = Boolean(latestStatusData?.dryAlert) || String(st).toUpperCase() === "DRY!";
+    const isRunning = !isDry && (Boolean(latestStatusData?.watering) || String(st).toUpperCase() === "RUN");
+    const modeHint = runMode ? runMode : (latestStatusData?.activeZone ? String(latestStatusData.activeZone).toLowerCase() : "auto");
+
+    syncRunTimerWithHardware(isRunning, modeHint);
+    renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
+  } else {
+    setControlsEnabled(false);
+    dot.className = "pulse-dot off";
+    badge.className = "status-pill offline";
+    badge.innerText = "OFFLINE";
+    badge.style.color = "";
+    syncTag.innerText = "ESP Offline";
+    syncRunTimerWithHardware(false);
+    renderBanner("OFFLINE", false, false, false);
+  }
+
+  updateRigVisuals();
+}
+
+async function fetchStatus() {
+  try {
+    const d = await fetchJsonSafe(`${DB_URL}/status.json`, {}, 2);
+    if (!d) return;
+    latestStatusData = d;
+
+    const rawSeen = (d.uptimeMs !== undefined && d.uptimeMs !== null) ? d.uptimeMs : d.lastSeen;
+    if (rawSeen !== undefined && rawSeen !== null) {
+      const incomingSeen = Number(rawSeen);
+      if (incomingSeen !== lastSeenMillis) {
+        lastSeenMillis = incomingSeen;
+        lastSeenChangeAt = Date.now();
+      }
+    } else {
+      const fallbackSig = `${d.time}|${d.status}|${d.m1}|${d.m2}|${d.l1}|${d.l2}`;
+      if (fallbackSig !== lastPayloadSig) {
+        lastPayloadSig = fallbackSig;
+        lastSeenChangeAt = Date.now();
+      }
+    }
+
+    const m1 = Number(d.m1 ?? 0);
+    const m2 = Number(d.m2 ?? 0);
+    const l1 = Number(d.l1 ?? 0);
+    const l2 = Number(d.l2 ?? 0);
+
+    document.getElementById("rtc").innerText = "RTC: " + (d.time || "--/--/---- --:--");
+    document.getElementById("m1").innerText = m1 + "%";
+    document.getElementById("m2").innerText = m2 + "%";
+    document.getElementById("band1").innerText = bandLabel(m1);
+    document.getElementById("band2").innerText = bandLabel(m2);
+    document.getElementById("b1").style.width = Math.max(0, Math.min(100, m1)) + "%";
+    document.getElementById("b2").style.width = Math.max(0, Math.min(100, m2)) + "%";
+    document.getElementById("l1").innerText = l1.toFixed(2) + " L";
+    document.getElementById("l2").innerText = l2.toFixed(2) + " L";
+    document.getElementById("wifiState").innerText = d.staSsid || "Not set";
+    document.getElementById("ipState").innerText = d.staIP || "--";
+    document.getElementById("curSsid").innerText = d.staSsid || "Not set";
+    document.getElementById("curIp").innerText = d.staIP || "--";
+
+    populateInputsFromStatus(d);
+    if (isEspAliveNow()) {
+      recordInsightPoint(m1, m2, l1, l2, latestWeatherData);
+    }
+    refreshInsightsGraphs();
+    updateEspLinkState();
+    updateAreaWeather(false);
+  } catch (e) {
+    updateEspLinkState();
+  }
 }
 
 document.addEventListener("pointerdown", () => {
   unlockAudio();
-  if (AppState.runStartedAt && !AppState.beepInterval) startBeepLoop();
+  if (runStartedAt && !beepInterval) startBeepLoop();
 }, { passive: true });
 
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    closeInfoModal();
-    closeStopModal();
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    fetchSettingsOnce();
+    fetchStatus();
+    updateEspLinkState();
+    updateAreaWeather(false);
+    if (document.getElementById("tab-coord")?.classList.contains("active") && mapInstance) {
+      setTimeout(() => mapInstance.invalidateSize(), 150);
+    }
   }
 });
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    if (AppState.runStartedAt > 0) {
-      unlockAudio();
-      if (!AppState.beepInterval) startBeepLoop();
-    }
-    return;
-  }
-  pullSettingsFromCloud(true);
-  pollStatus();
-  updateOnlineState();
-  if ($("tab-coord")?.classList.contains("active") && AppState.map) {
-    setTimeout(() => AppState.map.invalidateSize(), 150);
-  }
+window.addEventListener("focus", () => {
+  fetchSettingsOnce();
+  fetchStatus();
+  updateEspLinkState();
 });
 
 window.addEventListener("online", () => {
-  showToast("Internet reconnected — syncing...");
-  pullSettingsFromCloud(true);
-  pollStatus();
-  updateWeather(true);
+  showMsg("Internet reconnected — syncing...");
+  fetchSettingsOnce();
+  fetchStatus();
+  updateEspLinkState();
+  updateAreaWeather(true);
 });
 
-/* Bootstrap */
-loadPageLocks();
-bindInputTracking();
+bindInputEditGuards();
 initRtcInputs();
 initDefaultDateRangeInputs();
-applyAllPageLocks();
 renderSavedCoordSummary();
-setCoordLock(AppState.coordLocked, false);
+setCoordLock(coordLocked, false);
 restoreRunSession();
-renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
-setControlButtonsEnabled(false);
+setControlsEnabled(false);
 updateRigVisuals();
-
-pullSettingsFromCloud(true);
-pollStatus();
-
-setInterval(updateOnlineState, 1000);
-setInterval(pollStatus, STATUS_POLL_MS);
-setInterval(() => pullSettingsFromCloud(false), SETTINGS_POLL_MS);
+setInterval(updateEspLinkState, 1000);
+setInterval(fetchStatus, 2500);
+fetchSettingsOnce();
+fetchStatus();
+updateAreaWeather(true);
 </script>
 </body>
 </html>
