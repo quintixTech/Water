@@ -1298,27 +1298,27 @@ function applyTileLayerToMap() {
     currentLabelTileLayer = null;
   }
 
-  if (mapLayerStyle === "street") {
-    currentBaseTileLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      subdomains: "abcd",
+  // Google tile types: 's' = Satellite, 'y' = Hybrid, 'm' = Street
+  const gType = mapLayerStyle === "street" ? "m" : (mapLayerStyle === "hybrid" ? "y" : "s");
+
+  currentBaseTileLayer = L.tileLayer(
+    `https://mt{s}.google.com/vt/lyrs=${gType}&hl=en&x={x}&y={y}&z={z}`,
+    {
+      subdomains: ["0", "1", "2", "3"],
       maxZoom: 20,
-      attribution: "&copy; CARTO"
-    }).addTo(leafletMap);
-  } else if (mapLayerStyle === "hybrid") {
-    currentBaseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 19,
-      attribution: "&copy; Esri"
-    }).addTo(leafletMap);
-    currentLabelTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 19,
-      attribution: "&copy; Esri"
-    }).addTo(leafletMap);
-  } else {
-    currentBaseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 19,
-      attribution: "&copy; Esri"
-    }).addTo(leafletMap);
-  }
+      attribution: "&copy; Google Maps"
+    }
+  ).addTo(leafletMap);
+
+  currentBaseTileLayer.on("tileerror", () => {
+    if (leafletMap && currentBaseTileLayer) {
+      leafletMap.removeLayer(currentBaseTileLayer);
+      currentBaseTileLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 19, attribution: "&copy; Esri" }
+      ).addTo(leafletMap);
+    }
+  });
 }
 
 function setMapLayerStyle(style) {
