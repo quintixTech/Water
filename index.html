@@ -823,17 +823,32 @@
       <span class="chip" id="locDbChip">DB ONLY</span>
     </div>
     <div class="card" style="border-top:3px solid #34d399">
-      <div class="title"><span>Controller GPS Coordinates (Database)</span></div>
+      <div class="title"><span>Controller GPS / Coordinates (Database)</span></div>
       <div class="coord-box" id="locDbDisplay">
         Controller Lon / Lat: <b>Not set in DB</b><br>
         Accuracy: <b>--</b> · Updated: <b>--</b>
       </div>
       <button type="button" class="b-green" id="fetchLocBtn" onclick="fetchAndSaveControllerLocation()" style="margin-top:10px">
-        Fetch Location
+        Fetch Location (GPS + Network Fallback)
       </button>
       <div style="font-size:10.5px;color:var(--sub);margin-top:8px;line-height:1.45">
-        Phone-er GPS/Network location theke lon, lat niye sorasori database-e save hoy (locally save hoy na). Phone ar controller ek jaygay rakhle controller-er location save hobe.
+        GPS/Network location na pele IP location diye lon, lat niye sorasori database-e save hoy (locally save hoy na).
       </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><span>Manual Lat / Lon Save to DB</span></div>
+      <div class="row" style="margin:6px 0">
+        <label>Latitude</label>
+        <input id="manualLatInput" type="number" step="0.000001" placeholder="22.7520" style="width:120px">
+      </div>
+      <div class="row" style="margin:6px 0">
+        <label>Longitude</label>
+        <input id="manualLonInput" type="number" step="0.000001" placeholder="88.3426" style="width:120px">
+      </div>
+      <button type="button" class="b-cyan" id="saveManualLocBtn" onclick="saveManualCoordinatesToDb()">
+        Save Manual Lon / Lat to DB
+      </button>
     </div>
   </section>
 
@@ -1017,6 +1032,8 @@ function renderLocationDisplay() {
   const wLat = document.getElementById("wLatDisp");
   const wLon = document.getElementById("wLonDisp");
   const wChip = document.getElementById("weatherLocChip");
+  const latInp = document.getElementById("manualLatInput");
+  const lonInp = document.getElementById("manualLonInput");
 
   if (hasLoc) {
     const latStr = Number(controllerLocation.lat).toFixed(6);
@@ -1036,6 +1053,8 @@ function renderLocationDisplay() {
       wChip.textContent = "DB LOC";
       wChip.className = "chip man";
     }
+    if (latInp && document.activeElement !== latInp && !latInp.value) latInp.value = latStr;
+    if (lonInp && document.activeElement !== lonInp && !lonInp.value) lonInp.value = lonStr;
   } else {
     if (locChip) {
       locChip.textContent = "NO DB LOC";
@@ -1112,10 +1131,10 @@ async function fetchControllerLocationFromDb() {
   }
 }
 
-async function saveCoordsToDatabase(pos, sourceTag) {
-  const lat = Number(pos.coords.latitude.toFixed(6));
-  const lon = Number(pos.coords.longitude.toFixed(6));
-  const acc = Number(pos.coords.accuracy.toFixed(1));
+async function writeLocationToDb(latVal, lonVal, accVal, sourceTag) {
+  const lat = Number(Number(latVal).toFixed(6));
+  const lon = Number(Number(lonVal).toFixed(6));
+  const acc = accVal != null && Number.isFinite(Number(accVal)) ? Number(Number(accVal).toFixed(1)) : 5000;
   const nowTs = Date.now();
   const payload = { lat, lon, acc, updatedAt: nowTs };
 
@@ -1125,87 +1144,90 @@ async function saveCoordsToDatabase(pos, sourceTag) {
     body: JSON.stringify(payload)
   });
   if (!res.ok) throw new Error("HTTP " + res.status);
+
   controllerLocation = payload;
   renderLocationDisplay();
   await fetchWeatherFromCoords(lat, lon, true);
-  showMsg(`Controller location saved to DB (${lat}, ${lon}) [${sourceTag}]`);
+  showMsg(`Saved to DB (${lat}, ${lon}) [${sourceTag}]`);
   setDiag(`location PATCH OK (${sourceTag}) -> lat=${lat}, lon=${lon}`);
 }
 
-function requestSinglePosition(opts) {
+function tryBrowserGeoOnce(opts) {
   return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("No geolocation API"));
+      return;
+    }
     navigator.geolocation.getCurrentPosition(resolve, reject, opts);
   });
 }
 
-function formatGeoError(err) {
-  if (!err) return "Unable to fetch location";
-  const code = err.code;
-  if (code === 1) return "Permission denied (enable Location for app/browser)";
-  if (code === 2) return "Position unavailable (turn on Location/GPS)";
-  if (code === 3) return "Timeout (check phone GPS toggle & app location permission)";
-  return err.message || "Unable to fetch location";
+async function tryIpLocationFallback() {
+  try {
+    const r1 = await fetch("https://ipwho.is/", { cache: "no-store" });
+    if (r1.ok) {
+      const d1 = await r1.json();
+      if (d1 && d1.success !== false && Number.isFinite(Number(d1.latitude)) && Number.isFinite(Number(d1.longitude))) {
+        return { lat: Number(d1.latitude), lon: Number(d1.longitude), acc: 5000, src: "IP" };
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const r2 = await fetch("https://ipapi.co/json/", { cache: "no-store" });
+    if (r2.ok) {
+      const d2 = await r2.json();
+      if (d2 && Number.isFinite(Number(d2.latitude)) && Number.isFinite(Number(d2.longitude))) {
+        return { lat: Number(d2.latitude), lon: Number(d2.longitude), acc: 5000, src: "IP2" };
+      }
+    }
+  } catch (e) {}
+
+  throw new Error("IP location unavailable");
 }
 
 async function fetchAndSaveControllerLocation() {
-  if (!navigator.geolocation) {
-    showMsg("Geolocation not supported on this device", true);
-    setDiag("navigator.geolocation missing");
-    return;
-  }
   const btn = document.getElementById("fetchLocBtn");
   if (btn) btn.disabled = true;
-  showMsg("Fetching phone location...");
-
-  let settled = false;
-  let lastError = null;
+  showMsg("Fetching location...");
 
   try {
-    const pos = await new Promise((resolve, reject) => {
-      const failIfBothDone = (err) => {
-        lastError = err;
-        if (!settled && pendingCount <= 0) {
-          settled = true;
-          reject(err);
-        }
-      };
-
-      const succeedOnce = (p, tag) => {
-        if (settled) return;
-        settled = true;
-        resolve({ pos: p, tag });
-      };
-
-      let pendingCount = 2;
-
-      requestSinglePosition({
+    try {
+      const pos = await tryBrowserGeoOnce({
         enableHighAccuracy: false,
-        timeout: 12000,
+        timeout: 6000,
         maximumAge: 120000
-      })
-        .then(p => succeedOnce(p, "NET"))
-        .catch(err => {
-          pendingCount -= 1;
-          failIfBothDone(err);
-        });
+      });
+      await writeLocationToDb(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, "GPS/NET");
+      return;
+    } catch (geoErr) {}
 
-      requestSinglePosition({
-        enableHighAccuracy: true,
-        timeout: 18000,
-        maximumAge: 10000
-      })
-        .then(p => succeedOnce(p, "GPS"))
-        .catch(err => {
-          pendingCount -= 1;
-          failIfBothDone(err);
-        });
-    });
-
-    await saveCoordsToDatabase(pos.pos, pos.tag);
+    showMsg("Browser GPS blocked/timed out, using IP location...");
+    const ipLoc = await tryIpLocationFallback();
+    await writeLocationToDb(ipLoc.lat, ipLoc.lon, ipLoc.acc, ipLoc.src);
   } catch (err) {
-    const msg = formatGeoError(err || lastError);
-    showMsg("Location error: " + msg, true);
-    setDiag(`Geo error (code=${(err || lastError)?.code ?? "?"}): ${msg}`);
+    showMsg("Location failed: " + (err.message || "Try manual Lat/Lon below"), true);
+    setDiag("Location fallback failed: " + (err.message || "unknown"));
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function saveManualCoordinatesToDb() {
+  const latRaw = document.getElementById("manualLatInput")?.value;
+  const lonRaw = document.getElementById("manualLonInput")?.value;
+  const lat = Number(latRaw);
+  const lon = Number(lonRaw);
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lon) || lon < -180 || lon > 180) {
+    showMsg("Enter valid Latitude (-90..90) and Longitude (-180..180)", true);
+    return;
+  }
+  const btn = document.getElementById("saveManualLocBtn");
+  if (btn) btn.disabled = true;
+  try {
+    await writeLocationToDb(lat, lon, 10, "MANUAL");
+  } catch (e) {
+    showMsg("Save failed: " + e.message, true);
   } finally {
     if (btn) btn.disabled = false;
   }
