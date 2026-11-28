@@ -89,6 +89,97 @@
     box-shadow:0 4px 14px rgba(0,229,255,.12);
   }
 
+  .rail-footer-btns{
+    width:100%;
+    margin-top:auto;
+    padding-top:8px;
+    border-top:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .rail-meta-btn{
+    width:100%;
+    background:var(--card2);
+    color:var(--sub);
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:7px 4px;
+    font-size:9.5px;
+    font-weight:800;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    transition:all .15s ease;
+  }
+  .rail-meta-btn:hover{
+    color:var(--cyan);
+    border-color:rgba(0,229,255,.35);
+  }
+
+  .info-modal-backdrop{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(3,7,14,.78);
+    backdrop-filter:blur(5px);
+    z-index:999;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
+  }
+  .info-modal-backdrop.open{
+    display:flex;
+  }
+  .info-modal-card{
+    width:100%;
+    max-width:440px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px;
+    box-shadow:0 18px 42px rgba(0,0,0,.65);
+  }
+  .info-modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  .info-modal-title{
+    font-size:14px;
+    font-weight:900;
+    color:var(--cyan);
+  }
+  .info-modal-close{
+    width:auto;
+    padding:5px 10px;
+    border-radius:9px;
+    font-size:11px;
+    background:var(--card2);
+    color:#fff;
+    border:1px solid var(--line);
+  }
+  .info-modal-body{
+    font-size:12.5px;
+    line-height:1.65;
+    color:#cbd5e1;
+  }
+  .info-modal-body p{
+    margin:0 0 9px;
+  }
+  .info-modal-body p:last-child{
+    margin-bottom:0;
+  }
+  .info-modal-body b{
+    color:#fff;
+  }
+
   .main-area{
     flex:1;
     min-width:0;
@@ -119,6 +210,34 @@
   .banner{display:none;padding:10px 12px;border-radius:13px;margin-bottom:8px;font-size:12.5px;font-weight:700;align-items:center;justify-content:space-between;gap:8px}
   .banner.dry{display:flex;background:rgba(255,82,82,.15);border:1px solid rgba(255,82,82,.5);color:#ff8a80}
   .banner.run{display:flex;background:rgba(0,230,118,.13);border:1px solid rgba(0,230,118,.45);color:#69f0ae}
+
+  .run-timer-chip{
+    background:rgba(0,0,0,.35);
+    border:1px solid rgba(105,240,174,.45);
+    color:#fff;
+    padding:3px 8px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:900;
+    margin-left:6px;
+    font-variant-numeric:tabular-nums;
+  }
+  .ctrl-timer-box{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 11px;
+    border-radius:12px;
+    background:#09101d;
+    border:1px solid #1e2f4b;
+    margin-bottom:10px;
+    font-size:12px;
+  }
+  .ctrl-timer-box b{
+    color:var(--green);
+    font-size:13px;
+    font-variant-numeric:tabular-nums;
+  }
 
   .toast{text-align:center;font-size:12px;font-weight:700;min-height:18px;margin:4px 0 8px;color:var(--green)}
 
@@ -743,6 +862,17 @@
       <span class="ico">🕒</span>
       <span>RTC</span>
     </button>
+
+    <div class="rail-footer-btns">
+      <button type="button" class="rail-meta-btn" onclick="openInfoModal('about')">
+        <span>ℹ️</span>
+        <span>About Us</span>
+      </button>
+      <button type="button" class="rail-meta-btn" onclick="openInfoModal('disclaimer')">
+        <span>⚠️</span>
+        <span>Disclaimer</span>
+      </button>
+    </div>
   </aside>
 
   <div class="main-area">
@@ -908,6 +1038,10 @@
       <div class="page-body">
         <div class="card">
           <div class="sec-title">Pump & Solenoid Valves</div>
+          <div class="ctrl-timer-box">
+            <span>Manual Run Timer:</span>
+            <b id="ctrlManualTimer">00:00 (Idle)</b>
+          </div>
           <button class="b-green ctrl-btn" onclick="sendCmd('start')">Start Both Zones (Auto Target ml)</button>
           <div class="grid2" style="margin-top:8px">
             <button class="b-z1 ctrl-btn" onclick="sendCmd('z1')">Zone 1 Only</button>
@@ -1087,8 +1221,19 @@
     </section>
 
     <footer class="app-footer">
-      app development by <b>Abishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
+      app development by <b>Abhishek Mukhopadhyay</b> · Product of <b>Quantix Tech</b>
     </footer>
+  </div>
+</div>
+
+<!-- ABOUT US & DISCLAIMER MODAL -->
+<div id="infoModalBackdrop" class="info-modal-backdrop" onclick="if(event.target===this)closeInfoModal()">
+  <div class="info-modal-card" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+    <div class="info-modal-head">
+      <span class="info-modal-title" id="infoModalTitle">About Us</span>
+      <button type="button" class="info-modal-close" onclick="closeInfoModal()">✕ Close</button>
+    </div>
+    <div class="info-modal-body" id="infoModalBody"></div>
   </div>
 </div>
 
@@ -1101,7 +1246,44 @@ const INSIGHT_LOG_KEY = "quantix_insight_logs_v1";
 const CONTROLLER_COORD_KEY = "quantix_controller_coord_v1";
 const CONTROLLER_LOCK_KEY = "quantix_coord_locked_v1";
 const PAGE_LOCKS_KEY = "quantix_page_locks_v1";
+const MANUAL_RUN_KEY = "quantix_manual_run_v1";
 const MAX_INSIGHT_LOGS = 500;
+
+const INFO_MODAL_CONTENT = {
+  about: {
+    title: "About Us — Quantix Tech",
+    html: `
+      <p><b>Quantix Tech</b> is a Kolkata-based automation company building smart IoT, embedded hardware, and precision irrigation solutions.</p>
+      <p><b>Founders:</b><br>
+      • <b>Abhishek Mukhopadhyay</b> — Founder &amp; Chief Engineer<br>
+      • <b>Surojit Paul</b> — Founder &amp; Creative Head</p>
+      <p><b>Sister Concern:</b> <b>PixelCraft</b></p>
+      <p style="font-size:11.5px;color:#94a3b8">App development by Abhishek Mukhopadhyay · Product of Quantix Tech</p>
+    `
+  },
+  disclaimer: {
+    title: "Disclaimer",
+    html: `
+      <p><b>Hardware &amp; Water Safety:</b> Always verify pump, solenoid valve, dry-run protection, and electrical wiring physically before starting irrigation. Do not rely solely on remote alerts during critical operations.</p>
+      <p><b>Audio &amp; Background Limits:</b> Warning beeps and run timers depend on active browser/WebView session, device volume/mute settings, and OS background policies; completely force-closing the app may stop web audio.</p>
+      <p><b>Telemetry, Weather &amp; Map Data:</b> Weather, map tiles, geocoding, and cloud sync rely on third-party services and network connectivity, so minor delays or inaccuracies may occur.</p>
+    `
+  }
+};
+
+function openInfoModal(type) {
+  const item = INFO_MODAL_CONTENT[type] || INFO_MODAL_CONTENT.about;
+  const backdrop = document.getElementById("infoModalBackdrop");
+  const titleEl = document.getElementById("infoModalTitle");
+  const bodyEl = document.getElementById("infoModalBody");
+  if (titleEl) titleEl.innerText = item.title;
+  if (bodyEl) bodyEl.innerHTML = item.html;
+  if (backdrop) backdrop.classList.add("open");
+}
+
+function closeInfoModal() {
+  document.getElementById("infoModalBackdrop")?.classList.remove("open");
+}
 
 let settingsLoaded = false;
 let lastSeenMillis = null;
@@ -1125,6 +1307,169 @@ let currentMapMode = "street";
 let isCoordLocked = localStorage.getItem(CONTROLLER_LOCK_KEY) === "1";
 let pageLocks = loadPageLocks();
 const dirtyInputs = new Set();
+
+let manualRunStartedAt = 0;
+let manualRunMode = "";
+let manualTimerInterval = null;
+let beepLoopInterval = null;
+let audioCtx = null;
+
+function formatDurationClock(ms) {
+  const totalSec = Math.max(0, Math.floor(ms / 1000));
+  const hrs = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  const p = n => String(n).padStart(2, "0");
+  return hrs > 0 ? `${p(hrs)}:${p(mins)}:${p(secs)}` : `${p(mins)}:${p(secs)}`;
+}
+
+function playSingleWarningBeep() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(920, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.19);
+  } catch (e) {}
+}
+
+function startManualWarningBeepLoop() {
+  stopManualWarningBeepLoop();
+  playSingleWarningBeep();
+  beepLoopInterval = setInterval(() => {
+    if (!manualRunStartedAt) {
+      stopManualWarningBeepLoop();
+      return;
+    }
+    playSingleWarningBeep();
+  }, 1400);
+}
+
+function stopManualWarningBeepLoop() {
+  if (beepLoopInterval) {
+    clearInterval(beepLoopInterval);
+    beepLoopInterval = null;
+  }
+}
+
+function saveManualSessionToStorage() {
+  try {
+    if (manualRunStartedAt > 0 && manualRunMode) {
+      localStorage.setItem(MANUAL_RUN_KEY, JSON.stringify({
+        startedAt: manualRunStartedAt,
+        mode: manualRunMode
+      }));
+    } else {
+      localStorage.removeItem(MANUAL_RUN_KEY);
+    }
+  } catch (e) {}
+}
+
+function requestAlertNotificationPermission() {
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission().catch(() => {});
+  }
+}
+
+function triggerBackgroundRunNotification(mode) {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  try {
+    new Notification("Quantix Tech Irrigation", {
+      body: `Manual run active (${String(mode || "RUN").toUpperCase()}). Tap Stop when done.`,
+      tag: "quantix-manual-run",
+      renotify: true
+    });
+  } catch (e) {}
+}
+
+function updateManualTimerUi() {
+  const ctrlEl = document.getElementById("ctrlManualTimer");
+  const liveEl = document.getElementById("liveManualTimer");
+  if (!manualRunStartedAt) {
+    if (ctrlEl) ctrlEl.innerText = "00:00 (Idle)";
+    if (liveEl) liveEl.innerText = "00:00";
+    return;
+  }
+  const elapsedStr = formatDurationClock(Date.now() - manualRunStartedAt);
+  if (ctrlEl) ctrlEl.innerText = `${elapsedStr} (${manualRunMode.toUpperCase()})`;
+  if (liveEl) liveEl.innerText = elapsedStr;
+}
+
+function ensureAudioRunningForBackground() {
+  if (!manualRunStartedAt) return;
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+  } catch (e) {}
+  if (!beepLoopInterval) {
+    startManualWarningBeepLoop();
+  }
+  if (!manualTimerInterval) {
+    manualTimerInterval = setInterval(updateManualTimerUi, 500);
+  }
+  updateManualTimerUi();
+}
+
+function startManualSession(cmd) {
+  manualRunStartedAt = Date.now();
+  manualRunMode = cmd;
+  saveManualSessionToStorage();
+  requestAlertNotificationPermission();
+  if (!manualTimerInterval) {
+    manualTimerInterval = setInterval(updateManualTimerUi, 500);
+  }
+  updateManualTimerUi();
+  startManualWarningBeepLoop();
+}
+
+function stopManualSession(reasonText = "Manually stopped") {
+  const hadSession = manualRunStartedAt > 0;
+  const finalDur = hadSession ? formatDurationClock(Date.now() - manualRunStartedAt) : "00:00";
+  manualRunStartedAt = 0;
+  manualRunMode = "";
+  saveManualSessionToStorage();
+  if (manualTimerInterval) {
+    clearInterval(manualTimerInterval);
+    manualTimerInterval = null;
+  }
+  stopManualWarningBeepLoop();
+  updateManualTimerUi();
+  if (hadSession) {
+    showMsg(`${reasonText} · Ran ${finalDur}`);
+  }
+}
+
+function restoreManualSessionOnLoad() {
+  try {
+    const raw = localStorage.getItem(MANUAL_RUN_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    const ts = Number(saved?.startedAt || 0);
+    const mode = saved?.mode ? String(saved.mode) : "start";
+    if (ts > 0 && (Date.now() - ts) < 86400000) {
+      manualRunStartedAt = ts;
+      manualRunMode = mode;
+      ensureAudioRunningForBackground();
+    } else {
+      localStorage.removeItem(MANUAL_RUN_KEY);
+    }
+  } catch (e) {}
+}
 
 function loadPageLocks() {
   try {
@@ -1455,7 +1800,6 @@ async function searchMapArea() {
     let lon = NaN;
     let shortName = query;
 
-    // 1. Primary: ArcGIS World Geocoder (no API key needed)
     try {
       const arcUrl = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&SingleLine=${encodeURIComponent(query)}`;
       const arcRes = await fetchJsonSafe(arcUrl, {}, 1);
@@ -1474,7 +1818,6 @@ async function searchMapArea() {
       console.warn("ArcGIS search fallback to Nominatim:", e);
     }
 
-    // 2. Fallback: Nominatim search
     if (Number.isNaN(lat) || Number.isNaN(lon)) {
       const nomUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
       const results = await fetchJsonSafe(nomUrl, {}, 1);
@@ -2559,6 +2902,11 @@ async function sendCmd(cmd) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cmd)
     }, 2);
+    if (cmd === "start" || cmd === "z1" || cmd === "z2") {
+      startManualSession(cmd);
+    } else if (cmd === "stop") {
+      stopManualSession("Force stopped");
+    }
     showMsg("Command sent: " + cmd.toUpperCase());
   } catch (e) {
     showMsg("Cmd failed: " + e.message, true);
@@ -2744,9 +3092,13 @@ function renderBanner(st, dryAlert, watering, espAlive) {
     box.className = "banner dry";
     box.innerHTML = "<span>⚠ DRY RUN ALERT: Water flow not detected!</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#ff5252;color:#fff' onclick=\"sendCmd('stop')\">Clear</button>";
   } else if (watering || st === "RUN") {
+    const curRunText = manualRunStartedAt ? formatDurationClock(Date.now() - manualRunStartedAt) : "00:00";
     box.className = "banner run";
-    box.innerHTML = "<span>💧 Irrigation Running</span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick=\"confirmStop()\">Stop</button>";
+    box.innerHTML = `<span>💧 Irrigation Running <span class="run-timer-chip" id="liveManualTimer">${curRunText}</span></span><button style='width:auto;padding:6px 10px;font-size:12px;background:#00e676;color:#000' onclick="confirmStop()">Stop</button>`;
   } else {
+    if (manualRunStartedAt > 0) {
+      stopManualSession("Stopped");
+    }
     box.style.display = "none";
   }
 }
@@ -2843,20 +3195,31 @@ async function fetchStatus() {
   }
 }
 
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeInfoModal();
+});
+
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    fetchSettingsOnce();
-    syncControllerCoordFromCloud(true);
-    fetchStatus();
-    updateEspLinkState();
-    updateAreaWeather(false);
-    if (document.getElementById("tab-coord")?.classList.contains("active") && coordMapInstance) {
-      setTimeout(() => coordMapInstance.invalidateSize(), 150);
+  if (document.hidden) {
+    if (manualRunStartedAt > 0) {
+      ensureAudioRunningForBackground();
+      triggerBackgroundRunNotification(manualRunMode);
     }
+    return;
+  }
+  ensureAudioRunningForBackground();
+  fetchSettingsOnce();
+  syncControllerCoordFromCloud(true);
+  fetchStatus();
+  updateEspLinkState();
+  updateAreaWeather(false);
+  if (document.getElementById("tab-coord")?.classList.contains("active") && coordMapInstance) {
+    setTimeout(() => coordMapInstance.invalidateSize(), 150);
   }
 });
 
 window.addEventListener("focus", () => {
+  ensureAudioRunningForBackground();
   fetchSettingsOnce();
   syncControllerCoordFromCloud(true);
   fetchStatus();
@@ -2879,6 +3242,7 @@ initDefaultDateRangeInputs();
 applyAllPageLocksUi();
 renderSavedCoordSummary();
 setCoordLockState(isCoordLocked, false);
+restoreManualSessionOnLoad();
 renderWeatherNotFound("📍 Controller offline");
 refreshInsightsGraphs();
 fetchSettingsOnce();
