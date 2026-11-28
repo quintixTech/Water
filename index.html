@@ -123,8 +123,8 @@
     display:none;
     position:fixed;
     inset:0;
-    background:rgba(3,7,14,.78);
-    backdrop-filter:blur(5px);
+    background:rgba(3,7,14,.82);
+    backdrop-filter:blur(7px);
     z-index:999;
     align-items:center;
     justify-content:center;
@@ -132,15 +132,25 @@
   }
   .info-modal-backdrop.open{
     display:flex;
+    animation:modalFade .15s ease;
+  }
+  @keyframes modalFade{
+    from{opacity:0;transform:scale(.96)}
+    to{opacity:1;transform:scale(1)}
   }
   .info-modal-card{
     width:100%;
     max-width:440px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
+    background:linear-gradient(155deg,#132036 0%,#0d1524 100%);
+    border:1px solid rgba(0,229,255,.28);
+    border-radius:20px;
     padding:16px;
-    box-shadow:0 18px 42px rgba(0,0,0,.65);
+    box-shadow:0 22px 48px rgba(0,0,0,.72),0 0 24px rgba(0,229,255,.08);
+  }
+  .info-modal-card.danger-modal{
+    max-width:360px;
+    border-color:rgba(255,82,82,.42);
+    box-shadow:0 22px 48px rgba(0,0,0,.75),0 0 24px rgba(255,82,82,.14);
   }
   .info-modal-head{
     display:flex;
@@ -155,6 +165,9 @@
     font-size:14px;
     font-weight:900;
     color:var(--cyan);
+  }
+  .danger-modal .info-modal-title{
+    color:#ff8a80;
   }
   .info-modal-close{
     width:auto;
@@ -178,6 +191,22 @@
   }
   .info-modal-body b{
     color:#fff;
+  }
+  .confirm-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:14px;
+  }
+  .confirm-cancel-btn{
+    background:var(--card2);
+    color:#e2e8f0;
+    border:1px solid var(--line);
+  }
+  .confirm-stop-btn{
+    background:linear-gradient(135deg,#ff5252 0%,#d32f2f 100%);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(255,82,82,.28);
   }
 
   .main-area{
@@ -1433,6 +1462,23 @@
   </div>
 </div>
 
+<!-- DARK CONFIRMATION POPUP -->
+<div id="stopModalBackdrop" class="info-modal-backdrop" onclick="if(event.target===this)closeStopModal()">
+  <div class="info-modal-card danger-modal" role="dialog" aria-modal="true" aria-labelledby="stopModalTitle">
+    <div class="info-modal-head">
+      <span class="info-modal-title" id="stopModalTitle">🛑 Stop Irrigation?</span>
+      <button type="button" class="info-modal-close" onclick="closeStopModal()">✕</button>
+    </div>
+    <div class="info-modal-body">
+      <p>Stop the <b>Main Pump</b> and close active <b>solenoid valves</b> right now?</p>
+    </div>
+    <div class="confirm-actions">
+      <button type="button" class="confirm-cancel-btn" onclick="closeStopModal()">Cancel</button>
+      <button type="button" class="confirm-stop-btn" onclick="executeConfirmedStop()">Stop Now</button>
+    </div>
+  </div>
+</div>
+
 <!-- ABOUT US & DISCLAIMER MODAL -->
 <div id="infoModalBackdrop" class="info-modal-backdrop" onclick="if(event.target===this)closeInfoModal()">
   <div class="info-modal-card" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
@@ -1490,6 +1536,19 @@ function openInfoModal(type) {
 
 function closeInfoModal() {
   document.getElementById("infoModalBackdrop")?.classList.remove("open");
+}
+
+function openStopModal() {
+  document.getElementById("stopModalBackdrop")?.classList.add("open");
+}
+
+function closeStopModal() {
+  document.getElementById("stopModalBackdrop")?.classList.remove("open");
+}
+
+function executeConfirmedStop() {
+  closeStopModal();
+  sendCmd("stop");
 }
 
 let settingsLoaded = false;
@@ -3234,7 +3293,7 @@ function confirmStop() {
   if (!guardUnlockedPage("tab-ctrl") && document.getElementById("tab-ctrl")?.classList.contains("active")) return;
   if (!guardUnlockedPage("tab-home") && document.getElementById("tab-home")?.classList.contains("active")) return;
   if (!isEspAliveNow()) { showMsg("ESP is OFFLINE", true); return; }
-  if (confirm("Stop pump and close active valves now?")) sendCmd("stop");
+  openStopModal();
 }
 
 function confirmReset() {
@@ -3594,7 +3653,10 @@ document.addEventListener("pointerdown", () => {
 }, { passive: true });
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeInfoModal();
+  if (e.key === "Escape") {
+    closeInfoModal();
+    closeStopModal();
+  }
 });
 
 document.addEventListener("visibilitychange", () => {
