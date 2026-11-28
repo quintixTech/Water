@@ -1657,6 +1657,9 @@ function syncTimerWithHardwareRun(isRunningNow, modeHint = "auto") {
       if (!beepLoopInterval) {
         startManualWarningBeepLoop();
       }
+    } else if (manualRunMode === "auto" && modeHint && modeHint !== "auto") {
+      manualRunMode = modeHint;
+      saveManualSessionToStorage();
     }
     updateManualTimerUi();
   } else {
@@ -3490,9 +3493,11 @@ function updateEspLinkState() {
     const stUpper = String(st).toUpperCase();
     const isDryNow = Boolean(latestStatusData && latestStatusData.dryAlert) || stUpper === "DRY!";
     const isRunningNow = !isDryNow && (Boolean(latestStatusData && latestStatusData.watering) || stUpper === "RUN");
-    const detectedMode = (latestStatusData && latestStatusData.activeZone)
-      ? String(latestStatusData.activeZone).toLowerCase()
-      : (manualRunMode || "auto");
+    const detectedMode = manualRunMode
+      ? manualRunMode
+      : ((latestStatusData && latestStatusData.activeZone)
+          ? String(latestStatusData.activeZone).toLowerCase()
+          : "auto");
     syncTimerWithHardwareRun(isRunningNow, detectedMode);
     renderBanner(st, Boolean(latestStatusData && latestStatusData.dryAlert), Boolean(latestStatusData && latestStatusData.watering), true);
   } else {
