@@ -70,7 +70,7 @@
     font-size:13px;font-weight:800;color:var(--cyan);margin-bottom:10px;
     display:flex;justify-content:space-between;align-items:center;gap:6px;
   }
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0}
   label{font-size:12.5px;color:var(--sub)}
   input{
     background:#090f1b;border:1px solid #293954;color:#fff;
@@ -88,7 +88,7 @@
   .b-red{background:var(--red);color:#fff}
   .b-z1{background:#0284c7;color:#fff}
   .b-z2{background:#a21caf;color:#fff}
-  .b-cyan{background:var(--cyan);color:#04151c;margin-top:8px}
+  .b-cyan{background:var(--cyan);color:#04151c;margin-top:10px}
   .msg{text-align:center;font-size:12px;font-weight:700;min-height:18px;color:var(--green);margin-bottom:8px}
   .dbg{
     font-size:11px;color:var(--sub);background:#09101d;border:1px solid #1b2a44;
@@ -136,12 +136,19 @@
   </div>
 
   <div class="card">
-    <div class="title"><span>Schedule &amp; Flow Calibration</span><span>/settings</span></div>
+    <div class="title"><span>Daily Schedule &amp; Flow Cal</span><span class="chip" id="savedSchedChip">Sch: --:--</span></div>
     <div class="row">
-      <label>Schedule 1 (HH:MM)</label>
+      <label>Morning Sch 1 (HH:MM)</label>
       <div>
         <input id="s1h" type="number" min="0" max="23" style="width:58px"> :
         <input id="s1m" type="number" min="0" max="59" style="width:58px">
+      </div>
+    </div>
+    <div class="row">
+      <label>Evening Sch 2 (HH:MM)</label>
+      <div>
+        <input id="s2h" type="number" min="0" max="23" style="width:58px"> :
+        <input id="s2m" type="number" min="0" max="59" style="width:58px">
       </div>
     </div>
     <div class="row">
@@ -151,7 +158,7 @@
         <input id="c2" type="number" step="0.1" style="width:68px">
       </div>
     </div>
-    <button class="b-cyan" id="saveBtn" onclick="saveSettings()">Save Settings</button>
+    <button class="b-cyan" id="saveBtn" onclick="saveSchedule()">Save Schedule</button>
   </div>
 
   <div class="dbg" id="dbgBox">Diag: ready</div>
@@ -160,16 +167,19 @@
 <script>
 const DB_URL = "https://quantixirrigation-default-rtdb.asia-southeast1.firebasedatabase.app";
 const STALE_MS = 30000;
-const WRITE_GUARD_MS = 5000;
+const SCHED_IDS = ["s1h", "s1m", "s2h", "s2m", "c1", "c2"];
 
 let lastSeenKey = null;
 let lastSeenAt = 0;
-let lastWriteAt = 0;
+let justSavedUntil = 0;
 let lastSettingsSig = "";
 const editing = new Set();
 
-document.querySelectorAll("input").forEach(el => {
-  el.addEventListener("input", () => { if (el.id) editing.add(el.id); });
+SCHED_IDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("input", () => editing.add(id));
+  el.addEventListener("change", () => editing.add(id));
 });
 
 function showMsg(txt, err = false) {
@@ -202,6 +212,11 @@ function updatePill() {
   document.querySelectorAll(".cmd-btn").forEach(btn => { btn.disabled = !online; });
 }
 
+function formatSchedChip(s) {
+  const p2 = n => String(Number(n || 0)).padStart(2, "0");
+  return `S1 ${p2(s.s1h)}:${p2(s.s1m)} · S2 ${p2(s.s2h)}:${p2(s.s2m)}`;
+}
+
 async function sendCmd(cmd) {
   if (!isOnline()) {
     showMsg("ESP is OFFLINE", true);
@@ -227,13 +242,11 @@ async function fetchStatus() {
   try {
     const res = await fetch(`${DB_URL}/status.json`, { cache: "no-store" });
     if (!res.ok) {
-      setDiag(`status HTTP ${res.status}`);
       updatePill();
       return;
     }
     const d = await res.json();
     if (!d) {
-      setDiag("status is null");
       updatePill();
       return;
     }
@@ -258,69 +271,93 @@ async function fetchStatus() {
     document.getElementById("l2Val").innerText = Number(d.l2 ?? 0).toFixed(2) + " L";
     if (d.status) document.getElementById("modeChip").innerText = String(d.status);
 
-    setDiag(`status OK | key=${key}`);
     updatePill();
   } catch (e) {
-    setDiag(`status fetch error: ${e.message}`);
     updatePill();
   }
 }
 
-async function fetchSettings() {
-  if (Date.now() - lastWriteAt < WRITE_GUARD_MS) return;
+async function fetchSettings(forceFill = false) {
   try {
     const res = await fetch(`${DB_URL}/settings.json`, { cache: "no-store" });
-    if (!res.ok) return;
+    if (!res.ok) {
+      setDiag(`settings GET HTTP ${res.status}`);
+      return null;
+    }
     const s = await res.json();
-    if (!s) return;
+    if (!s) {
+      setDiag("/settings is null in RTDB");
+      return null;
+    }
 
-    const sig = [s.s1h, s.s1m, s.c1, s.c2, s.updatedAt].join("|");
-    if (sig === lastSettingsSig && editing.size === 0) return;
+    document.getElementById("savedSchedChip").innerText = formatSchedChip(s);
 
-    ["s1h", "s1m", "c1", "c2"].forEach(id => {
+    const sig = SCHED_IDS.map(k => s[k] ?? "").join(",") + "|" + (s.updatedAt ?? "");
+    if (!forceFill && sig === lastSettingsSig) return s;
+
+    SCHED_IDS.forEach(id => {
       const inp = document.getElementById(id);
-      if (s[id] !== undefined && document.activeElement !== inp && !editing.has(id)) {
+      if (s[id] === undefined || s[id] === null) return;
+      if (forceFill) {
+        inp.value = s[id];
+        editing.delete(id);
+      } else if (document.activeElement !== inp && !editing.has(id) && Date.now() > justSavedUntil) {
         inp.value = s[id];
       }
     });
+
     lastSettingsSig = sig;
-  } catch (e) {}
+    setDiag(`DB /settings -> s1=${s.s1h}:${s.s1m}, s2=${s.s2h}:${s.s2m}, c1=${s.c1}, c2=${s.c2}`);
+    return s;
+  } catch (e) {
+    setDiag(`settings GET error: ${e.message}`);
+    return null;
+  }
 }
 
-async function saveSettings() {
+async function saveSchedule() {
   const btn = document.getElementById("saveBtn");
   btn.disabled = true;
-  showMsg("Saving...");
+  showMsg("Saving schedule...");
+
+  SCHED_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.blur();
+  });
 
   const payload = {
     s1h: Number(document.getElementById("s1h").value || 0),
     s1m: Number(document.getElementById("s1m").value || 0),
+    s2h: Number(document.getElementById("s2h").value || 0),
+    s2m: Number(document.getElementById("s2m").value || 0),
     c1: Number(document.getElementById("c1").value || 7.5),
     c2: Number(document.getElementById("c2").value || 7.5),
     updatedAt: Date.now()
   };
 
   try {
-    lastWriteAt = Date.now();
     const res = await fetch(`${DB_URL}/settings.json`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    const text = await res.text();
+    const rawText = await res.text();
     if (!res.ok) {
-      showMsg(`Failed HTTP ${res.status}`, true);
-      setDiag(`PATCH failed (${res.status}): ${text}`);
+      showMsg(`Save failed (${res.status})`, true);
+      setDiag(`PATCH failed ${res.status}: ${rawText}`);
       return;
     }
-    ["s1h", "s1m", "c1", "c2"].forEach(id => editing.delete(id));
+
+    justSavedUntil = Date.now() + 2500;
+    SCHED_IDS.forEach(id => editing.delete(id));
     lastSettingsSig = "";
-    showMsg("Saved to /settings!");
-    setDiag(`PATCH OK at ${new Date().toLocaleTimeString()}`);
-    await fetchSettings();
+    showMsg("Schedule saved to /settings!");
+
+    await new Promise(r => setTimeout(r, 300));
+    await fetchSettings(true);
   } catch (e) {
     showMsg(`Error: ${e.message}`, true);
-    setDiag(`PATCH exception: ${e.message}`);
+    setDiag(`PATCH error: ${e.message}`);
   } finally {
     btn.disabled = false;
   }
@@ -328,9 +365,9 @@ async function saveSettings() {
 
 setInterval(updatePill, 1000);
 setInterval(fetchStatus, 2500);
-setInterval(fetchSettings, 3000);
+setInterval(() => fetchSettings(false), 3000);
 fetchStatus();
-fetchSettings();
+fetchSettings(true);
 </script>
 </body>
 </html>
